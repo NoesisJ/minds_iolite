@@ -1,0 +1,32 @@
+{
+  "name": "minds_iolite",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@primevue/themes": "^4.0.7",
+    "@tauri-apps/api": "^1",
+    "@vueuse/core": "^11.1.0",
+    "axios": "^1.7.7",
+    "echarts": "^5.5.1",
+    "pinia": "^2.2.2",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.0.7",
+    "vue": "^3.3.4",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "tailwindcss": "^3.4.12",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1",
+    "vue-tsc": "^2.0.22"
+  }
+}
