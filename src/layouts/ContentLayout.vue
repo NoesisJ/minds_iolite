@@ -2,6 +2,6 @@
 </script>
 
 <template>
-  <div class="layout-hub">
+  <div class="content-layout">
   </div>
 </template>

@@ -2,6 +2,6 @@
 </script>
 
 <template>
-  <div class="layout-hub">
+  <div class="sidebar-layout">
   </div>
 </template>
