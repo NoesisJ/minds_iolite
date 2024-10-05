@@ -1,27 +1,22 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import DashBoard from "../views/Dashboard.vue";
 // 定义路由数组
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Home',
-    component: () => import('../views/Dashboard.vue'),
+    path: "/",
+    component: DashBoard,
+    children: [],
   },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/Dashboard.vue'),
-  },
-  {
-    path: '/:catchAll(.*)', 
-    name: 'NotFound',
-    component: () => import('../views/Dashboard.vue'),
-  },
+
+
+  
 ];
 
+// 创建 Router 实例并传入配置
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(), // 使用 HTML5 的 History 模式
   routes,
 });
 
+// 导出 Router 实例
 export default router;

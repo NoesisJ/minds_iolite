@@ -1,17 +1,26 @@
 import { createApp } from "vue";
-import { createPinia } from 'pinia'
+import { createPinia } from "pinia";
 import App from "./App.vue";
-import PrimeVue from 'primevue/config';
-import Aura from '@primevue/themes/aura';
-import router from './router';
-import 'primeicons/primeicons.css'
+import PrimeVue from "primevue/config";
+import Aura from "@primevue/themes/aura";
+import router from "./router";
+import "primeicons/primeicons.css";
+import StyleClass from "primevue/styleclass";
 
-const app = createApp(App)
-const pinia = createPinia()
+const app = createApp(App);
+const pinia = createPinia();
 
-
-app.use(PrimeVue, {
+app
+  .use(pinia)
+  .use(router)
+  .use(PrimeVue, {
     theme: {
-        preset: Aura
-    }
-}).use(pinia).use(router).mount("#app");
+      preset: Aura,
+    },
+    options: {
+        prefix: "p",
+        cssLayer: false,
+      },
+  })
+  .directive('styleclass', StyleClass)
+  .mount("#app");
