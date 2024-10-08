@@ -7,7 +7,7 @@ import LayoutHUb from "./layouts/LayoutHub.vue";
 <template>
   <div
     id="app"
-    style="background: rgb(27, 27, 56); width: 100%; height: 2000px"
+    style="background: rgb(27, 27, 56); width: 100%; height: 2000px; z-index: 0"
   >
     <LayoutHUb />
   </div>

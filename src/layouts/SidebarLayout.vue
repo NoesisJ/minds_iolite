@@ -1,80 +1,45 @@
 <template>
-  <div class="sidebar">
-    <ul class="layout-menu">
-      <div class="card flex justify-center">
-        <VirtualScroller
-          :items="items"
-          :itemSize="50"
-          style="width: 100%; height: 300px"
-        >
-          <template v-slot:item="{ item }">
-            <!-- <div v-for="(item, i) in model" :key="i"> -->
-            <li
-              @click="toggleSubmenu(item)"
-              class="nav-item user-select-none"
-              :class="{ 'has-submenu': item.items }"
-            >
-              <i v-if="item.icon" :class="item.icon"></i>
-              <!-- 显示图标 -->
-              {{ item.label }}
-              <i
-                v-if="item.items"
-                class="pi"
-                :class="
-                  isSubmenuOpen(item) ? 'pi-chevron-down' : 'pi-chevron-right'
-                "
-                style="font-size: 10px; margin-left: auto"
-                @click.stop="toggleSubmenu(item)"
-              ></i>
-            </li>
+  <div class="container">
+    <hd-scroll>
+      <!-- 父菜单部分 -->
+      <div
+        v-for="(item, i) in items"
+        :key="i"
+        @click="toggleSubmenu(item)"
+        class="nav-item"
+        :class="{ 'has-submenu': item.items }"
+      >
+        <i v-if="item.icon" :class="item.icon"></i>
+        {{ item.label }}
+        <i
+          v-if="item.items"
+          class="pi"
+          :class="isSubmenuOpen(item) ? 'pi-chevron-down' : 'pi-chevron-right'"
+          style="font-size: 0.625rem; margin-left: auto"
+          @click.stop="toggleSubmenu(item)"
+        ></i>
 
-            <transition name="slide-fade">
-              <ul
-                v-if="isSubmenuOpen(item) && item.items"
-                class="submenu"
-                :key="item.label"
-              >
-                <li v-for="(subitem, j) in item.items" :key="j">
-                  <router-link
-                    v-if="subitem.to"
-                    :to="subitem.to"
-                    class="nav-item"
-                  >
-                    <i v-if="subitem.icon" :class="subitem.icon"></i>
-                    <!-- 显示子选项图标 -->
-                    {{ subitem.label }}
-                  </router-link>
-                  <span v-else class="nav-item">{{ subitem.label }}</span>
-                  <ul v-if="subitem.items">
-                    <li v-for="(subsubitem, k) in subitem.items" :key="k">
-                      <router-link
-                        v-if="subsubitem.to"
-                        :to="subsubitem.to"
-                        class="nav-item"
-                      >
-                        <i v-if="subsubitem.icon" :class="subsubitem.icon"></i>
-                        <!-- 显示子子选项图标 -->
-                        {{ subsubitem.label }}
-                      </router-link>
-                      <span v-else class="nav-item">{{
-                        subsubitem.label
-                      }}</span>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </transition>
-            <!-- </div> -->
-          </template>
-        </VirtualScroller>
+        <!-- 子菜单部分 -->
+        <div
+          v-for="(subitem, j) in item.items"
+          :key="j"
+          v-if="isSubmenuOpen(item) && item.items"
+          class="nav-childItem"
+        >
+          <router-link v-if="subitem.to" :to="subitem.to">
+            <i v-if="subitem.icon" :class="subitem.icon"></i>
+            {{ subitem.label }}
+          </router-link>
+          <span v-else>{{ subitem.label }}</span>
+        </div>
       </div>
-    </ul>
+    </hd-scroll>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import VirtualScroller from "primevue/virtualscroller";
+import hdScroll from "../components/hdScroll.vue";
 
 // 定义接口
 interface MenuItem {
@@ -84,7 +49,7 @@ interface MenuItem {
   items?: MenuItem[]; // 允许有子菜单
 }
 
-// 选项模型，以后可直接修改这里的数据。
+// 选项模型
 const model = ref<MenuItem[]>([
   {
     label: "选项1",
@@ -97,7 +62,7 @@ const model = ref<MenuItem[]>([
   {
     label: "选项2",
     icon: "pi pi-fw pi-list",
-    to: "/route2",
+    to: "/",
   },
   {
     label: "选项3",
@@ -106,116 +71,187 @@ const model = ref<MenuItem[]>([
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },
-  {
-    label: "选项5",
-    icon: "pi pi-fw pi-list",
-    to: "/route5",
-  },
-  {
-    label: "选项4",
-    icon: "pi pi-fw pi-list",
-    to: "/route4",
-  },
-  {
-    label: "选项4",
-    icon: "pi pi-fw pi-list",
-    to: "/route4",
-  },
-  {
-    label: "选项4",
-    icon: "pi pi-fw pi-list",
-    to: "/route4",
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
+  },{
+    label: "选项3",
+    icon: "pi pi-fw pi-home",
+    items: [
+      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
+      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+    ],
   },
 ]);
-
+// 如果有子菜单则展开
 const submenuOpen = ref<string | null>(null);
-
+// 切换子菜单的展开状态
 const toggleSubmenu = (item: MenuItem) => {
   if (item.items) {
     submenuOpen.value = submenuOpen.value === item.label ? null : item.label;
   }
 };
-
+// 判断子菜单是否展开
 const isSubmenuOpen = (item: MenuItem) => {
   return submenuOpen.value === item.label;
 };
-
-const items = computed(() => {
-  const visibleItems: MenuItem[] = [];
-
-  const countVisibleItems = (items: MenuItem[]) => {
-    for (const item of items) {
-      visibleItems.push(item); // 添加当前项（父选项）
-      if (isSubmenuOpen(item) && item.items) {
-        visibleItems.push(...item.items); // 添加当前打开的子项
-      }
-    }
-  };
-
-  countVisibleItems(model.value); // 传入原始数据模型
-  return visibleItems; // 返回当前显示的父选项和子选项
-});
+// 导出
+const items = computed(() => model.value);
 </script>
 
-<style scoped>
-.layout-menu {
-  list-style-type: none;
-  padding: 0;
+<style lang="scss" scoped>
+.container {
+  position: fixed;
+  background-color: rgb(50, 50, 89);
+  width: 200px;
+  height: 100%;
 }
-
+.has-submenu {
+  cursor: pointer; // 鼠标移动到有子菜单的选项上时显示手型
+}
 .nav-item {
-  height: 52px;
+  user-select: none;
+  // height: 52px;
   cursor: pointer;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  /* 垂直居中 */
-  padding: 10px;
-  /* 添加内边距 */
+  padding: 0.625rem;
   color: white;
-  /* 字体颜色 */
-  border-bottom: 1.5px solid rgb(27, 27, 56);
-  /* 底部边框 */
+  border-bottom: 0.0938rem solid rgb(27, 27, 56);
+}
+.nav-item:hover {
+  color: rgb(168, 132, 244);
+}
+.nav-childItem{
+  margin-top: 10px;
+  padding:  10.4px 0;  
 }
 
 .nav-item i {
   margin-right: 1em;
-  /* 设置图标与文字之间的间隔为1em */
-}
-
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  /* 悬停效果 */
-}
-
-.submenu {
-  list-style-type: none;
-  padding-left: 10px;
-  /* 为子选项增加缩进 */
-  overflow: hidden;
-  /* 确保溢出部分不显示 */
-}
-
-.user-select-none {
-  user-select: none;
-  /* 不允许文本选择 */
-}
-
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: max-height 0.5s ease, opacity 0.5s ease;
-}
-
-.slide-fade-enter,
-.slide-fade-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.slide-fade-enter-to,
-.slide-fade-leave {
-  max-height: 500px;
-  /* 设置一个足够大的值以适应内容 */
-  opacity: 1;
 }
 </style>

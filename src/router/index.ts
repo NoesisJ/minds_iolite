@@ -1,10 +1,16 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import DashBoard from "../views/Dashboard.vue";
+import PersonInformation from "../views/PersonInformation.vue";
 // 定义路由数组
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
+    path: "/DashBoard",
     component: DashBoard,
+    children: [],
+  },
+  {
+    path: "/",
+    component: PersonInformation,
     children: [],
   },
 

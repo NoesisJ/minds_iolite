@@ -1,9 +1,9 @@
 <template>
-  <div class="contentLayout flex flex-row">
-    <!-- Sidebar -->
+  <div class="contentLayout flex flex-row mt-[4.75rem]">
     <SidebarLayout />
     <!-- Main content -->
-    <RouterView />
+     <!-- 这里的ml为sidebar的宽度 -->
+    <RouterView class="ml-[12.5rem]"/>
   </div>
 </template>
 
