@@ -3,24 +3,24 @@
     <div class="HeaderPerson">
       <div class="searchGroup">
         <AutoComplete
-          v-model="value"
+          v-model="nameValue"
           :suggestions="filteredNames"
-          @complete="search"
+          @complete="searchNames"
           placeholder="姓名"
           class="AutoComplete"
         />
         <AutoComplete
-          v-model="value"
-          :suggestions="filteredNames"
-          @complete="search"
-          placeholder="姓名"
+          v-model="groupValue"
+          :suggestions="filteredGroups"
+          @complete="searchGroups"
+          placeholder="组别"
           class="AutoComplete"
         />
         <AutoComplete
-          v-model="value"
-          :suggestions="filteredNames"
-          @complete="search"
-          placeholder="姓名"
+          v-model="branchValue"
+          :suggestions="filteredBranches"
+          @complete="searchBranches"
+          placeholder="兵种"
           class="AutoComplete"
         />
       </div>
@@ -34,7 +34,7 @@
 
     <div class="contentPerson">
       <DataTable
-        :value="students"
+        :value="filteredStudents"
         :paginator="true"
         :rows="14"
         :filters="filters"
@@ -58,6 +58,11 @@
           </template>
         </Column>
         <Column field="group" header="组别" editor filter>
+          <template #editor="{ data, field }">
+            <InputText v-model="data[field]" fluid />
+          </template>
+        </Column>
+        <Column field="branch" header="兵种" editor filter>
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" fluid />
           </template>
@@ -109,76 +114,97 @@
     </div>
   </div>
 </template>
+
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed  } from "vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 // datatable
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
 
 // auto complete
 const nameValue = ref(""); // 用户输入的名字
-const names = ref([
-  // 预定义的名字数组
-  "Alice",
-  "Bob",
-  "Charlie",
-  "David",
-  "Eva",
-  "Frank",
-  "Grace",
-  "Hannah",
-  "Isaac",
-  "Jack",
+const groupValue = ref(""); // 用户输入的组别
+const branchValue = ref(""); // 用户输入的兵种
+
+// 统一的学生数据
+// datatable
+const students = ref([
+  { id: 1, name: '张三', group: 'A组', gender: '男', grade: '一年级', major: '计算机', campus: '南校区', phone: '123456789', qq: '123456', wechat: 'zhangsan', branch: '步兵' },
+  { id: 2, name: '李四', group: 'B组', gender: '女', grade: '二年级', major: '软件工程', campus: '北校区', phone: '987654321', qq: '654321', wechat: 'lisi', branch: '炮兵' },
+  { id: 3, name: '王五', group: 'A组', gender: '男', grade: '三年级', major: '人工智能', campus: '南校区', phone: '135246809', qq: '234567', wechat: 'wangwu', branch: '特种兵' },
+  { id: 4, name: '赵六', group: 'B组', gender: '女', grade: '四年级', major: '网络安全', campus: '北校区', phone: '139876543', qq: '765432', wechat: 'zhaoliu', branch: '机械兵' },
+  { id: 5, name: '孙七', group: 'C组', gender: '男', grade: '一年级', major: '物联网', campus: '西校区', phone: '158963741', qq: '876543', wechat: 'sunqi', branch: '步兵' },
+  { id: 6, name: '周八', group: 'A组', gender: '女', grade: '二年级', major: '大数据', campus: '南校区', phone: '159753842', qq: '435267', wechat: 'zhouba', branch: '炮兵' },
+  { id: 7, name: '吴九', group: 'B组', gender: '男', grade: '三年级', major: '信息管理', campus: '北校区', phone: '137951482', qq: '546728', wechat: 'wujia', branch: '特种兵' },
+  { id: 8, name: '郑十', group: 'C组', gender: '女', grade: '四年级', major: '物联网', campus: '西校区', phone: '139258741', qq: '678321', wechat: 'zhengshi', branch: '机械兵' },
+  { id: 9, name: '王十一', group: 'A组', gender: '男', grade: '一年级', major: '计算机', campus: '南校区', phone: '187654321', qq: '432156', wechat: 'wangshiyi', branch: '步兵' },
+  { id: 10, name: '李十二', group: 'C组', gender: '女', grade: '三年级', major: '人工智能', campus: '西校区', phone: '135879654', qq: '125763', wechat: 'lishier', branch: '炮兵' },
+  { id: 11, name: '钱十三', group: 'A组', gender: '男', grade: '四年级', major: '物联网', campus: '南校区', phone: '187654322', qq: '777321', wechat: 'qianshisan', branch: '特种兵' },
+  { id: 12, name: '丁十四', group: 'B组', gender: '女', grade: '二年级', major: '大数据', campus: '北校区', phone: '147852369', qq: '888456', wechat: 'dingshisi', branch: '机械兵' },
+  { id: 13, name: '杨十五', group: 'C组', gender: '男', grade: '一年级', major: '计算机', campus: '西校区', phone: '138741258', qq: '999789', wechat: 'yangshiwu', branch: '步兵' },
+  { id: 14, name: '吴十六', group: 'A组', gender: '女', grade: '三年级', major: '信息管理', campus: '南校区', phone: '139753951', qq: '111654', wechat: 'wushiliu', branch: '炮兵' },
+  { id: 15, name: '赵十七', group: 'B组', gender: '男', grade: '四年级', major: '物联网', campus: '北校区', phone: '147963852', qq: '222987', wechat: 'zhaoshiyi', branch: '特种兵' },
+  { id: 16, name: '孙十八', group: 'C组', gender: '女', grade: '二年级', major: '人工智能', campus: '西校区', phone: '187456321', qq: '333432', wechat: 'sunshiba', branch: '机械兵' },
+  { id: 17, name: '周十九', group: 'A组', gender: '男', grade: '一年级', major: '网络安全', campus: '南校区', phone: '186321753', qq: '444345', wechat: 'zhoushijiu', branch: '步兵' },
+  { id: 18, name: '郑二十', group: 'B组', gender: '女', grade: '三年级', major: '信息管理', campus: '北校区', phone: '159357486', qq: '555678', wechat: 'zhengershi', branch: '炮兵' },
+  { id: 19, name: '王二十一', group: 'C组', gender: '男', grade: '四年级', major: '计算机', campus: '西校区', phone: '136258741', qq: '666912', wechat: 'wangershiyi', branch: '特种兵' },
+  { id: 20, name: '李二十二', group: 'A组', gender: '女', grade: '一年级', major: '大数据', campus: '南校区', phone: '148951753', qq: '777234', wechat: 'liershier', branch: '机械兵' },
+  { id: 21, name: '刘二十三', group: 'B组', gender: '男', grade: '二年级', major: '人工智能', campus: '北校区', phone: '178321456', qq: '888432', wechat: 'liuershisan', branch: '步兵' },
+  { id: 22, name: '钱二十四', group: 'C组', gender: '女', grade: '三年级', major: '物联网', campus: '西校区', phone: '189357248', qq: '999657', wechat: 'qianershisi', branch: '炮兵' },
+  { id: 23, name: '吴二十五', group: 'A组', gender: '男', grade: '四年级', major: '计算机', campus: '南校区', phone: '186753951', qq: '111321', wechat: 'wuershiwu', branch: '特种兵' },
+  { id: 24, name: '张二十六', group: 'B组', gender: '女', grade: '一年级', major: '软件工程', campus: '北校区', phone: '147852369', qq: '222345', wechat: 'zhangerli', branch: '机械兵' },
+  { id: 25, name: '李二十七', group: 'C组', gender: '男', grade: '二年级', major: '大数据', campus: '南校区', phone: '159357159', qq: '333987', wechat: 'liershijiu', branch: '步兵' },
+  { id: 26, name: '王二十八', group: 'A组', gender: '女', grade: '三年级', major: '人工智能', campus: '西校区', phone: '178951258', qq: '444567', wechat: 'wangershijiu', branch: '炮兵' },
+  { id: 27, name: '赵二十九', group: 'B组', gender: '男', grade: '四年级', major: '网络安全', campus: '北校区', phone: '187456951', qq: '555678', wechat: 'zhaoshan', branch: '特种兵' },
 ]);
 
-const filteredNames = ref([]); // 过滤后的名字列表
+// 过滤后的列表
+const filteredNames = ref([]);
+const filteredGroups = ref([]);
+const filteredBranches = ref([]);
 
-const search = (event) => {
-  const query = event.query.toLowerCase(); // 转为小写以实现不区分大小写的搜索
-  // 根据用户输入的 query 过滤名字
-  filteredNames.nameValue = names.nameValue.filter((name) =>
-    name.toLowerCase().includes(query)
+// 搜索函数
+const searchNames = (event) => {
+  const query = event.query.toLowerCase();
+  filteredNames.value = students.value.filter(student => 
+    student.name.toLowerCase().includes(query)
+  ).map(student => student.name);
+};
+
+const searchGroups = (event) => {
+  const query = event.query.toLowerCase();
+  const uniqueGroups = [...new Set(students.value.map(student => student.group))];
+  filteredGroups.value = uniqueGroups.filter(group => 
+    group.toLowerCase().includes(query)
   );
 };
 
-// datatable
-// 假数据
-const students = ref([
-{ id: 1, name: '张三', group: 'A组', gender: '男', grade: '一年级', major: '计算机', campus: '南校区', phone: '123456789', qq: '123456', wechat: 'zhangsan' },
-  { id: 2, name: '李四', group: 'B组', gender: '女', grade: '二年级', major: '软件工程', campus: '北校区', phone: '987654321', qq: '654321', wechat: 'lisi' },
-  { id: 3, name: '王五', group: 'A组', gender: '男', grade: '三年级', major: '人工智能', campus: '南校区', phone: '135246809', qq: '234567', wechat: 'wangwu' },
-  { id: 4, name: '赵六', group: 'B组', gender: '女', grade: '四年级', major: '网络安全', campus: '北校区', phone: '139876543', qq: '765432', wechat: 'zhaoliu' },
-  { id: 5, name: '孙七', group: 'C组', gender: '男', grade: '一年级', major: '物联网', campus: '西校区', phone: '158963741', qq: '876543', wechat: 'sunqi' },
-  { id: 6, name: '周八', group: 'A组', gender: '女', grade: '二年级', major: '大数据', campus: '南校区', phone: '159753842', qq: '435267', wechat: 'zhouba' },
-  { id: 7, name: '吴九', group: 'B组', gender: '男', grade: '三年级', major: '信息管理', campus: '北校区', phone: '137951482', qq: '546728', wechat: 'wujia' },
-  { id: 8, name: '郑十', group: 'C组', gender: '女', grade: '四年级', major: '物联网', campus: '西校区', phone: '139258741', qq: '678321', wechat: 'zhengshi' },
-  { id: 9, name: '王十一', group: 'A组', gender: '男', grade: '一年级', major: '计算机', campus: '南校区', phone: '187654321', qq: '432156', wechat: 'wangshiyi' },
-  { id: 10, name: '李十二', group: 'C组', gender: '女', grade: '三年级', major: '人工智能', campus: '西校区', phone: '135879654', qq: '125763', wechat: 'lishier' },
-  // 继续生成更多学生数据...
-  { id: 11, name: '钱十三', group: 'A组', gender: '男', grade: '四年级', major: '物联网', campus: '南校区', phone: '187654322', qq: '777321', wechat: 'qianshisan' },
-  { id: 12, name: '丁十四', group: 'B组', gender: '女', grade: '二年级', major: '大数据', campus: '北校区', phone: '147852369', qq: '888456', wechat: 'dingshisi' },
-  { id: 13, name: '杨十五', group: 'C组', gender: '男', grade: '一年级', major: '计算机', campus: '西校区', phone: '138741258', qq: '999789', wechat: 'yangshiwu' },
-  { id: 14, name: '吴十六', group: 'A组', gender: '女', grade: '三年级', major: '信息管理', campus: '南校区', phone: '139753951', qq: '111654', wechat: 'wushiliu' },
-  { id: 15, name: '赵十七', group: 'B组', gender: '男', grade: '四年级', major: '物联网', campus: '北校区', phone: '147963852', qq: '222987', wechat: 'zhaoshiyi' },
-  { id: 16, name: '孙十八', group: 'C组', gender: '女', grade: '二年级', major: '人工智能', campus: '西校区', phone: '187456321', qq: '333432', wechat: 'sunshiba' },
-  { id: 17, name: '周十九', group: 'A组', gender: '男', grade: '一年级', major: '网络安全', campus: '南校区', phone: '186321753', qq: '444345', wechat: 'zhoushijiu' },
-  { id: 18, name: '郑二十', group: 'B组', gender: '女', grade: '三年级', major: '信息管理', campus: '北校区', phone: '159357486', qq: '555678', wechat: 'zhengershi' },
-  { id: 19, name: '王二十一', group: 'C组', gender: '男', grade: '四年级', major: '计算机', campus: '西校区', phone: '136258741', qq: '666912', wechat: 'wangershiyi' },
-  { id: 20, name: '李二十二', group: 'A组', gender: '女', grade: '一年级', major: '大数据', campus: '南校区', phone: '148951753', qq: '777234', wechat: 'liershier' },
-  // 再继续生成更多数据，直到50条...
-  { id: 21, name: '刘二十三', group: 'B组', gender: '男', grade: '二年级', major: '人工智能', campus: '北校区', phone: '178321456', qq: '888432', wechat: 'liuershisan' },
-  { id: 22, name: '钱二十四', group: 'C组', gender: '女', grade: '三年级', major: '物联网', campus: '西校区', phone: '189357248', qq: '999657', wechat: 'qianershisi' },
-  { id: 23, name: '吴二十五', group: 'A组', gender: '男', grade: '四年级', major: '计算机', campus: '南校区', phone: '186753951', qq: '111321', wechat: 'wuershiwu' },
-]);
+const searchBranches = (event) => {
+  const query = event.query.toLowerCase();
+  const uniqueBranches = [...new Set(students.value.map(student => student.branch))]; 
+  filteredBranches.value = uniqueBranches.filter(branch => 
+    branch.toLowerCase().includes(query)
+  );
+};
+
+
+const filteredStudents = computed(() => {
+  return students.value.filter(student => 
+    (!nameValue.value || student.name.includes(nameValue.value)) &&
+    (!groupValue.value || student.group.includes(groupValue.value)) &&
+    (!branchValue.value || student.branch.includes(branchValue.value)) // 使用 branchValue
+  );
+});
+
 
 // 过滤器配置
 const filters = ref({
   'name': { value: null, matchMode: 'contains' },
   'group': { value: null, matchMode: 'contains' },
+  'branch': { value: null, matchMode: 'contains' },
   'gender': { value: null, matchMode: 'contains' },
   'grade': { value: null, matchMode: 'contains' },
   'major': { value: null, matchMode: 'contains' },
@@ -195,24 +221,19 @@ const selectedStudents = ref([]);
 
 // 行编辑初始化
 const onRowEditInit = (event) => {
-  // 在行编辑开始时，可以添加一些自定义逻辑
   console.log('开始编辑行:', event.data);
 };
 
 const onRowEditSave = (event) => {
   let { newData, index } = event;
-  students.value[index] = newData; // 更新数据
-  editingRows.value = editingRows.value.filter(row => row.id !== newData.id); // 清除编辑状态
+  students.value[index] = newData;
+  editingRows.value = editingRows.value.filter(row => row.id !== newData.id);
 };
 
 const onRowEditCancel = (event) => {
-  // 在行编辑取消时，可以添加一些自定义逻辑
   console.log('取消编辑行:', event.data);
 };
-
-
 </script>
-
 <style scoped>
 /* personInformation */
 .personInformation {
@@ -235,7 +256,7 @@ const onRowEditCancel = (event) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 48%;
+  width: 46rem;
   height: 100%;
   margin-left: 2rem;
 }
@@ -243,15 +264,17 @@ const onRowEditCancel = (event) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 36%;
+  width: 32rem;
   height: 100%;
-  margin-right: 2rem;
 }
+
 Button {
   height: 2.2rem;
   width: 6rem;
   font-size: 1rem;
   font-weight: 900;
+  margin-right: 0.5rem;
+
 }
 
 /* contentPerson */

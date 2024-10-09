@@ -39,8 +39,8 @@
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
+import { useRouter } from 'vue-router';
 import hdScroll from "../components/hdScroll.vue";
-
 // 定义接口
 interface MenuItem {
   label: string;
@@ -55,21 +55,23 @@ const model = ref<MenuItem[]>([
     label: "选项1",
     icon: "pi pi-fw pi-home",
     items: [
-      { label: "子选项1.1", icon: "pi pi-fw pi-pencil", to: "/subroute1-1" },
+      {     label: "DashBoard",
+    icon: "pi pi-fw pi-list",
+    to: "/DashBoard",},
       { label: "子选项1.2", icon: "pi pi-fw pi-pencil", to: "/subroute1-2" },
     ],
   },
   {
-    label: "选项2",
+    label: "DashBoard",
     icon: "pi pi-fw pi-list",
-    to: "/",
+    to: "/DashBoard",
   },
   {
-    label: "选项3",
+    label: "test",
     icon: "pi pi-fw pi-home",
     items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+      { label: "Test01", icon: "pi pi-fw pi-pencil", to: "/Test01" },
+      { label: "Test02", icon: "pi pi-fw pi-pencil", to: "/Test02" },
     ],
   },{
     label: "选项3",
@@ -208,10 +210,14 @@ const model = ref<MenuItem[]>([
 ]);
 // 如果有子菜单则展开
 const submenuOpen = ref<string | null>(null);
+const router = useRouter(); // 在这里获取路由实例
 // 切换子菜单的展开状态
 const toggleSubmenu = (item: MenuItem) => {
   if (item.items) {
     submenuOpen.value = submenuOpen.value === item.label ? null : item.label;
+  } else if (item.to) {
+    // 直接进行路由跳转
+    router.push(item.to); // 使用获取到的 router 实例
   }
 };
 // 判断子菜单是否展开
@@ -254,4 +260,5 @@ const items = computed(() => model.value);
 .nav-item i {
   margin-right: 1em;
 }
+
 </style>

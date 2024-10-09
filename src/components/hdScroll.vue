@@ -105,38 +105,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    // 滚动条宽度
-    $scrollbar-width: 2px;
+/* 滚动条宽度 */
+.scrollbox {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding-right: 2px; /* 滚动条宽度 */
+    overflow-y: hidden;
+}
 
-    @use 'sass:math'; // 导入 sass:math
+.scrollbar {
+    width: 2px; /* 滚动条宽度 */
+    height: 100%;
+    background-color: rgb(50, 50, 89);
+    position: absolute;
+    right: 0;
+    border-radius: 1px; /* 替换为半宽度 */
+}
 
-    .scrollbox {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        padding-right: $scrollbar-width;
-        overflow-y: hidden;
-    }
-    .scrollbar {
-        width: $scrollbar-width;
-        height: 100%;
-        background-color: rgb(50, 50, 89);
-        position: absolute;
-        right: 0;
-        border-radius: math.div($scrollbar-width, 2); // 替换为 math.div
-        &:hover {
-            background-color: gray;
-        }
-        &.force {
-            background-color: gray;
-        }
-    }
+.scrollbar:hover {
+    background-color: gray;
+}
 
-    // Vue进入离开动画
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s;
-    }
-    .fade-enter, .fade-leave-to {
-        opacity: 0;
-    }
+.scrollbar.force {
+    background-color: gray;
+}
+
+/* Vue进入离开动画 */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+
 </style>
