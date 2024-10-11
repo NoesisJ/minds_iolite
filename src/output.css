@@ -705,6 +705,14 @@ video {
   padding-right: 2rem;
 }
 
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.text-end {
+  text-align: end;
+}
+
 .text-\[\#b4b4db\] {
   --tw-text-opacity: 1;
   color: rgb(180 180 219 / var(--tw-text-opacity));
