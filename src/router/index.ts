@@ -6,12 +6,12 @@ import Test02 from "../views/Test02.vue";
 // 定义路由数组
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/DashBoard",
+    path: "/",
     component: DashBoard,
     children: [],
   },
   {
-    path: "/",
+    path: "/PersonInformation",
     component: PersonInformation,
     children: [],
   },

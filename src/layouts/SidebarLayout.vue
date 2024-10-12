@@ -51,20 +51,15 @@ interface MenuItem {
 
 // 选项模型
 const model = ref<MenuItem[]>([
-  {
-    label: "选项1",
-    icon: "pi pi-fw pi-home",
-    items: [
-      {     label: "DashBoard",
-    icon: "pi pi-fw pi-list",
-    to: "/DashBoard",},
-      { label: "子选项1.2", icon: "pi pi-fw pi-pencil", to: "/subroute1-2" },
-    ],
+{
+    label: "人员管理",
+    icon: "pi pi-users",
+    to: "/PersonInformation",
   },
   {
-    label: "DashBoard",
-    icon: "pi pi-fw pi-list",
-    to: "/DashBoard",
+    label: "人员分布",
+    icon: "pi pi-chart-bar",
+    to: "/",
   },
   {
     label: "test",
