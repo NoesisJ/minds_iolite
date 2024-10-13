@@ -104,7 +104,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 /* 滚动条宽度 */
 .scrollbox {
     width: 100%;

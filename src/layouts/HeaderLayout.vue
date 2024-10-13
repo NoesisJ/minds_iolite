@@ -1,7 +1,7 @@
 <template>
-  <div class="header-layout flex items-center pl-[1.25rem] shadow-lg min-w-[760px]">
+  <div class="header-layout z-10 shadow-xl">
     <div
-      class="flex w-full justify-between items-center p-2 h-[3rem]"
+      class="h-[4.75rem] p-2 pl-[1.25rem] bg-[#323259] flex justify-between items-center"
       data-tauri-drag-region
     >
       <div class="flex flex-row items-center space-x-8 pl-1">
@@ -21,9 +21,10 @@
       </div>
 
       <!-- Message,settings,etc -->
-      <div class="space-x-6 ml-auto mr-20 text-[#b4b4db]" >
-        <!-- // 11 -->
-        <i class="pi pi-envelope pr-[1.5rem] border-r-[2px] border-[#1b1b38]"></i>
+      <div class="space-x-6 ml-auto mr-20 text-[#b4b4db]">
+        <i
+          class="pi pi-envelope pr-[1.5rem] border-r-[2px] border-[#1b1b38]"
+        ></i>
         <i class="pi pi-bell pr-[1.5rem] border-r-[2px] border-[#1b1b38]"></i>
         <i class="pi pi-cog"></i>
       </div>
@@ -37,23 +38,12 @@
           @click="getCurrentWebviewWindow().minimize()"
         />
         <Button
-          icon="pi pi-expand"
+          :icon="maximizeIcon"
           aria-label="Maximize"
           class="header-button"
-          @click="
-            () => {
-              getCurrentWebviewWindow()
-                .isMaximized()
-                .then((maximized) => {
-                  if (maximized) {
-                    getCurrentWebviewWindow().unmaximize();
-                  } else {
-                    getCurrentWebviewWindow().maximize();
-                  }
-                });
-            }
-          "
+          @click="toggleMaximize"
         />
+
         <Button
           icon="pi pi-times"
           aria-label="Close"
@@ -66,12 +56,36 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import Button from "primevue/button";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+
+const maximizeIcon = ref("pi pi-expand"); // 初始图标
+
+// 函数来切换窗口大小
+const toggleMaximize = async () => {
+  const window = getCurrentWebviewWindow();
+  const isMaximized = await window.isMaximized(); // 等待 Promise 完成
+
+  if (isMaximized) {
+    window.unmaximize();
+    maximizeIcon.value = "pi pi-expand";
+  } else {
+    window.maximize();
+    maximizeIcon.value = "pi pi-clone";
+  }
+};
+
+// 组件挂载时检查窗口最大化状态，并设置初始图标
+onMounted(async () => {
+  const window = getCurrentWebviewWindow();
+  const isMaximized = await window.isMaximized();
+  maximizeIcon.value = isMaximized ? "pi pi-window-minimize" : "pi pi-expand";
+});
 </script>
 
 <style scoped>
-.header-layout {
+/* .header-layout {
   user-select: none;
   position: fixed;
   top: 0;
@@ -79,8 +93,8 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   z-index: 1000;
   width: 100%;
   height: 4.75rem;
-  background-color: rgb(50, 50, 89);
-}
+  background-color: #323259;
+} */
 
 .header-button {
   height: 2.125rem;
@@ -89,8 +103,4 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   background-color: #a16eff;
   border: none;
 }
-
-/* .header-button:hover {
-  background-color: #8a4fff;
-} */
 </style>

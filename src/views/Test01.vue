@@ -2,7 +2,7 @@
     <div class="t01"></div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
     .t01 {
         width: 100%;
         height: 100rem;

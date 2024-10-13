@@ -145,63 +145,7 @@ const model = ref<MenuItem[]>([
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },
+  }
 ]);
 // 如果有子菜单则展开
 const submenuOpen = ref<string | null>(null);
@@ -223,7 +167,7 @@ const isSubmenuOpen = (item: MenuItem) => {
 const items = computed(() => model.value);
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   position: fixed;
   background-color: rgb(50, 50, 89);
@@ -231,11 +175,10 @@ const items = computed(() => model.value);
   height: 100%;
 }
 .has-submenu {
-  cursor: pointer; // 鼠标移动到有子菜单的选项上时显示手型
+  cursor: pointer;
 }
 .nav-item {
   user-select: none;
-  // height: 52px;
   cursor: pointer;
   display: flex;
   flex-wrap: wrap;
@@ -249,7 +192,7 @@ const items = computed(() => model.value);
 }
 .nav-childItem{
   margin-top: 10px;
-  padding:  10.4px 0;  
+  padding:  10.4px 0;
 }
 
 .nav-item i {

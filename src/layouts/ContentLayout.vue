@@ -1,15 +1,12 @@
 <template>
-  <div class="contentLayout flex flex-row mt-[4.75rem]">
+  <div class="contentLayout flex flex-row">
     <SidebarLayout />
     <!-- Main content -->
-     <!-- 这里的ml为sidebar的宽度 -->
-     <!-- scale transition -->
-
-  <router-view v-slot="{ Component }">
-    <transition name="scale" mode="out-in" class="ml-[12.5rem]">
-      <component :is="Component" />
-    </transition>
-  </router-view>
+    <router-view v-slot="{ Component }">
+      <transition name="slide-fade" mode="out-in" class="ml-[12.5rem]">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -17,16 +14,22 @@
 import SidebarLayout from "./SidebarLayout.vue";
 </script>
 
-<style lang="scss" scoped>
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.5s ease;
+<style scoped>
+/* 动画的总持续时间和效果 */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.1s ease;
 }
 
-
-.scale-enter-from,
-.scale-leave-to {
+/* 进入动画 */
+.slide-fade-enter-from {
   opacity: 0;
-  transform: scale(0.5);
+  transform: translateY(-10px); /* 从上向下 */
+}
+
+/* 离开动画 */
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px); /* 向下移出 */
 }
 </style>

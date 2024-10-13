@@ -83,12 +83,10 @@ const initCharts = () => {
   subjectChart.setOption({
     title: {
       text: "专业分布",
-      textStyle: {
         fontFamily: "Arial", // 字体
         fontSize: 20, // 字号
         fontWeight: "bold", // 字重
         color: "#ebebef", // 字体颜色
-      },
       left: "center",
     },
     tooltip: { trigger: "item", formatter: "{a} <br/>{b} : {c} ({d}%)" },
@@ -99,12 +97,10 @@ const initCharts = () => {
         radius: "58%",
         data: chartData.value.subjectData,
         label: {
-          textStyle: {
             fontFamily: "Arial", // 数据标签的字体
             fontSize: 14, // 数据标签的字号
             fontWeight: "normal",
             color: "#ee82ee", // 数据标签的字体颜色
-          },
         },
       },
     ],
@@ -114,12 +110,10 @@ const initCharts = () => {
   campusChart.setOption({
     title: {
       text: "校区分布",
-      textStyle: {
         fontFamily: "Arial", // 字体
         fontSize: 20, // 字号
         fontWeight: "bold", // 字重
         color: "#ebebef", // 字体颜色
-      },
       left: "center",
     },
     tooltip: {
@@ -133,12 +127,10 @@ const initCharts = () => {
         radius: "58%",
         data: chartData.value.campusData,
         label: {
-          textStyle: {
             fontFamily: "Arial",
             fontSize: 14,
             fontWeight: "normal",
             color: "#ee82ee",
-          },
         },
       },
     ],
@@ -148,21 +140,17 @@ const initCharts = () => {
   groupChart.setOption({
     title: {
       text: "组别分布",
-      textStyle: {
         fontFamily: "Arial",
         fontSize: 20,
         fontWeight: "bold",
         color: "#ebebef",
-      },
     },
     xAxis: {
       data: chartData.value.groupData.types,
       axisLabel: {
-        textStyle: {
           fontFamily: "Arial", // 横坐标文字的字体
           fontSize: 14, // 横坐标文字的字号
           color: "#fff", // 横坐标文字的颜色
-        },
       },
     },
     yAxis: {},
@@ -175,21 +163,17 @@ const initCharts = () => {
   divisionChart.setOption({
     title: {
       text: "兵种分布",
-      textStyle: {
         fontFamily: "Arial",
         fontSize: 20,
         fontWeight: "bold",
         color: "#ebebef",
-      },
     },
     xAxis: {
       data: chartData.value.divisionData.types,
       axisLabel: {
-        textStyle: {
           fontFamily: "Arial", // 横坐标文字的字体
           fontSize: 14, // 横坐标文字的字号
           color: "#fff", // 横坐标文字的颜色
-        },
       },
     },
     yAxis: {},

@@ -1,14 +1,17 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import LayoutHUb from "./layouts/LayoutHub.vue";
 </script>
 
 <template>
-  <div
-    id="app"
-    style="background: rgb(27, 27, 56); width: 100%; height: 2000px; z-index: 0"
-  >
+  <div id="app" class="bg-[#1b1b38] z-0">
     <LayoutHUb />
   </div>
 </template>
+
+<style>
+body {
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+</style>

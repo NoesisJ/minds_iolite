@@ -1,76 +1,176 @@
 <template>
-  <div class="personInformation">
-    <div class="HeaderPerson">
-      <div class="searchGroup">
+  <div class="personInformation w-full flex flex-col">
+    <div
+      class="header w-full h-[4.5rem] pl-[1rem] pr-[3rem] flex justify-between items-center"
+    >
+      <div class="searchGroup space-x-2">
         <AutoComplete
           v-model="nameValue"
           :suggestions="filteredNames"
           @complete="searchNames"
           placeholder="姓名"
-          class="AutoComplete"
         />
         <AutoComplete
           v-model="groupValue"
           :suggestions="filteredGroups"
           @complete="searchGroups"
           placeholder="组别"
-          class="AutoComplete"
         />
         <AutoComplete
           v-model="branchValue"
           :suggestions="filteredBranches"
           @complete="searchBranches"
           placeholder="兵种"
-          class="AutoComplete"
         />
       </div>
-      <div class="buttonGroup">
-        <Button label="添加" severity="success" raised @click="showAddDialog" />
-        <Button label="删除" severity="danger" raised @click="deleteSelected" />
+      <div class="buttonGroup space-x-2">
+        <Button label="添加" severity="help" raised @click="showAddDialog" />
+        <Button label="删除" severity="info" raised @click="confirmDelete" />
       </div>
     </div>
 
-    <!-- 删除确认对话框 -->
-    <Toast ref="toast" />
+    <!-- 操作成功提示 -->
+    <Toast />
 
-    <Dialog
-      v-model:visible="confirmDeleteVisible"
-      header="确认删除"
-      @hide="resetDelete"
-      modal
-    >
-      <p>您确定要删除选中的项吗？</p>
-      <template #footer>
-        <Button label="取消" @click="resetDelete" />
-        <Button label="确认" @click="confirmDelete" severity="danger" />
-      </template>
-    </Dialog>
+    <!-- 确认删除对话框 -->
+    <ConfirmDialog></ConfirmDialog>
 
     <!-- 添加学生对话框 -->
-    <Dialog
-      v-model:visible="addStudentVisible"
-      header="添加学生"
-      @hide="resetAddStudent"
-      modal
-    >
-      <div>
-        <InputText v-model="newStudent.name" placeholder="姓名" />
-        <InputText v-model="newStudent.group" placeholder="组别" />
-        <InputText v-model="newStudent.branch" placeholder="兵种" />
-        <InputText v-model="newStudent.gender" placeholder="性别" />
-        <InputText v-model="newStudent.grade" placeholder="年级" />
-        <InputText v-model="newStudent.major" placeholder="专业" />
-        <InputText v-model="newStudent.campus" placeholder="校区" />
-        <InputText v-model="newStudent.phone" placeholder="电话" />
-        <InputText v-model="newStudent.qq" placeholder="QQ" />
-        <InputText v-model="newStudent.wechat" placeholder="微信" />
+    <Dialog v-model:visible="addStudentVisible" header="添加学生" modal>
+      <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- name -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-user"></i>
+          </InputGroupAddon>
+          <InputText v-model="newStudent.name" placeholder="姓名" />
+        </InputGroup>
+
+        <!-- gender -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-mars"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.gender"
+            :options="genders"
+            optionLabel="name"
+            placeholder="性别"
+          />
+        </InputGroup>
+
+        <!-- grade -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-calendar"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.grade"
+            :options="years"
+            optionLabel="name"
+            placeholder="入学年份"
+          />
+        </InputGroup>
+
+        <!-- id -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-info"></i>
+          </InputGroupAddon>
+          <InputNumber v-model="newStudent.id" placeholder="学号" />
+        </InputGroup>
+
+        <!-- group -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-id-card"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.group"
+            :options="groups"
+            optionLabel="name"
+            placeholder="组别"
+          />
+        </InputGroup>
+
+        <!-- identity -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-flag"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.identity"
+            :options="identities"
+            optionLabel="name"
+            placeholder="在队身份"
+          />
+        </InputGroup>
+
+        <!-- campus -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-map-marker"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.campus"
+            :options="campuses"
+            optionLabel="name"
+            placeholder="校区"
+          />
+        </InputGroup>
+
+        <!-- major -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-map"></i>
+          </InputGroupAddon>
+          <Select
+            v-model="newStudent.major"
+            :options="majors"
+            optionLabel="name"
+            placeholder="专业"
+          />
+        </InputGroup>
+
+        <!-- phone -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-phone"></i>
+          </InputGroupAddon>
+          <InputNumber v-model="newStudent.phone" placeholder="电话" />
+        </InputGroup>
+
+        <!-- email -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-at"></i>
+          </InputGroupAddon>
+          <InputText v-model="newStudent.email" placeholder="邮箱" />
+        </InputGroup>
+
+        <!-- qq -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-user"></i>
+          </InputGroupAddon>
+          <InputText v-model="newStudent.qq" placeholder="QQ" />
+        </InputGroup>
+
+        <!-- wechat -->
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-comments"></i>
+          </InputGroupAddon>
+          <InputText v-model="newStudent.wechat" placeholder="微信" />
+        </InputGroup>
       </div>
       <template #footer>
-        <Button label="取消" @click="resetAddStudent" />
-        <Button label="确认" @click="confirmAddStudent" severity="success" />
+        <Button label="取消" @click="resetAddStudent" severity="info" />
+        <Button label="确认" @click="AddStudent" severity="help" />
       </template>
     </Dialog>
 
+    <!-- 表格 -->
     <div class="contentPerson">
       <DataTable
         :value="filteredStudents"
@@ -82,7 +182,8 @@
         selection-mode="multiple"
         editMode="row"
         dataKey="id"
-        class="dataTable"
+        scrollable
+        scroll-height="100vh"
         @row-edit-init="onRowEditInit"
         @row-edit-save="onRowEditSave"
         @row-edit-cancel="onRowEditCancel"
@@ -166,17 +267,69 @@
 import { ref, computed } from "vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
-// datatable
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
+import Select from "primevue/select";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import Dialog from "primevue/dialog";
 import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import ConfirmDialog from "primevue/confirmdialog";
+import { useConfirm } from "primevue/useconfirm";
+import { show } from "@tauri-apps/api/app";
+import { identity } from "@vueuse/core";
+
+const toast = useToast();
+const confirm = useConfirm();
 
 // auto complete
 const nameValue = ref(""); // 用户输入的名字
 const groupValue = ref(""); // 用户输入的组别
 const branchValue = ref(""); // 用户输入的兵种
+const genders = ref([
+  { name: "男", code: "M" },
+  { name: "女", code: "FM" },
+]);
+const years = ref([
+  { name: "2020", code: "1" },
+  { name: "2021", code: "2" },
+  { name: "2022", code: "3" },
+  { name: "2023", code: "4" },
+  { name: "2024", code: "5" },
+]);
+const groups = ref([
+  { name: "机械组", code: "NY" },
+  { name: "AI组", code: "RM" },
+  { name: "视觉组", code: "LDN" },
+  { name: "电控组", code: "IST" },
+  { name: "软件组", code: "PRS" },
+  { name: "运营组", code: "WTF" },
+]);
+const campuses = ref([
+  { name: "前卫南区", code: "NY" },
+  { name: "南湖", code: "RM" },
+  { name: "南岭", code: "LDN" },
+]);
+const majors = ref([
+  { name: "计算机", code: "NY" },
+  { name: "软件工程", code: "RM" },
+  { name: "人工智能", code: "LDN" },
+  { name: "网络安全", code: "IST" },
+  { name: "物联网", code: "PRS" },
+  { name: "大数据", code: "WTF" },
+  { name: "信息管理", code: "WTF" },
+]);
+const identities = ref([
+  { name: "梯队队员", code: "NY" },
+  { name: "正式队员", code: "RM" },
+  { name: "组长", code: "LDN" },
+  { name: "已退队", code: "IST" },
+  { name: "已毕业", code: "PRS" },
+  { name: "已转专业", code: "WTF" },
+]);
 
 // 统一的学生数据
 // datatable
@@ -595,6 +748,8 @@ const filters = ref({
 // 行编辑相关
 const editingRows = ref([]);
 const selectedStudents = ref([]);
+// 删除确认对话框
+const studentToDelete = ref(null);
 
 // 行编辑初始化
 const onRowEditInit = (event) => {
@@ -616,73 +771,89 @@ const onRowEditCancel = (event) => {
 // 新增的学生数据
 const newStudent = ref({
   name: "",
-  group: "",
-  branch: "",
   gender: "",
   grade: "",
-  major: "",
+  id: null,
+  group: "",
+  identity: "",
   campus: "",
-  phone: "",
+  major: "",
+  phone: null,
+  email: "",
   qq: "",
   wechat: "",
 });
+
 // 控制添加学生对话框的显示
 const addStudentVisible = ref(false);
 
 const showAddDialog = () => {
-  newStudent.value = { name: "", group: "", branch: "", gender: "", grade: "", major: "", campus: "", phone: "", qq: "", wechat: "" }; // 清空输入框
+  newStudent.value = {
+    name: "",
+    gender: "",
+    grade: "",
+    id: null,
+    group: "",
+    identity: "",
+    campus: "",
+    major: "",
+    phone: null,
+    email: "",
+    qq: "",
+    wechat: "",
+  }; // 清空输入框
   addStudentVisible.value = true; // 显示对话框
 };
 
+// 添加学生
+const AddStudent = () => {
+  // const newId = students.value.length
+  //   ? Math.max(...students.value.map((s) => s.id)) + 1
+  //   : 1;
+
+  // 使用 reduce 一次遍历找到最大 ID
+  const newId =
+    students.value.reduce((maxId, student) => Math.max(maxId, student.id), 0) +
+    1;
+  students.value.push({ id: newId, ...newStudent.value });
+  showToast("添加成功！"); // 提示添加成功
+};
+
+// 取消添加
 const resetAddStudent = () => {
   addStudentVisible.value = false;
 };
 
-const confirmAddStudent = () => {
-  const newId = students.value.length ? Math.max(...students.value.map(s => s.id)) + 1 : 1;
-  students.value.push({ id: newId, ...newStudent.value });
-  resetAddStudent(); // 关闭对话框
-  showToast("添加成功！"); // 提示添加成功
-};
-
-
-const deleteSelected = () => {
-  confirmDeleteVisible.value = true; // 打开确认删除对话框
-};
-
-// 删除确认对话框
-const confirmDeleteVisible = ref(false);
-const studentToDelete = ref(null);
-
-const openConfirmDelete = (student) => {
-  studentToDelete.value = student;
-  confirmDeleteVisible.value = true;
-};
-
-const resetDelete = () => {
-  confirmDeleteVisible.value = false;
-  studentToDelete.value = null;
-};
-
-
-
+// 删除商品
 const confirmDelete = () => {
-  selectedStudents.value.forEach((student) => {
-    const index = students.value.findIndex((s) => s.id === student.id);
-    if (index !== -1) {
-      students.value.splice(index, 1);
-    }
-  });
-  selectedStudents.value = []; // 清空选择
-  resetDelete();
-  showToast("删除成功！");
+  if (selectedStudents.value) {
+    confirm.require({
+      message: "您确定要删除选中的项吗？",
+      header: "确认删除",
+      icon: "pi pi-exclamation-triangle",
+      rejectProps: {
+        label: "取消",
+        severity: "secondary",
+        outlined: true,
+      },
+      acceptProps: {
+        label: "确定",
+        severity: "confirm",
+      },
+      accept: () => {
+        students.value = students.value.filter(
+          (student) => !selectedStudents.value.includes(student)
+        );
+        studentToDelete.value = null;
+        showToast("删除成功！");
+      },
+    });
+  }
 };
 
-const toast = ref(null); // 声明 toast 的 ref
-defineExpose({ toast });
-
+// 成功提示
 const showToast = (message) => {
-  toast.value.add({
+  toast.add({
     severity: "success",
     summary: "成功",
     detail: message,
@@ -690,55 +861,13 @@ const showToast = (message) => {
   });
 };
 </script>
-<style scoped>
-/* personInformation */
-.personInformation {
-  width: 100%;
-  min-width: 82rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-/* headerPerson */
-.HeaderPerson {
-  margin-top: 1rem;
-  width: 100%;
-  height: 3.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.searchGroup {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 46rem;
-  height: 100%;
-  margin-left: 2rem;
-}
-.buttonGroup {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 16rem;
-  height: 100%;
-}
 
+<style scoped>
 Button {
   height: 2.2rem;
   width: 6rem;
   font-size: 1rem;
   font-weight: 900;
   margin-right: 0.5rem;
-}
-
-/* contentPerson */
-.contentPerson {
-  margin-top: 1rem;
-  width: 100%;
-  height: 50rem;
-}
-input {
-  display: block; /* 确保输入框为块级元素 */
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="layoutHub">
+  <div class="layoutHub flex flex-col h-screen w-screen">
     <HeaderLayout/>
     <ContentLayout />
   </div>
@@ -9,11 +9,3 @@
 import HeaderLayout from './HeaderLayout.vue';
 import ContentLayout from './ContentLayout.vue';
 </script>
-
-<style scoped>
-.layoutHub {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-</style>
