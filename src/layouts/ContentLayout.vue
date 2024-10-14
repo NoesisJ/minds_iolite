@@ -3,7 +3,7 @@
     <SidebarLayout />
     <!-- Main content -->
     <router-view v-slot="{ Component }">
-      <transition name="slide-fade" mode="out-in" class="ml-[12.5rem]">
+      <transition name="slide-fade" mode="out-in" class="">
         <component :is="Component" />
       </transition>
     </router-view>
@@ -18,7 +18,7 @@ import SidebarLayout from "./SidebarLayout.vue";
 /* 动画的总持续时间和效果 */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: all 0.1s ease;
+  transition: all 0.07s ease;
 }
 
 /* 进入动画 */

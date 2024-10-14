@@ -110,7 +110,7 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
-    padding-right: 2px; /* 滚动条宽度 */
+    padding-right: .1rem; /* 滚动条宽度 */
     overflow-y: hidden;
 }
 

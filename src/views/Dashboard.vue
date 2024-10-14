@@ -1,6 +1,6 @@
 <template>
-  <div class="chartsGroup">
-    <div class="pieCharts">
+  <div class="chartsGroup w-full flex-grow flex flex-col items-center overflow-auto">
+    <div class="pieCharts w-full flex justify-around">
       <div
         class="chart"
         id="subjectChart"
@@ -14,7 +14,7 @@
         :key="campusKey"
       ></div>
     </div>
-    <div class="barCharts">
+    <div class="barCharts w-full flex justify-around">
       <div class="chart" id="groupChart" ref="groupChart" :key="groupKey"></div>
       <div
         class="chart"
@@ -83,10 +83,10 @@ const initCharts = () => {
   subjectChart.setOption({
     title: {
       text: "专业分布",
-        fontFamily: "Arial", // 字体
-        fontSize: 20, // 字号
-        fontWeight: "bold", // 字重
-        color: "#ebebef", // 字体颜色
+      fontFamily: "Arial", // 字体
+      fontSize: 20, // 字号
+      fontWeight: "bold", // 字重
+      color: "#ebebef", // 字体颜色
       left: "center",
     },
     tooltip: { trigger: "item", formatter: "{a} <br/>{b} : {c} ({d}%)" },
@@ -97,10 +97,10 @@ const initCharts = () => {
         radius: "58%",
         data: chartData.value.subjectData,
         label: {
-            fontFamily: "Arial", // 数据标签的字体
-            fontSize: 14, // 数据标签的字号
-            fontWeight: "normal",
-            color: "#ee82ee", // 数据标签的字体颜色
+          fontFamily: "Arial", // 数据标签的字体
+          fontSize: 14, // 数据标签的字号
+          fontWeight: "normal",
+          color: "#ee82ee", // 数据标签的字体颜色
         },
       },
     ],
@@ -110,10 +110,10 @@ const initCharts = () => {
   campusChart.setOption({
     title: {
       text: "校区分布",
-        fontFamily: "Arial", // 字体
-        fontSize: 20, // 字号
-        fontWeight: "bold", // 字重
-        color: "#ebebef", // 字体颜色
+      fontFamily: "Arial", // 字体
+      fontSize: 20, // 字号
+      fontWeight: "bold", // 字重
+      color: "#ebebef", // 字体颜色
       left: "center",
     },
     tooltip: {
@@ -127,10 +127,10 @@ const initCharts = () => {
         radius: "58%",
         data: chartData.value.campusData,
         label: {
-            fontFamily: "Arial",
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#ee82ee",
+          fontFamily: "Arial",
+          fontSize: 14,
+          fontWeight: "normal",
+          color: "#ee82ee",
         },
       },
     ],
@@ -140,17 +140,17 @@ const initCharts = () => {
   groupChart.setOption({
     title: {
       text: "组别分布",
-        fontFamily: "Arial",
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#ebebef",
+      fontFamily: "Arial",
+      fontSize: 20,
+      fontWeight: "bold",
+      color: "#ebebef",
     },
     xAxis: {
       data: chartData.value.groupData.types,
       axisLabel: {
-          fontFamily: "Arial", // 横坐标文字的字体
-          fontSize: 14, // 横坐标文字的字号
-          color: "#fff", // 横坐标文字的颜色
+        fontFamily: "Arial", // 横坐标文字的字体
+        fontSize: 14, // 横坐标文字的字号
+        color: "#fff", // 横坐标文字的颜色
       },
     },
     yAxis: {},
@@ -163,17 +163,17 @@ const initCharts = () => {
   divisionChart.setOption({
     title: {
       text: "兵种分布",
-        fontFamily: "Arial",
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#ebebef",
+      fontFamily: "Arial",
+      fontSize: 20,
+      fontWeight: "bold",
+      color: "#ebebef",
     },
     xAxis: {
       data: chartData.value.divisionData.types,
       axisLabel: {
-          fontFamily: "Arial", // 横坐标文字的字体
-          fontSize: 14, // 横坐标文字的字号
-          color: "#fff", // 横坐标文字的颜色
+        fontFamily: "Arial", // 横坐标文字的字体
+        fontSize: 14, // 横坐标文字的字号
+        color: "#fff", // 横坐标文字的颜色
       },
     },
     yAxis: {},
@@ -198,31 +198,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#subjectChart,
-#campusChart,
-#groupChart,
-#divisionChart {
-  display: inline-block;
-  width: 40rem;
-  height: 45vh;
-}
-
-.chartsGroup {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-}
-
-.pieCharts,
-.barCharts {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
 .chart {
   display: inline-block;
+  width: 400px;
+  height: 400px;
 }
 </style>

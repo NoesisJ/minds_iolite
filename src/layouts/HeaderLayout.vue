@@ -103,4 +103,8 @@ onMounted(async () => {
   background-color: #a16eff;
   border: none;
 }
+.p-button {
+  --p-button-primary-hover-border-color: #38bcf6;
+  --p-button-primary-hover-background: #38bcf6;
+}
 </style>

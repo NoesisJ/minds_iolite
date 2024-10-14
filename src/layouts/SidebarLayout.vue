@@ -1,202 +1,93 @@
 <template>
-  <div class="container">
+  <div class="container w-[12.5rem] h-[100vh] bg-[#323259] py-[.3rem] pl-[.4rem]">
     <hd-scroll>
-      <!-- 父菜单部分 -->
-      <div
-        v-for="(item, i) in items"
-        :key="i"
-        @click="toggleSubmenu(item)"
-        class="nav-item"
-        :class="{ 'has-submenu': item.items }"
-      >
-        <i v-if="item.icon" :class="item.icon"></i>
-        {{ item.label }}
-        <i
-          v-if="item.items"
-          class="pi"
-          :class="isSubmenuOpen(item) ? 'pi-chevron-down' : 'pi-chevron-right'"
-          style="font-size: 0.625rem; margin-left: auto"
-          @click.stop="toggleSubmenu(item)"
-        ></i>
-
-        <!-- 子菜单部分 -->
-        <div
-          v-for="(subitem, j) in item.items"
-          :key="j"
-          v-if="isSubmenuOpen(item) && item.items"
-          class="nav-childItem"
-        >
-          <router-link v-if="subitem.to" :to="subitem.to">
-            <i v-if="subitem.icon" :class="subitem.icon"></i>
-            {{ subitem.label }}
+      <PanelMenu :model="navMenus" class="w-40 md:w-40">
+        <template #item="{ item }">
+          <router-link
+            v-if="item.route"
+            v-slot="{ href, navigate }"
+            :to="item.route"
+            custom
+          >
+            <a
+              class="flex items-center cursor-pointer px-2 py-1"
+              :href="href"
+              @click="navigate"
+            >
+              <span :class="item.icon" />
+              <span class="ml-2">{{ item.label }}</span>
+            </a>
           </router-link>
-          <span v-else>{{ subitem.label }}</span>
-        </div>
-      </div>
+          <a
+            v-else
+            class="flex items-center cursor-pointer px-2 py-1"
+            :href="item.url"
+            :target="item.target"
+          >
+            <span :class="item.icon" />
+            <span class="ml-6">{{ item.label }}</span>
+            <span
+              v-if="item.items"
+              class="pi pi-angle-down text-primary ml-auto"
+            />
+          </a>
+        </template>
+      </PanelMenu>
     </hd-scroll>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
-import { useRouter } from 'vue-router';
 import hdScroll from "../components/hdScroll.vue";
-// 定义接口
-interface MenuItem {
-  label: string;
-  icon?: string;
-  to?: string;
-  items?: MenuItem[]; // 允许有子菜单
-}
+import PanelMenu from "primevue/panelmenu";
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
-// 选项模型
-const model = ref<MenuItem[]>([
-{
+const router = useRouter();
+
+const navMenus = ref([
+  {
     label: "人员管理",
     icon: "pi pi-users",
-    to: "/PersonInformation",
+    command: () => {
+      router.push("/PersonInformation");
+    },
   },
   {
     label: "人员分布",
     icon: "pi pi-chart-bar",
-    to: "/",
+    command: () => {
+      router.push("/");
+    },
   },
   {
     label: "test",
     icon: "pi pi-fw pi-home",
     items: [
-      { label: "Test01", icon: "pi pi-fw pi-pencil", to: "/Test01" },
-      { label: "Test02", icon: "pi pi-fw pi-pencil", to: "/Test02" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
-    ],
-  },{
-    label: "选项3",
-    icon: "pi pi-fw pi-home",
-    items: [
-      { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
-      { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
+      {
+        label: "Test01",
+        icon: "pi pi-fw pi-pencil",
+        command: () => {
+          router.push("/Test01");
+        },
+      },
+      {
+        label: "Test02",
+        icon: "pi pi-fw pi-pencil",
+        command: () => {
+          router.push("/Test02");
+        },
+      },
     ],
   }
 ]);
-// 如果有子菜单则展开
-const submenuOpen = ref<string | null>(null);
-const router = useRouter(); // 在这里获取路由实例
-// 切换子菜单的展开状态
-const toggleSubmenu = (item: MenuItem) => {
-  if (item.items) {
-    submenuOpen.value = submenuOpen.value === item.label ? null : item.label;
-  } else if (item.to) {
-    // 直接进行路由跳转
-    router.push(item.to); // 使用获取到的 router 实例
-  }
-};
-// 判断子菜单是否展开
-const isSubmenuOpen = (item: MenuItem) => {
-  return submenuOpen.value === item.label;
-};
-// 导出
-const items = computed(() => model.value);
 </script>
 
 <style scoped>
-.container {
-  position: fixed;
-  background-color: rgb(50, 50, 89);
-  width: 200px;
-  height: 100%;
+.p-panelmenu {
+  gap: 0.15rem;
 }
-.has-submenu {
-  cursor: pointer;
+.p-panelmenu-panel {
+  height: 2.5rem;
 }
-.nav-item {
-  user-select: none;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 0.625rem;
-  color: white;
-  border-bottom: 0.0938rem solid rgb(27, 27, 56);
-}
-.nav-item:hover {
-  color: rgb(168, 132, 244);
-}
-.nav-childItem{
-  margin-top: 10px;
-  padding:  10.4px 0;
-}
-
-.nav-item i {
-  margin-right: 1em;
-}
-
 </style>
