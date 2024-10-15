@@ -54,12 +54,12 @@ const model = ref<MenuItem[]>([
 {
     label: "人员管理",
     icon: "pi pi-users",
-    to: "/PersonInformation",
+    to: "/InformationView",
   },
   {
     label: "人员分布",
     icon: "pi pi-chart-bar",
-    to: "/",
+    to: "/ChartsView",
   },
   {
     label: "test",

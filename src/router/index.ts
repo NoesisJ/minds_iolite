@@ -1,19 +1,21 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import DashBoard from "../views/Dashboard.vue";
-import PersonInformation from "../views/PersonInformation.vue";
+import ChartsView from "../views/ChartsView.vue";
+import InformationView from "../views/InformationView.vue";
+import MessagesView from "../views/functionalViews/MessagesView.vue";
+import NotificationsView from "../views/functionalViews/NotificationsView.vue";
+import SettingsView from "../views/functionalViews/SettingsView.vue";
 import Test01 from "../views/Test01.vue";
 import Test02 from "../views/Test02.vue";
 // 定义路由数组
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    component: DashBoard,
+    path: "/ChartsView",
+    component: ChartsView,
     children: [],
   },
   {
-    path: "/PersonInformation",
-    component: PersonInformation,
-    children: [],
+    path: "/InformationView",
+    component: InformationView,
   },
   {
     path: "/Test01",
@@ -23,9 +25,18 @@ const routes: Array<RouteRecordRaw> = [
     path: "/Test02",
     component: Test02,
   },
-
-
-  
+  {
+    path: "/MessagesView",
+    component: MessagesView,
+  },
+  {
+    path: "/NotificationsView",
+    component: NotificationsView,
+  },
+  {
+    path: "/SettingsView",
+    component: SettingsView,
+  },
 ];
 
 // 创建 Router 实例并传入配置

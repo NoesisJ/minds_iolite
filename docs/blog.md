@@ -4,6 +4,27 @@
 
 data-tauri-drag-region 代表在应用中，该位置可拖动
 
+以下方法可以给panelmenu的任意一个层级添加active类，实现点击菜单项高亮显示（node目前指向a标签），层级关系是这样的：".panelmenu"-".panelmenu-panel"-".panelmenul-header"-".panelmenul-header-content"-"a标签"
+
+```ts
+// 处理点击菜单项
+const activeMenu = (event: any) => {
+  let node;
+  if (event.target.tagName === "A") {
+    node = event.target;
+  } else {
+    node = event.target.parentNode;
+  }
+
+  // 获取所有菜单项的元素
+  const menuItems = document.querySelectorAll(".p-panelmenu-panel");
+  menuItems.forEach((item) => item.classList.remove("active"));
+
+  // 为点击的菜单项添加 active 类
+  node.parentElement?.parentElement?.parentElement?.classList.add("active");
+};
+```
+
 TODO:
 
 - [x] Header添加邮件按钮、提醒按钮、设置按钮
@@ -21,3 +42,5 @@ TODO:
 - [ ] 联合查询
 - [ ] 网页端移动端适配
 - [ ] Header各个功能实现
+- [ ] 登录逻辑
+- [ ] 背景牛逼化
