@@ -88,13 +88,14 @@ const initCharts = () => {
       fontWeight: "bold", // 字重
       color: "#ebebef", // 字体颜色
       left: "center",
+      top: "10%",
     },
     tooltip: { trigger: "item", formatter: "{a} <br/>{b} : {c} ({d}%)" },
     series: [
       {
         name: "Subjects",
         type: "pie",
-        radius: "58%",
+        radius: "50%",
         data: chartData.value.subjectData,
         label: {
           fontFamily: "Arial", // 数据标签的字体
@@ -115,6 +116,7 @@ const initCharts = () => {
       fontWeight: "bold", // 字重
       color: "#ebebef", // 字体颜色
       left: "center",
+      top: "10%",
     },
     tooltip: {
       trigger: "item",
@@ -124,7 +126,7 @@ const initCharts = () => {
       {
         name: "Campuses",
         type: "pie",
-        radius: "58%",
+        radius: "50%",
         data: chartData.value.campusData,
         label: {
           fontFamily: "Arial",
@@ -145,6 +147,7 @@ const initCharts = () => {
       fontWeight: "bold",
       color: "#ebebef",
     },
+    
     xAxis: {
       data: chartData.value.groupData.types,
       axisLabel: {
@@ -201,6 +204,6 @@ onMounted(() => {
 .chart {
   display: inline-block;
   width: 400px;
-  height: 400px;
+  height: 380px;
 }
 </style>
