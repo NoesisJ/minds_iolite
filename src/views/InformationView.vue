@@ -59,198 +59,277 @@
     <!-- 添加、编辑队员对话框 -->
     <Dialog
       v-model:visible="memberDialog"
-      :style="{ width: '450px' }"
+      :style="{ width: '800px' }"
       header="添加队员"
       :modal="true"
     >
-      <div class="flex flex-col gap-6">
-        <!-- 大头 -->
-        <img
-          v-if="member.image"
-          :src="`https://primefaces.org/cdn/primevue/images/product/${member.image}`"
-          :alt="member.image"
-          class="block m-auto pb-4"
-        />
-        <!-- 姓名 -->
-        <div>
-          <label for="name" class="block font-bold mb-3">姓名</label>
-          <InputText
-            id="name"
-            v-model.trim="member.name"
-            required="true"
-            autofocus
-            :invalid="submitted && !member.name"
-            fluid
+      <div class="flex flex-row gap-4">
+        <div class="min-w-[350px] flex flex-col gap-6">
+          <!-- 大头 -->
+          <img
+            v-if="member.image"
+            :src="`https://primefaces.org/cdn/primevue/images/product/${member.image}`"
+            :alt="member.image"
+            class="block m-auto pb-4"
           />
-          <small v-if="submitted && !member.name" class="text-red-500"
-            >Name is required.</small
-          >
-        </div>
-
-        <!-- 信息内容 -->
-        <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- gender -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-mars"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.gender"
-              :options="genders"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="性别"
-            />
-          </InputGroup>
-
-          <!-- grade -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-calendar"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.grade"
-              :options="years"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="入学年份"
-            />
-          </InputGroup>
-
-          <!-- id -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-info"></i>
-            </InputGroupAddon>
-            <InputNumber
-              v-model="member.id"
-              :invalid="submitted && member.id && !/^\d+$/.test(member.id)"
-              placeholder="学号"
-            />
-          </InputGroup>
-
-          <!-- group -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-id-card"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.group"
-              :options="groups"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="组别"
-            />
-          </InputGroup>
-
-          <!-- identity -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-flag"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.identity"
-              :options="identities"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="在队身份"
-            />
-          </InputGroup>
-
-          <!-- branch -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-ethereum"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.branch"
-              :options="branches"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="兵种"
-            />
-          </InputGroup>
-
-          <!-- campus -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-map-marker"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.campus"
-              :options="campuses"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="校区"
-            />
-          </InputGroup>
-
-          <!-- major -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-map"></i>
-            </InputGroupAddon>
-            <Select
-              v-model="member.major"
-              :options="majors"
-              optionLabel="name"
-              optionValue="name"
-              placeholder="专业"
-            />
-          </InputGroup>
-
-          <!-- phone -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-phone"></i>
-            </InputGroupAddon>
-            <InputNumber
-              v-model="member.phone"
-              :invalid="
-                submitted &&
-                member.phone &&
-                (member.phone.length !== 9 || /^\d+$/.test(member.phone))
-              "
-              placeholder="电话"
-            />
-          </InputGroup>
-
-          <!-- email -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-at"></i>
-            </InputGroupAddon>
+          <!-- 姓名 -->
+          <div>
+            <label for="name" class="block font-bold mb-3">姓名</label>
             <InputText
-              v-model="member.email"
-              :invalid="
-                submitted &&
-                member.email &&
-                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)
-              "
-              placeholder="邮箱"
+              id="name"
+              v-model.trim="member.name"
+              required="true"
+              autofocus
+              :invalid="submitted && !member.name"
+              fluid
             />
-          </InputGroup>
+            <small v-if="submitted && !member.name" class="text-red-500"
+              >Name is required.</small
+            >
+          </div>
 
-          <!-- qq -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-telegram"></i>
-            </InputGroupAddon>
-            <InputNumber
-              v-model="member.qq"
-              :invalid="submitted && member.qq && !/^\d+$/.test(member.qq)"
-              placeholder="QQ"
-            />
-          </InputGroup>
+          <!-- 信息内容 -->
+          <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- gender -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-mars"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.gender"
+                :options="genders"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="性别"
+              />
+            </InputGroup>
 
-          <!-- wechat -->
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-comments"></i>
-            </InputGroupAddon>
-            <InputText v-model="member.wechat" placeholder="微信" />
-          </InputGroup>
+            <!-- grade -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-calendar"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.grade"
+                :options="years"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="入学年份"
+              />
+            </InputGroup>
+
+            <!-- id -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-info"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="member.id"
+                :invalid="submitted && member.id && !/^\d+$/.test(member.id)"
+                placeholder="学号"
+                v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
+              />
+            </InputGroup>
+
+            <!-- group -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-id-card"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.group"
+                :options="groups"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="组别"
+              />
+            </InputGroup>
+
+            <!-- identity -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-flag"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.identity"
+                :options="identities"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="在队身份"
+              />
+            </InputGroup>
+
+            <!-- branch -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-ethereum"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.branch"
+                :options="branches"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="兵种"
+              />
+            </InputGroup>
+
+            <!-- campus -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-map-marker"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.campus"
+                :options="campuses"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="校区"
+              />
+            </InputGroup>
+
+            <!-- major -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-map"></i>
+              </InputGroupAddon>
+              <Select
+                v-model="member.major"
+                :options="majors"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="专业"
+              />
+            </InputGroup>
+
+            <!-- phone -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-phone"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="member.phone"
+                :invalid="
+                  submitted &&
+                  member.phone &&
+                  (member.phone.length !== 9 || /^\d+$/.test(member.phone))
+                "
+                v-keyfilter="{
+                  pattern: /^[+]?(d{1,13})?$/,
+                  validateOnly: true,
+                }"
+                placeholder="电话"
+              />
+            </InputGroup>
+
+            <!-- email -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-at"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="member.email"
+                :invalid="
+                  submitted &&
+                  member.email &&
+                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)
+                "
+                v-keyfilter="{
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  validateOnly: true,
+                }"
+                placeholder="邮箱"
+              />
+            </InputGroup>
+
+            <!-- qq -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-telegram"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="member.qq"
+                :invalid="submitted && member.qq && !/^\d+$/.test(member.qq)"
+                v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
+                placeholder="QQ"
+              />
+            </InputGroup>
+
+            <!-- wechat -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-comments"></i>
+              </InputGroupAddon>
+              <InputText v-model="member.wechat" placeholder="微信" />
+            </InputGroup>
+          </div>
         </div>
+        <FileUpload
+          name="demo[]"
+          url="/api/upload"
+          @upload="onAdvancedUpload($event)"
+          :multiple="true"
+          accept="image/*"
+          :maxFileSize="1000000"
+          :style="{
+            'background-color': '#a16eff',
+            border: '0px',
+          }"
+        >
+          <template #empty>
+            <span>Drag and drop files to here to upload.</span>
+          </template>
+        </FileUpload>
+        <!-- <FileUpload
+          ref="fileUpload"
+          name="demo[]"
+          url="/upload"
+          :auto="false"
+          :customUpload="true"
+          multiple
+          :chooseLabel="'Choose'"
+          :uploadLabel="'Upload'"
+          :cancelLabel="'Cancel'"
+          :maxFileSize="1000000"
+          @upload="uploadHandler"
+          @select="onFileSelect"
+          :style="{ width: '400px' }"
+        >
+          <template #header>
+            <div class="p-fileupload-header">
+              <Button
+                icon="pi pi-plus"
+                label="Choose"
+                class="p-button-success"
+                @click="$refs.fileUpload.choose()"
+              />
+              <Button
+                icon="pi pi-upload"
+                label="Upload"
+                class="p-button-primary"
+                :disabled="!filesSelected"
+                @click="onUpload"
+              />
+              <Button
+                icon="pi pi-times"
+                label="Cancel"
+                class="p-button-danger"
+                @click="onCancel"
+              />
+            </div>
+          </template>
+          <template #content>
+            <div class="p-fileupload-content">
+              <p v-if="files.length === 0">
+                Drag and drop files to here to upload.
+              </p>
+              <ul>
+                <li v-for="(file, index) in files" :key="index">
+                  {{ file.name }}
+                </li>
+              </ul>
+            </div>
+          </template>
+        </FileUpload> -->
       </div>
 
       <template #footer>
@@ -331,7 +410,7 @@
     </Dialog>
 
     <!-- 信息表格 -->
-    <div class="contentPerson w-full overflow-auto scrollbar-hide">
+    <div class="contentPerson w-full overflow-auto hide-scrollbar">
       <DataTable
         ref="dt"
         v-model:selection="selectedMembers"
@@ -341,8 +420,8 @@
         :filters="filters"
         scrollable
         :scrollHeight="scrollHeight"
-        tableStyle="min-width: 1500px; min-height: 100rem;"
-        class="overflow-auto scrollbar-hide"
+        tableStyle="min-width: 1500px; height: fit;"
+        class="overflow-auto hide-scrollbar"
       >
         <!-- 多选列 -->
         <Column
@@ -397,8 +476,8 @@ import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import FileUpload from "primevue/fileupload";
 import InputText from "primevue/inputtext";
-import InputNumber from "primevue/inputnumber";
 import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
@@ -407,6 +486,7 @@ import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 import { show } from "@tauri-apps/api/app";
 import { identity } from "@vueuse/core";
+import { color } from "echarts";
 
 const toast = useToast();
 const dt = ref();
@@ -797,6 +877,40 @@ const editMember = (memb) => {
   memberDialog.value = true;
 };
 
+// 上传图片文件
+const onAdvancedUpload = () => {
+  toast.add({
+    severity: "info",
+    summary: "Success",
+    detail: "File Uploaded",
+    life: 3000,
+  });
+};
+
+const files = ref([]);
+const filesSelected = ref(false);
+
+const onFileSelect = (event) => {
+  files.value = event.files;
+  filesSelected.value = true;
+};
+
+const onUpload = () => {
+  // Custom upload logic, if any
+  console.log('Uploading files: ', files.value);
+};
+
+const onCancel = () => {
+  files.value = [];
+  filesSelected.value = false;
+  console.log('Upload cancelled');
+};
+
+const uploadHandler = (event) => {
+  // Handle the file upload event
+  console.log('Uploaded files:', event.files);
+};
+
 // 添加、编辑队员
 const saveMember = () => {
   submitted.value = true;
@@ -911,4 +1025,72 @@ const showToast = (message) => {
   font-weight: 900;
   margin-right: 0.5rem;
 }
+
+.p-fileupload {
+  width: 30rem;
+  overflow: hidden;
+}
+
+.p-inputtext {
+  --p-inputtext-hover-border-color: #a16eff;
+  --p-inputtext-focus-border-color: #a16eff;
+}
+
+.p-select {
+  --p-select-hover-border-color: #a16eff;
+  --p-select-focus-border-color: #a16eff;
+}
+
+/* 
+.p-datatable-tbody > tr {
+  max-height: 2.5rem;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none; For Firefox
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; For Chrome, Safari, and Edge
+}
+
+.p-datatable-table-container {
+  scrollbar-width: none;
+}
+
+.p-datatable-table-container::-webkit-scrollbar {
+  display: none;
+}
+
+.p-datatable-table {
+  scrollbar-width: none;
+}
+
+.p-datatable-table::-webkit-scrollbar {
+  display: none;
+}
+
+.p-datatable-scrollable-table {
+  scrollbar-width: none;
+}
+
+.p-datatable-scrollable-table::-webkit-scrollbar {
+  display: none;
+}
+
+.p-datatable-scrollable {
+  scrollbar-width: none;
+}
+
+.p-datatable-scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.p-datatable {
+  scrollbar-width: none;
+}
+
+.p-datatable::-webkit-scrollbar {
+  display: none;
+} */
 </style>

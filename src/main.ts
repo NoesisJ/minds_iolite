@@ -6,8 +6,10 @@ import Aura from "@primevue/themes/aura";
 import router from "./router";
 import "primeicons/primeicons.css";
 import StyleClass from "primevue/styleclass";
-import ToastService from 'primevue/toastservice';
-import ConfirmationService from 'primevue/confirmationservice';
+import KeyFilter from "primevue/keyfilter";
+import ToastService from "primevue/toastservice";
+import ConfirmationService from "primevue/confirmationservice";
+
 const app = createApp(App);
 const pinia = createPinia();
 
@@ -19,11 +21,15 @@ app
   .use(PrimeVue, {
     theme: {
       preset: Aura,
+      options: {
+        darkModeSelector: ".my-app-dark",
+      },
     },
     options: {
-        prefix: "p",
-        cssLayer: false,
-      },
+      prefix: "p",
+      cssLayer: false,
+    },
   })
-  .directive('styleclass', StyleClass)
+  .directive("keyfilter", KeyFilter)
+  .directive("styleclass", StyleClass)
   .mount("#app");

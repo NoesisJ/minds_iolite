@@ -9,6 +9,10 @@ import Test02 from "../views/Test02.vue";
 // 定义路由数组
 const routes: Array<RouteRecordRaw> = [
   {
+    path: "/",
+    redirect: "/ChartsView",
+  },
+  {
     path: "/ChartsView",
     component: ChartsView,
     children: [],
