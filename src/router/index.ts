@@ -1,58 +1,85 @@
+// router/index.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import ChartsView from "../views/ChartsView.vue";
-import InformationView from "../views/InformationView.vue";
-import MessagesView from "../views/functionalViews/MessagesView.vue";
-import NotificationsView from "../views/functionalViews/NotificationsView.vue";
-import SettingsView from "../views/functionalViews/SettingsView.vue";
-import MaterialChartsView from "../views/finance/MateriallChartsview.vue";
-import Test01 from "../views/Test01.vue";
-import Test02 from "../views/Test02.vue";
-// 定义路由数组
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/ChartsView",
+    redirect: "/infoCharts",
   },
   {
-    path: "/ChartsView",
-    component: ChartsView,
-    children: [],
+    path: "/information",
+    name: "information",
+    component: () => import("../views/InformationView.vue"),
   },
   {
-    path: "/InformationView",
-    component: InformationView,
+    path: "/infoCharts",
+    name: "infoCharts",
+    component: () => import("../views/InfoChartsView.vue"),
   },
   {
-    path:"/MaterialChartsView",
-    component:MaterialChartsView,
+    path: "/signUp",
+    name: "signUp",
+    component: () => import("../views/SignUpView.vue"),
   },
   {
-    path: "/Test01",
-    component: Test01,
+    path: "/functional",
+    name: "functional",
+    children: [
+      {
+        path: "messages",
+        name: "messages",
+        component: () => import("../views/FunctionalViews/MessagesView.vue"),
+      },
+      {
+        path: "notifications",
+        name: "notifications",
+        component: () => import("../views/FunctionalViews/NotificationsView.vue"),
+      },
+      {
+        path: "settings",
+        name: "settings",
+        component: () => import("../views/FunctionalViews/SettingsView.vue"),
+      },
+    ],
   },
   {
-    path: "/Test02",
-    component: Test02,
+    path: "/finance",
+    name: "finance",
+    children: [
+      {
+        path: "list",
+        name: "financeList",
+        component: () => import("../views/FinanceViews/FinanceView.vue"),
+      },
+      {
+        path: "charts",
+        name: "financeCharts",
+        component: () => import("../views/FinanceViews/FinanceChartsView.vue"),
+      },
+    ],
   },
   {
-    path: "/MessagesView",
-    component: MessagesView,
-  },
-  {
-    path: "/NotificationsView",
-    component: NotificationsView,
-  },
-  {
-    path: "/SettingsView",
-    component: SettingsView,
+    path: "/material",
+    name: "material",
+    component: () => import("../views/MaterialViews/MaterialHub.vue"),
+    children: [
+      {
+        path: "storage",
+        name: "storage",
+        component: () => import("../views/MaterialViews/StorageView.vue"),
+      },
+      {
+        path: "requestLogs",
+        name: "requestLogs",
+        component: () => import("../views/MaterialViews/RequestLogsView.vue"),
+      },
+    ],
   },
 ];
 
-// 创建 Router 实例并传入配置
 const router = createRouter({
-  history: createWebHistory(), // 使用 HTML5 的 History 模式
+  history: createWebHistory(),
   routes,
 });
 
-// 导出 Router 实例
 export default router;

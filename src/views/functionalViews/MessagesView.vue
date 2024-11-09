@@ -92,19 +92,30 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { createGlobalState, useStorage } from "@vueuse/core";
 import { ref, computed, watch } from "vue";
 import Toast from "primevue/toast";
 import Avatar from "primevue/avatar";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Menu from "primevue/menu";
-import { createGlobalState, useStorage } from "@vueuse/core";
 
 const items = ref([
   { label: "Option 1", icon: "pi pi-refresh" },
   { label: "Option 2", icon: "pi pi-times" },
 ]);
+
+interface Message {
+  id: number;
+  avatar: string;
+  name: string;
+  time: Date;
+  content: string;
+  read: boolean;
+  loved: boolean;
+}
+
 // 使用 createGlobalState 定义全局状态，存储整个消息列表
 const useState = createGlobalState(() =>
   useStorage("messages", [
@@ -172,7 +183,11 @@ const messages = ref(state.value);
 const sortedMessages = computed(() => {
   return messages.value
     .slice()
-    .sort((a, b) => a.read - b.read || b.time - a.time);
+    .sort(
+      (a, b) =>
+        (a.read ? 1 : 0) - (b.read ? 1 : 0) ||
+        new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
 });
 
 // 计算筛选后的消息列表
@@ -198,21 +213,21 @@ const toggleFilterLoved = () => {
 };
 
 // 标记消息为已读
-const markAsRead = (message) => {
+const markAsRead = (message: Message) => {
   message.read = true;
   state.value = messages.value; // 同步到 localStorage
 };
 
 // 切换收藏状态
-const toggleLoved = (message) => {
+const toggleLoved = (message: Message) => {
   message.loved = !message.loved;
   state.value = messages.value; // 同步到 localStorage
 };
 
 // 计算时间差并格式化显示
-const formatTimeDiff = (time) => {
+const formatTimeDiff = (time: Date) => {
   const now = new Date();
-  const diffMs = now - new Date(time);
+  const diffMs = now.getTime() - new Date(time).getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));

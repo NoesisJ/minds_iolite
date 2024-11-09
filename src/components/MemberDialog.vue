@@ -88,7 +88,7 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
-import Select from "primevue/select";
+// import Select from "primevue/select";
 import FileUpload from "primevue/fileupload";
 
 // 字段配置接口

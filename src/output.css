@@ -750,8 +750,37 @@ video {
   width: 100vw;
 }
 
+.w-\[10\.5rem\] {
+  width: 10.5rem;
+}
+
+.w-\[11\.5rem\] {
+  width: 11.5rem;
+}
+
+.w-\[11rem\] {
+  width: 11rem;
+}
+
+.w-\[124rem\] {
+  width: 124rem;
+}
+
+.w-\[20rem\] {
+  width: 20rem;
+}
+
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .min-w-\[350px\] {
   min-width: 350px;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
 }
 
 .flex-grow {
@@ -897,6 +926,11 @@ video {
 .py-\[\.3rem\] {
   padding-top: .3rem;
   padding-bottom: .3rem;
+}
+
+.px-\[\.4rem\] {
+  padding-left: .4rem;
+  padding-right: .4rem;
 }
 
 .pb-4 {

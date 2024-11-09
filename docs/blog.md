@@ -40,10 +40,11 @@ TODO:
 - [x] headerButton样式完善
 - [x] 联合查询
 - [x] 网页端移动端适配, 好像不用适配网页端了
-- [ ] 修改添加人员信息中电话和邮箱的正则表达式
-- [ ] 后端别忘了防注入
-- [ ] Header各个功能实现
-- [ ] 登录逻辑
-- [ ] 背景牛逼化
 - [x] 添加人员：头像上传
+- [x] Header各个功能实现
+- [x] 修改添加人员信息中电话和邮箱的正则表达式
+- [ ] 后端防注入
+- [ ] 登录逻辑
 - [ ] 财务折线图下标更新,新图表功能更新
+- [ ] 梳理headerlayout，InfoChartsView，MessageView的史
+- [ ] 同步informationView和FinanceView的逻辑

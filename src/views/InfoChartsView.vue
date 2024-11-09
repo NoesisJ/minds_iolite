@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import * as echarts from "echarts";
 import { ref, onMounted } from "vue";
 
@@ -36,11 +36,16 @@ const campusKey = ref(0);
 const groupKey = ref(0);
 const divisionKey = ref(0);
 
+interface ChartDataItem {
+  value: number;
+  name: string;
+}
+
 const chartData = ref({
-  subjectData: [],
-  campusData: [],
-  groupData: { types: [], sums: [] },
-  divisionData: { types: [], sums: [] },
+  subjectData: [] as ChartDataItem[],
+  campusData: [] as ChartDataItem[],
+  groupData: { types: [] as string[], sums: [] as number[] },
+  divisionData: { types: [] as string[], sums: [] as number[] },
 });
 
 // 模拟数据获取
@@ -192,10 +197,15 @@ onMounted(() => {
   initCharts();
 
   window.onresize = () => {
-    echarts.getInstanceByDom(document.getElementById("subjectChart")).resize();
-    echarts.getInstanceByDom(document.getElementById("campusChart")).resize();
-    echarts.getInstanceByDom(document.getElementById("groupChart")).resize();
-    echarts.getInstanceByDom(document.getElementById("divisionChart")).resize();
+    const subjectEl = document.getElementById("subjectChart");
+    const campusEl = document.getElementById("campusChart");
+    const groupEl = document.getElementById("groupChart");
+    const divisionEl = document.getElementById("divisionChart");
+
+    if (subjectEl) echarts.getInstanceByDom(subjectEl)?.resize();
+    if (campusEl) echarts.getInstanceByDom(campusEl)?.resize();
+    if (groupEl) echarts.getInstanceByDom(groupEl)?.resize();
+    if (divisionEl) echarts.getInstanceByDom(divisionEl)?.resize();
   };
 });
 </script>
