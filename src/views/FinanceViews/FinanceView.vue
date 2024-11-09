@@ -374,7 +374,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import Table from "../components/Table.vue";
+import Table from "../../components/Table.vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

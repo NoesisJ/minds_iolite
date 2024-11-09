@@ -314,15 +314,15 @@ const toggleMaximize = async () => {
 };
 // 打开消息窗口
 const openMessageWindow = () => {
-  router.push("/MessagesView");
+  router.push("/functional/messages");
 };
 // 打开通知窗口
 const openNotificationWindow = () => {
-  router.push("/NotificationsView");
+  router.push("/functional/notifications");
 };
 // 打开设置窗口
 const openSettingsWindow = () => {
-  router.push("/SettingsView");
+  router.push("/functional/settings");
 };
 </script>
 
