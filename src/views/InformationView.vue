@@ -30,7 +30,7 @@
           label="导出"
           severity="info"
           class="header-button"
-          @click="exportCSV($event)"
+          @click="exportCSV()"
         />
         <Button
           icon="pi pi-plus"
@@ -65,13 +65,6 @@
     >
       <div class="flex flex-row gap-4">
         <div class="min-w-[350px] flex flex-col gap-6">
-          <!-- 大头 -->
-          <img
-            v-if="member.image"
-            :src="`https://primefaces.org/cdn/primevue/images/product/${member.image}`"
-            :alt="member.image"
-            class="block m-auto pb-4"
-          />
           <!-- 姓名 -->
           <div>
             <label for="name" class="block font-bold mb-3">姓名</label>
@@ -125,7 +118,7 @@
               </InputGroupAddon>
               <InputText
                 v-model="member.id"
-                :invalid="submitted && member.id && !/^\d+$/.test(member.id)"
+                :invalid="submitted && !!member.id && !/^\d+$/.test(member.id)"
                 placeholder="学号"
                 v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
               />
@@ -209,9 +202,11 @@
               <InputText
                 v-model="member.phone"
                 :invalid="
-                  submitted &&
-                  member.phone &&
-                  (member.phone.length !== 9 || /^\d+$/.test(member.phone))
+                  Boolean(
+                    submitted &&
+                      member.phone &&
+                      (member.phone.length !== 9 || /^\d+$/.test(member.phone))
+                  )
                 "
                 v-keyfilter="{
                   pattern: /^[+]?(d{1,13})?$/,
@@ -229,9 +224,11 @@
               <InputText
                 v-model="member.email"
                 :invalid="
-                  submitted &&
-                  member.email &&
-                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)
+                  Boolean(
+                    submitted &&
+                      member.email &&
+                      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)
+                  )
                 "
                 v-keyfilter="{
                   pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -248,7 +245,9 @@
               </InputGroupAddon>
               <InputText
                 v-model="member.qq"
-                :invalid="submitted && member.qq && !/^\d+$/.test(member.qq)"
+                :invalid="
+                  Boolean(submitted && member.qq && !/^\d+$/.test(member.qq))
+                "
                 v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
                 placeholder="QQ"
               />
@@ -266,7 +265,7 @@
         <FileUpload
           name="demo[]"
           url="/api/upload"
-          @upload="onAdvancedUpload($event)"
+          @upload="onAdvancedUpload()"
           :multiple="true"
           accept="image/*"
           :maxFileSize="1000000"
@@ -279,57 +278,6 @@
             <span>Drag and drop files to here to upload.</span>
           </template>
         </FileUpload>
-        <!-- <FileUpload
-          ref="fileUpload"
-          name="demo[]"
-          url="/upload"
-          :auto="false"
-          :customUpload="true"
-          multiple
-          :chooseLabel="'Choose'"
-          :uploadLabel="'Upload'"
-          :cancelLabel="'Cancel'"
-          :maxFileSize="1000000"
-          @upload="uploadHandler"
-          @select="onFileSelect"
-          :style="{ width: '400px' }"
-        >
-          <template #header>
-            <div class="p-fileupload-header">
-              <Button
-                icon="pi pi-plus"
-                label="Choose"
-                class="p-button-success"
-                @click="$refs.fileUpload.choose()"
-              />
-              <Button
-                icon="pi pi-upload"
-                label="Upload"
-                class="p-button-primary"
-                :disabled="!filesSelected"
-                @click="onUpload"
-              />
-              <Button
-                icon="pi pi-times"
-                label="Cancel"
-                class="p-button-danger"
-                @click="onCancel"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="p-fileupload-content">
-              <p v-if="files.length === 0">
-                Drag and drop files to here to upload.
-              </p>
-              <ul>
-                <li v-for="(file, index) in files" :key="index">
-                  {{ file.name }}
-                </li>
-              </ul>
-            </div>
-          </template>
-        </FileUpload> -->
       </div>
 
       <template #footer>
@@ -411,90 +359,47 @@
 
     <!-- 信息表格 -->
     <div class="contentPerson w-full overflow-auto hide-scrollbar">
-      <DataTable
-        ref="dt"
-        v-model:selection="selectedMembers"
-        :value="filteredMembers"
-        dataKey="id"
-        :rows="14"
+      <Table
+        ref="dataTable"
+        :data="members"
+        :columns="columns"
         :filters="filters"
-        scrollable
-        :scrollHeight="scrollHeight"
-        tableStyle="min-width: 1500px; height: fit;"
-        class="overflow-auto hide-scrollbar"
-      >
-        <!-- 多选列 -->
-        <Column
-          selectionMode="multiple"
-          style="width: 3rem"
-          :exportable="false"
-        ></Column>
-
-        <!-- 队员信息列 -->
-        <Column field="name" header="姓名" sortable frozen></Column>
-        <Column field="gender" header="性别"></Column>
-        <Column field="grade" header="年级"></Column>
-        <Column field="id" header="学号"></Column>
-        <Column field="group" header="组别"></Column>
-        <Column field="identity" header="在队身份"></Column>
-        <Column field="branch" header="兵种"></Column>
-        <Column field="campus" header="校区"></Column>
-        <Column field="major" header="专业"></Column>
-        <Column field="phone" header="电话"></Column>
-        <Column field="email" header="邮箱"></Column>
-        <Column field="qq" header="QQ"></Column>
-        <Column field="wechat" header="微信"></Column>
-
-        <!-- 操作列 -->
-        <Column :exportable="false">
-          <template #body="slotProps" style="min-width: 12rem">
-            <Button
-              icon="pi pi-pencil"
-              outlined
-              rounded
-              severity="info"
-              class="mr-2"
-              @click="editMember(slotProps.data)"
-            />
-            <Button
-              icon="pi pi-trash"
-              outlined
-              rounded
-              severity="danger"
-              @click="confirmDeleteMember(slotProps.data)"
-            />
-          </template>
-        </Column>
-      </DataTable>
+        v-model:selection="selectedMembers"
+        @edit="editMember"
+        @delete="confirmDeleteMember"
+      />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
+import Table from "../components/Table.vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import FileUpload from "primevue/fileupload";
+import Dialog from "primevue/dialog";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
-import Dialog from "primevue/dialog";
-import Toast from "primevue/toast";
-import { useToast } from "primevue/usetoast";
-import { show } from "@tauri-apps/api/app";
-import { identity } from "@vueuse/core";
-import { color } from "echarts";
+import FileUpload from "primevue/fileupload";
 
 const toast = useToast();
-const dt = ref();
-const scrollHeight = "calc(100vh - 8.5rem)";
-// 用户输入
+const dataTable = ref();
+
+// 搜索值
 const nameValue = ref("");
 const groupValue = ref("");
 const branchValue = ref("");
+const filteredNames = ref<string[]>([]);
+const filteredGroups = ref<string[]>([]);
+const filteredBranches = ref<string[]>([]);
+
+// 表格选中项
+const selectedMembers = ref<Member[]>([]);
+
 // 添加、修改队员下拉框数据
 const genders = ref([
   { name: "男", code: "M" },
@@ -546,17 +451,63 @@ const identities = ref([
   { name: "已毕业", code: "PRS" },
   { name: "已转专业", code: "WTF" },
 ]);
+
+// 列配置
+const columns = [
+  { field: "name", header: "姓名", sortable: true, frozen: true },
+  { field: "gender", header: "性别" },
+  { field: "grade", header: "年级" },
+  { field: "id", header: "学号" },
+  { field: "group", header: "组别" },
+  { field: "identity", header: "在队身份" },
+  { field: "branch", header: "兵种" },
+  { field: "campus", header: "校区" },
+  { field: "major", header: "专业" },
+  { field: "phone", header: "电话" },
+  { field: "email", header: "邮箱" },
+  { field: "qq", header: "QQ" },
+  { field: "wechat", header: "微信" },
+];
+
 // 控制添加队员对话框的显示
 const memberDialog = ref(false);
 const deleteMemberDialog = ref(false);
 const deleteMembersDialog = ref(false);
-const member = ref({});
+type Member = {
+  name: string;
+  gender: string;
+  grade: string;
+  id: string;
+  group: string;
+  identity: string;
+  branch: string;
+  campus: string;
+  major: string;
+  phone: string;
+  email: string;
+  qq: string;
+  wechat: string;
+};
+const member = ref<Member>({
+  name: "",
+  gender: "",
+  grade: "",
+  id: "",
+  group: "",
+  identity: "",
+  branch: "",
+  campus: "",
+  major: "",
+  phone: "",
+  email: "",
+  qq: "",
+  wechat: "",
+});
 const submitted = ref(false);
 // 全部队员数据
 const members = ref([
   {
-    id: 1,
-    sn: 1,
+    id: "1",
     name: "张三",
     group: "A组",
     gender: "男",
@@ -567,10 +518,11 @@ const members = ref([
     qq: "123456",
     wechat: "zhangsan",
     branch: "步兵",
+    identity: "正式队员",
+    email: "zhangsan@example.com",
   },
   {
-    id: 2,
-    sn: 2,
+    id: "2",
     name: "李四",
     group: "B组",
     gender: "女",
@@ -579,30 +531,34 @@ const members = ref([
     campus: "北校区",
     phone: "987654321",
     qq: "654321",
+    identity: "正式队员",
+    email: "lisi@example.com",
     wechat: "lisi",
     branch: "炮兵",
   },
   {
-    id: 3,
-    sn: 3,
+    id: "3",
     name: "王五",
     group: "A组",
     gender: "男",
     grade: "三年级",
     major: "人工智能",
     campus: "南校区",
+    identity: "正式队员",
+    email: "wangwu@example.com",
     phone: "135246809",
     qq: "234567",
     wechat: "wangwu",
     branch: "特种兵",
   },
   {
-    id: 4,
-    sn: 4,
+    id: "4",
     name: "赵六",
     group: "B组",
     gender: "女",
     grade: "四年级",
+    identity: "正式队员",
+    email: "zhaoliu@example.com",
     major: "网络安全",
     campus: "北校区",
     phone: "139876543",
@@ -611,8 +567,7 @@ const members = ref([
     branch: "机械兵",
   },
   {
-    id: 5,
-    sn: 5,
+    id: "5",
     name: "孙七",
     group: "C组",
     gender: "男",
@@ -623,10 +578,11 @@ const members = ref([
     qq: "876543",
     wechat: "sunqi",
     branch: "步兵",
+    identity: "正式队员",
+    email: "sunqi@example.com",
   },
   {
-    id: 6,
-    sn: 6,
+    id: "6",
     name: "周八",
     group: "A组",
     gender: "女",
@@ -637,10 +593,11 @@ const members = ref([
     qq: "435267",
     wechat: "zhouba",
     branch: "炮兵",
+    identity: "正式队员",
+    email: "zhouba@example.com",
   },
   {
-    id: 7,
-    sn: 7,
+    id: "7",
     name: "吴九",
     group: "B组",
     gender: "男",
@@ -651,10 +608,11 @@ const members = ref([
     qq: "546728",
     wechat: "wujia",
     branch: "特种兵",
+    identity: "正式队员",
+    email: "wujia@example.com",
   },
   {
-    id: 8,
-    sn: 8,
+    id: "8",
     name: "郑十",
     group: "C组",
     gender: "女",
@@ -665,10 +623,11 @@ const members = ref([
     qq: "678321",
     wechat: "zhengshi",
     branch: "机械兵",
+    identity: "正式队员",
+    email: "zhengshi@example.com",
   },
   {
-    id: 9,
-    sn: 9,
+    id: "9",
     name: "王十一",
     group: "A组",
     gender: "男",
@@ -679,10 +638,11 @@ const members = ref([
     qq: "432156",
     wechat: "wangshiyi",
     branch: "步兵",
+    identity: "正式队员",
+    email: "wangshiyi@example.com",
   },
   {
-    id: 10,
-    sn: 10,
+    id: "10",
     name: "李十二",
     group: "C组",
     gender: "女",
@@ -693,10 +653,11 @@ const members = ref([
     qq: "125763",
     wechat: "lishier",
     branch: "炮兵",
+    identity: "正式队员",
+    email: "lishier@example.com",
   },
   {
-    id: 11,
-    sn: 11,
+    id: "11",
     name: "钱十三",
     group: "A组",
     gender: "男",
@@ -707,10 +668,11 @@ const members = ref([
     qq: "777321",
     wechat: "qianshisan",
     branch: "特种兵",
+    identity: "正式队员",
+    email: "qianshisan@example.com",
   },
   {
-    id: 12,
-    sn: 12,
+    id: "12",
     name: "丁十四",
     group: "B组",
     gender: "女",
@@ -721,10 +683,11 @@ const members = ref([
     qq: "888456",
     wechat: "dingshisi",
     branch: "机械兵",
+    identity: "正式队员",
+    email: "dingshisi@example.com",
   },
   {
-    id: 13,
-    sn: 13,
+    id: "13",
     name: "杨十五",
     group: "C组",
     gender: "男",
@@ -735,10 +698,11 @@ const members = ref([
     qq: "999789",
     wechat: "yangshiwu",
     branch: "步兵",
+    identity: "正式队员",
+    email: "yangshiwu@example.com",
   },
   {
-    id: 14,
-    sn: 14,
+    id: "14",
     name: "吴十六",
     group: "A组",
     gender: "女",
@@ -749,10 +713,11 @@ const members = ref([
     qq: "111654",
     wechat: "wushiliu",
     branch: "炮兵",
+    identity: "正式队员",
+    email: "wushiliu@example.com",
   },
   {
-    id: 15,
-    sn: 15,
+    id: "15",
     name: "赵十七",
     group: "B组",
     gender: "男",
@@ -763,10 +728,11 @@ const members = ref([
     qq: "222987",
     wechat: "zhaoshiyi",
     branch: "特种兵",
+    identity: "正式队员",
+    email: "zhaoshiyi@example.com",
   },
   {
-    id: 16,
-    sn: 16,
+    id: "16",
     name: "孙十八",
     group: "C组",
     gender: "女",
@@ -777,27 +743,24 @@ const members = ref([
     qq: "333432",
     wechat: "sunshiba",
     branch: "机械兵",
+    identity: "正式队员",
+    email: "sunshiba@example.com",
   },
 ]);
-// 过滤后的列表
-const filteredNames = ref([]);
-const filteredGroups = ref([]);
-const filteredBranches = ref([]);
 
-// 导出表格 CSV
 const exportCSV = () => {
-  dt.value.exportCSV();
+  dataTable.value.exportCSV();
 };
 
 // 搜索
-const searchNames = (event) => {
+const searchNames = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   filteredNames.value = members.value
     .filter((member) => member.name.toLowerCase().includes(query))
     .map((member) => member.name);
 };
 
-const searchGroups = (event) => {
+const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   const uniqueGroups = [
     ...new Set(members.value.map((member) => member.group)),
@@ -807,7 +770,7 @@ const searchGroups = (event) => {
   );
 };
 
-const searchBranches = (event) => {
+const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   const uniqueBranches = [
     ...new Set(members.value.map((member) => member.branch)),
@@ -817,132 +780,90 @@ const searchBranches = (event) => {
   );
 };
 
-// 过滤后的队员列表
-const filteredMembers = computed(() => {
-  return members.value.filter(
-    (member) =>
-      (!nameValue.value || member.name.includes(nameValue.value)) &&
-      (!groupValue.value || member.group.includes(groupValue.value)) &&
-      (!branchValue.value || member.branch.includes(branchValue.value)) // 使用 branchValue
-  );
-});
-
-// 过滤器配置
-const filters = ref({
-  name: { value: null, matchMode: "contains" },
-  gender: { value: null, matchMode: "contains" },
-  grade: { value: null, matchMode: "contains" },
-  id: { value: null, matchMode: "equals" },
-  group: { value: null, matchMode: "contains" },
-  identity: { value: null, matchMode: "contains" },
-  branch: { value: null, matchMode: "contains" },
-  campus: { value: null, matchMode: "contains" },
-  major: { value: null, matchMode: "contains" },
-  phone: { value: null, matchMode: "contains" },
-  email: { value: null, matchMode: "contains" },
-  qq: { value: null, matchMode: "contains" },
-  wechat: { value: null, matchMode: "contains" },
-});
-
-// 要删除的队员数据
-const selectedMembers = ref();
-
-// 新增的队员数据(仅用于规范数据结构，不实际使用)
-const newMember = ref({
-  name: "",
-  gender: "",
-  grade: "",
-  id: null,
-  group: "",
-  identity: "",
-  branch: "",
-  campus: "",
-  major: "",
-  phone: null,
-  email: "",
-  qq: "",
-  wechat: "",
-});
+// 过滤值
+const filters = computed(() => ({
+  name: nameValue.value,
+  group: groupValue.value,
+  branch: branchValue.value,
+}));
 
 // 显示添加队员
 const openNew = () => {
-  member.value = {};
+  member.value = {
+    name: "",
+    gender: "",
+    grade: "",
+    id: "",
+    group: "",
+    identity: "",
+    branch: "",
+    campus: "",
+    major: "",
+    phone: "",
+    email: "",
+    qq: "",
+    wechat: "",
+  };
   submitted.value = false;
   memberDialog.value = true;
 };
 
 // 显示编辑队员
-const editMember = (memb) => {
-  member.value = { ...memb };
+const editMember = (m: Member) => {
+  member.value = { ...m };
   memberDialog.value = true;
+};
+
+// 显示确认删除队员
+const confirmDeleteMember = (data: Member) => {
+  member.value = data;
+  deleteMemberDialog.value = true;
+};
+
+// 显示确认批量删除
+const confirmDeleteSelected = () => {
+  deleteMembersDialog.value = true;
 };
 
 // 上传图片文件
 const onAdvancedUpload = () => {
-  toast.add({
-    severity: "info",
-    summary: "Success",
-    detail: "File Uploaded",
-    life: 3000,
-  });
-};
-
-const files = ref([]);
-const filesSelected = ref(false);
-
-const onFileSelect = (event) => {
-  files.value = event.files;
-  filesSelected.value = true;
-};
-
-const onUpload = () => {
-  // Custom upload logic, if any
-  console.log('Uploading files: ', files.value);
-};
-
-const onCancel = () => {
-  files.value = [];
-  filesSelected.value = false;
-  console.log('Upload cancelled');
-};
-
-const uploadHandler = (event) => {
-  // Handle the file upload event
-  console.log('Uploaded files:', event.files);
+  showToast("File uploaded!");
 };
 
 // 添加、编辑队员
 const saveMember = () => {
   submitted.value = true;
 
-  if (
-    member?.value.name?.trim() &&
-    (!member.id || (member.id && /^\d+$/.test(member.id))) &&
-    (!member.phone ||
-      (member.phone &&
-        member.phone.length == 9 &&
-        /^\d+$/.test(member.phone))) &&
-    (!member.email ||
-      (member.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email))) &&
-    (!member.qq || (member.qq && /^\d+$/.test(member.qq)))
-  ) {
-    if (member.value.sn) {
-      const index = findIndexBySN(member.value.sn);
-      if (index !== -1) {
-        members.value[index] = member.value; // 更新成员信息
-        showToast("编辑成功！");
-      } else {
-        showToast("成员未找到，编辑失败！");
-      }
+  if (validateMember()) {
+    const index = members.value.findIndex((m) => m.id === member.value.id);
+    // 更新现有成员
+    if (index !== -1) {
+      members.value[index] = {
+        ...member.value,
+      };
+      showToast("编辑成功！");
     } else {
-      member.value.sn = createSN();
-      // member.value.image = "product-placeholder.svg";
+      // 添加新成员
       members.value.push({ ...member.value });
       showToast("添加成功！");
     }
 
     memberDialog.value = false;
-    member.value = {};
+    member.value = {
+      name: "",
+      gender: "",
+      grade: "",
+      id: "",
+      group: "",
+      identity: "",
+      branch: "",
+      campus: "",
+      major: "",
+      phone: "",
+      email: "",
+      qq: "",
+      wechat: "",
+    };
   }
 };
 
@@ -952,24 +873,26 @@ const hideDialog = () => {
   submitted.value = false;
 };
 
-// 确认删除队员
-const confirmDeleteMember = (memb) => {
-  deleteMemberDialog.value = true;
-  member.value = memb;
-};
-
 // 删除队员
 const deleteMember = () => {
-  members.value = members.value.filter((memb) => memb !== member.value);
-  updateSnValues();
+  members.value = members.value.filter((m) => m.id !== member.value.id);
   deleteMemberDialog.value = false;
-  member.value = {};
+  member.value = {
+    name: "",
+    gender: "",
+    grade: "",
+    id: "",
+    group: "",
+    identity: "",
+    branch: "",
+    campus: "",
+    major: "",
+    phone: "",
+    email: "",
+    qq: "",
+    wechat: "",
+  };
   showToast("删除成功！");
-};
-
-// 确认批量删除
-const confirmDeleteSelected = () => {
-  deleteMembersDialog.value = true;
 };
 
 // 批量删除队员
@@ -977,37 +900,28 @@ const deleteSelectedMembers = () => {
   members.value = members.value.filter(
     (member) => !selectedMembers.value.includes(member)
   );
-  updateSnValues();
   deleteMembersDialog.value = false;
   selectedMembers.value = []; // 清空选中的队员
   showToast("删除成功！");
 };
 
-// 生成 SN
-const createSN = () => {
-  // 上一版生成 SN 的方法
-  // const newId = members.value.length
-  //   ? Math.max(...members.value.map((s) => s.id)) + 1
-  //   : 1;
-
-  // 使用 reduce 一次遍历找到最大 SN
-  const newSN =
-    members.value.reduce((maxSN, member) => Math.max(maxSN, member.sn), 0) + 1;
-  return newSN;
+// 验证队员信息
+const validateMember = () => {
+  return (
+    member.value.name?.trim() &&
+    (!member.value.id || /^\d+$/.test(String(member.value.id))) &&
+    (!member.value.phone ||
+      (member.value.phone.length === 9 && /^\d+$/.test(member.value.phone))) &&
+    (!member.value.email ||
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.value.email)) &&
+    (!member.value.qq || /^\d+$/.test(member.value.qq))
+  );
 };
 
-// 查询 SN
-const findIndexBySN = (sn) => members.value.findIndex((memb) => memb.sn === sn);
-
-// 更新 SN
-const updateSnValues = () => {
-  members.value.forEach((memb, index) => {
-    memb.sn = index + 1;
-  });
-};
+// 查询是否有此队员
 
 // 成功提示
-const showToast = (message) => {
+const showToast = (message: string) => {
   toast.add({
     severity: "success",
     summary: "成功",
@@ -1040,57 +954,4 @@ const showToast = (message) => {
   --p-select-hover-border-color: #a16eff;
   --p-select-focus-border-color: #a16eff;
 }
-
-/* 
-.p-datatable-tbody > tr {
-  max-height: 2.5rem;
-}
-
-.hide-scrollbar {
-  scrollbar-width: none; For Firefox
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; For Chrome, Safari, and Edge
-}
-
-.p-datatable-table-container {
-  scrollbar-width: none;
-}
-
-.p-datatable-table-container::-webkit-scrollbar {
-  display: none;
-}
-
-.p-datatable-table {
-  scrollbar-width: none;
-}
-
-.p-datatable-table::-webkit-scrollbar {
-  display: none;
-}
-
-.p-datatable-scrollable-table {
-  scrollbar-width: none;
-}
-
-.p-datatable-scrollable-table::-webkit-scrollbar {
-  display: none;
-}
-
-.p-datatable-scrollable {
-  scrollbar-width: none;
-}
-
-.p-datatable-scrollable::-webkit-scrollbar {
-  display: none;
-}
-
-.p-datatable {
-  scrollbar-width: none;
-}
-
-.p-datatable::-webkit-scrollbar {
-  display: none;
-} */
 </style>
