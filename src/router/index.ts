@@ -4,6 +4,7 @@ import InformationView from "../views/InformationView.vue";
 import MessagesView from "../views/functionalViews/MessagesView.vue";
 import NotificationsView from "../views/functionalViews/NotificationsView.vue";
 import SettingsView from "../views/functionalViews/SettingsView.vue";
+import MaterialChartsView from "../views/finance/MateriallChartsview.vue";
 import Test01 from "../views/Test01.vue";
 import Test02 from "../views/Test02.vue";
 // 定义路由数组
@@ -20,6 +21,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/InformationView",
     component: InformationView,
+  },
+  {
+    path:"/MaterialChartsView",
+    component:MaterialChartsView,
   },
   {
     path: "/Test01",
