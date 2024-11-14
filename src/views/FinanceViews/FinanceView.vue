@@ -1,5 +1,5 @@
 <template>
-  <div class="personInformation w-full flex-grow flex flex-col overflow-auto">
+  <div class="materialInformation w-full flex-grow flex flex-col overflow-auto">
     <!-- Header -->
     <div
       class="header w-full h-[4.5rem] pl-[1rem] pr-[3rem] flex justify-between items-center gap-2"
@@ -9,7 +9,7 @@
           v-model="nameValue"
           :suggestions="filteredNames"
           @complete="searchNames"
-          placeholder="姓名"
+          placeholder="物资名称"
         />
         <AutoComplete
           v-model="groupValue"
@@ -21,7 +21,7 @@
           v-model="branchValue"
           :suggestions="filteredBranches"
           @complete="searchBranches"
-          placeholder="兵种"
+          placeholder="类型"
         />
       </div>
       <div class="buttonGroup flex items-center space-x-2">
@@ -48,7 +48,7 @@
           outlined
           raised
           @click="confirmDeleteSelected"
-          :disabled="!selectedMembers || !selectedMembers.length"
+          :disabled="!selectedItems || !selectedItems.length"
         />
       </div>
     </div>
@@ -56,81 +56,112 @@
     <!-- 操作成功提示 -->
     <Toast />
 
-    <!-- 添加、编辑队员对话框 -->
+    <!-- 添加、编辑物资对话框 -->
     <Dialog
-      v-model:visible="memberDialog"
+      v-model:visible="itemDialog"
       :style="{ width: '800px' }"
-      header="添加队员"
+      header="添加物资"
       :modal="true"
     >
       <div class="flex flex-row gap-4">
         <div class="min-w-[350px] flex flex-col gap-6">
-          <!-- 姓名 -->
+          <!-- 物资名称 -->
           <div>
-            <label for="name" class="block font-bold mb-3">姓名</label>
+            <label for="name" class="block font-bold mb-3">物资名称</label>
             <InputText
               id="name"
-              v-model.trim="member.name"
+              v-model.trim="item.name"
               required="true"
               autofocus
-              :invalid="submitted && !member.name"
+              :invalid="submitted && !item.name"
               fluid
             />
-            <small v-if="submitted && !member.name" class="text-red-500"
-              >Name is required.</small
+            <small v-if="submitted && !item.name" class="text-red-500"
+              >物资名称为必填项。</small
             >
           </div>
 
-          <!-- 信息内容 -->
+          <!-- 物资信息 -->
           <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- gender -->
+            <!-- 类型 -->
             <InputGroup>
               <InputGroupAddon>
-                <i class="pi pi-mars"></i>
-              </InputGroupAddon>
-              <Select
-                v-model="member.gender"
-                :options="genders"
-                optionLabel="name"
-                optionValue="name"
-                placeholder="性别"
-              />
-            </InputGroup>
-
-            <!-- grade -->
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-calendar"></i>
-              </InputGroupAddon>
-              <Select
-                v-model="member.grade"
-                :options="years"
-                optionLabel="name"
-                optionValue="name"
-                placeholder="入学年份"
-              />
-            </InputGroup>
-
-            <!-- id -->
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-info"></i>
+                <i class="pi pi-inbox"></i>
               </InputGroupAddon>
               <InputText
-                v-model="member.id"
-                :invalid="submitted && !!member.id && !/^\d+$/.test(member.id)"
-                placeholder="学号"
+                v-model="item.model"
+                placeholder="型号"
+              />
+            </InputGroup>
+
+
+          <!-- 单价 -->
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-dollar"></i>
+            </InputGroupAddon>
+            <InputText
+            v-model="unitPriceStr"
+            :invalid="submitted && !!unitPriceStr && !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(unitPriceStr)"
+            placeholder="单价"
+          />
+          </InputGroup>
+
+            <!-- 单位 -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-flag"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="item.unit"
+                placeholder="单位"
+              />
+            </InputGroup>
+
+            <!-- 数量 -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-hashtag"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="quantityStr"
+                :invalid="submitted && !!quantityStr && !/^\d+$/.test(quantityStr)"
+                placeholder="数量"
                 v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
               />
             </InputGroup>
 
-            <!-- group -->
+            <!-- 时间 -->
             <InputGroup>
               <InputGroupAddon>
-                <i class="pi pi-id-card"></i>
+                <i class="pi pi-calendar"></i>
+              </InputGroupAddon>
+              <InputText
+                v-model="item.date"
+                :invalid="submitted && !!item.date && !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(item.date)"
+                placeholder="时间( - 分隔)"
+              />
+            </InputGroup>
+
+          <!-- 单价 -->
+          <InputGroup>
+            <InputGroupAddon>
+              <i class="pi pi-dollar"></i>
+            </InputGroupAddon>
+            <InputText
+            v-model="shippingCostStr"
+            :invalid="submitted && !!shippingCostStr && !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(shippingCostStr)"
+            placeholder="运费"
+          />
+          </InputGroup>
+
+            <!-- 组别 -->
+            <InputGroup>
+              <InputGroupAddon>
+                <i class="pi pi-th-large"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.group"
+                v-model="item.group"
                 :options="groups"
                 optionLabel="name"
                 optionValue="name"
@@ -138,27 +169,15 @@
               />
             </InputGroup>
 
-            <!-- identity -->
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-flag"></i>
-              </InputGroupAddon>
-              <Select
-                v-model="member.identity"
-                :options="identities"
-                optionLabel="name"
-                optionValue="name"
-                placeholder="在队身份"
-              />
-            </InputGroup>
 
-            <!-- branch -->
+
+            <!-- 兵种 -->
             <InputGroup>
               <InputGroupAddon>
                 <i class="pi pi-ethereum"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.branch"
+                v-model="item.branch"
                 :options="branches"
                 optionLabel="name"
                 optionValue="name"
@@ -166,13 +185,13 @@
               />
             </InputGroup>
 
-            <!-- campus -->
+            <!-- 校区 -->
             <InputGroup>
               <InputGroupAddon>
                 <i class="pi pi-map-marker"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.campus"
+                v-model="item.campus"
                 :options="campuses"
                 optionLabel="name"
                 optionValue="name"
@@ -180,104 +199,49 @@
               />
             </InputGroup>
 
-            <!-- major -->
+                        <!-- 采购人 -->
             <InputGroup>
               <InputGroupAddon>
-                <i class="pi pi-map"></i>
-              </InputGroupAddon>
-              <Select
-                v-model="member.major"
-                :options="majors"
-                optionLabel="name"
-                optionValue="name"
-                placeholder="专业"
-              />
-            </InputGroup>
-
-            <!-- phone -->
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-phone"></i>
+                <i class="pi pi-cart-arrow-down"></i>
               </InputGroupAddon>
               <InputText
-                v-model="member.phone"
-                :invalid="
-                  Boolean(
-                    submitted &&
-                      member.phone &&
-                      (member.phone.length !== 9 || /^\d+$/.test(member.phone))
-                  )
-                "
-                v-keyfilter="{
-                  pattern: /^[+]?(d{1,13})?$/,
-                  validateOnly: true,
-                }"
-                placeholder="电话"
+                v-model="item.purchaser"
+                placeholder="采购人"
               />
             </InputGroup>
 
-            <!-- email -->
+            <!-- 链接 -->
             <InputGroup>
               <InputGroupAddon>
-                <i class="pi pi-at"></i>
+                <i class="pi pi-link"></i>
               </InputGroupAddon>
               <InputText
-                v-model="member.email"
-                :invalid="
-                  Boolean(
-                    submitted &&
-                      member.email &&
-                      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email)
-                  )
-                "
-                v-keyfilter="{
-                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  validateOnly: true,
-                }"
-                placeholder="邮箱"
+                v-model="item.link"
+                placeholder="链接"
               />
             </InputGroup>
 
-            <!-- qq -->
+            <!-- 项目 -->
             <InputGroup>
               <InputGroupAddon>
-                <i class="pi pi-telegram"></i>
+                <i class="pi pi-briefcase"></i>
               </InputGroupAddon>
               <InputText
-                v-model="member.qq"
-                :invalid="
-                  Boolean(submitted && member.qq && !/^\d+$/.test(member.qq))
-                "
-                v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
-                placeholder="QQ"
+                v-model="item.project"
+                placeholder="项目"
               />
-            </InputGroup>
-
-            <!-- wechat -->
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-comments"></i>
-              </InputGroupAddon>
-              <InputText v-model="member.wechat" placeholder="微信" />
             </InputGroup>
           </div>
         </div>
-        <FileUpload
-          name="demo[]"
-          url="/api/upload"
-          @upload="onAdvancedUpload()"
-          :multiple="true"
-          accept="image/*"
-          :maxFileSize="1000000"
-          :style="{
-            'background-color': '#a16eff',
-            border: '0px',
-          }"
-        >
-          <template #empty>
-            <span>Drag and drop files to here to upload.</span>
-          </template>
-        </FileUpload>
+
+        
+      <!-- 备注 -->
+      <InputGroup class="remarks">
+        <InputText
+          v-model="item.remarks"
+          placeholder="备注"
+        />
+      </InputGroup>
       </div>
 
       <template #footer>
@@ -292,86 +256,82 @@
           label="确认"
           icon="pi pi-check"
           severity="help"
-          @click="saveMember"
+          @click="saveItem"
         />
       </template>
     </Dialog>
 
     <!-- 确认单个删除对话框 -->
     <Dialog
-      v-model:visible="deleteMemberDialog"
+      v-model:visible="deleteItemDialog"
       :style="{ width: '450px' }"
-      header="Confirm"
+      header="确认"
       :modal="true"
     >
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="member"
-          >您确定要删除<b>{{ member.name }}</b
-          >吗?
-        </span>
+        <span v-if="item">您确定要删除<b>{{ item.name }}</b>吗?</span>
       </div>
       <template #footer>
         <Button
-          label="No"
+          label="否"
           icon="pi pi-times"
           severity="secondary"
           text
-          @click="deleteMemberDialog = false"
+          @click="deleteItemDialog = false"
         />
         <Button
-          label="Yes"
+          label="是"
           icon="pi pi-check"
           severity="help"
-          @click="deleteMember"
+          @click="deleteItem"
         />
       </template>
     </Dialog>
 
     <!-- 确认批量删除对话框 -->
     <Dialog
-      v-model:visible="deleteMembersDialog"
+      v-model:visible="deleteItemsDialog"
       :style="{ width: '450px' }"
-      header="Confirm"
+      header="确认"
       :modal="true"
     >
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="selectedMembers">您确定要删除选中的项吗?</span>
+        <span v-if="selectedItems">您确定要删除选中的项吗?</span>
       </div>
       <template #footer>
         <Button
-          label="No"
+          label="否"
           icon="pi pi-times"
           severity="secondary"
           text
-          @click="deleteMembersDialog = false"
+          @click="deleteItemsDialog = false"
         />
         <Button
-          label="Yes"
+          label="是"
           icon="pi pi-check"
           severity="help"
           text
-          @click="deleteSelectedMembers"
+          @click="deleteSelectedItems"
         />
       </template>
     </Dialog>
 
-    <!-- 信息表格 -->
-    <div class="contentPerson w-full overflow-auto hide-scrollbar">
+    <!-- 物资表格 -->
+    <div class="contentMaterial w-full overflow-auto hide-scrollbar">
       <Table
         ref="dataTable"
-        :data="members"
+        :data="items"
         :columns="columns"
         :filters="filters"
-        v-model:selection="selectedMembers"
-        @edit="editMember"
-        @delete="confirmDeleteMember"
+        v-model:selection="selectedItems"
+        @edit="editItem"
+        @delete="confirmDeleteItem"
       />
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import Table from "../../components/Table.vue";
@@ -385,6 +345,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import FileUpload from "primevue/fileupload";
+import { Input } from "postcss";
 
 const toast = useToast();
 const dataTable = ref();
@@ -398,7 +359,7 @@ const filteredGroups = ref<string[]>([]);
 const filteredBranches = ref<string[]>([]);
 
 // 表格选中项
-const selectedMembers = ref<Member[]>([]);
+const selectedItems = ref<Item[]>([]);
 
 // 添加、修改队员下拉框数据
 const genders = ref([
@@ -454,300 +415,123 @@ const identities = ref([
 
 // 列配置
 const columns = [
-  { field: "name", header: "姓名", sortable: true, frozen: true },
-  { field: "gender", header: "性别" },
-  { field: "grade", header: "年级" },
-  { field: "id", header: "学号" },
-  { field: "group", header: "组别" },
-  { field: "identity", header: "在队身份" },
-  { field: "branch", header: "兵种" },
+  { field: "name", header: "名称", sortable: true, frozen: true },
+  { field: "model", header: "型号" },
+  { field: "unitPrice", header: "单价" },
+  { field: "quantity", header: "数量" },
+  { field: "unit", header: "单位" },
+  { field: "shippingCost", header: "运费" },
+  { field: "totalPrice", header: "总价" },
+  { field: "purchaser", header: "采购人" },
+  { field: "date", header: "时间" },
   { field: "campus", header: "校区" },
-  { field: "major", header: "专业" },
-  { field: "phone", header: "电话" },
-  { field: "email", header: "邮箱" },
-  { field: "qq", header: "QQ" },
-  { field: "wechat", header: "微信" },
+  { field: "group", header: "组别" },
+  { field: "branch", header: "兵种" },
+  { field: "link", header: "链接" },
+  { field: "project", header: "项目" },
+  { field: "remarks", header: "备注" },
 ];
 
+
 // 控制添加队员对话框的显示
-const memberDialog = ref(false);
-const deleteMemberDialog = ref(false);
-const deleteMembersDialog = ref(false);
-type Member = {
-  name: string;
-  gender: string;
-  grade: string;
+const itemDialog = ref(false);
+const deleteItemDialog = ref(false);
+const deleteItemsDialog = ref(false);
+type Item = {
   id: string;
-  group: string;
-  identity: string;
-  branch: string;
+  name: string;
+  model: string;
+  unitPrice: number;
+  quantity: number;
+  unit: string;
+  shippingCost: number;
+  totalPrice: number;
+  purchaser: string;
+  date: string;
   campus: string;
-  major: string;
-  phone: string;
-  email: string;
-  qq: string;
-  wechat: string;
+  group: string;
+  branch: string;
+  link: string;
+  project: string;
+  remarks: string;
 };
-const member = ref<Member>({
-  name: "",
-  gender: "",
-  grade: "",
+
+const item = ref<Item>({
   id: "",
-  group: "",
-  identity: "",
-  branch: "",
+  name: "",
+  model: "",
+  unitPrice: 0,
+  quantity: 0,
+  unit: "",
+  shippingCost: 0,
+  totalPrice: 0,
+  purchaser: "",
+  date: "",
   campus: "",
-  major: "",
-  phone: "",
-  email: "",
-  qq: "",
-  wechat: "",
+  group: "",
+  branch: "",
+  link: "",
+  project: "",
+  remarks: "",
 });
+
 const submitted = ref(false);
 // 全部队员数据
-const members = ref([
-  {
-    id: "1",
-    name: "张三",
-    group: "A组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "南校区",
-    phone: "123456789",
-    qq: "123456",
-    wechat: "zhangsan",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "zhangsan@example.com",
-  },
-  {
-    id: "2",
-    name: "李四",
-    group: "B组",
-    gender: "女",
-    grade: "二年级",
-    major: "软件工程",
-    campus: "北校区",
-    phone: "987654321",
-    qq: "654321",
-    identity: "正式队员",
-    email: "lisi@example.com",
-    wechat: "lisi",
-    branch: "炮兵",
-  },
-  {
-    id: "3",
-    name: "王五",
-    group: "A组",
-    gender: "男",
-    grade: "三年级",
-    major: "人工智能",
-    campus: "南校区",
-    identity: "正式队员",
-    email: "wangwu@example.com",
-    phone: "135246809",
-    qq: "234567",
-    wechat: "wangwu",
-    branch: "特种兵",
-  },
-  {
-    id: "4",
-    name: "赵六",
-    group: "B组",
-    gender: "女",
-    grade: "四年级",
-    identity: "正式队员",
-    email: "zhaoliu@example.com",
-    major: "网络安全",
-    campus: "北校区",
-    phone: "139876543",
-    qq: "765432",
-    wechat: "zhaoliu",
-    branch: "机械兵",
-  },
-  {
-    id: "5",
-    name: "孙七",
-    group: "C组",
-    gender: "男",
-    grade: "一年级",
-    major: "物联网",
-    campus: "西校区",
-    phone: "158963741",
-    qq: "876543",
-    wechat: "sunqi",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "sunqi@example.com",
-  },
-  {
-    id: "6",
-    name: "周八",
-    group: "A组",
-    gender: "女",
-    grade: "二年级",
-    major: "大数据",
-    campus: "南校区",
-    phone: "159753842",
-    qq: "435267",
-    wechat: "zhouba",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "zhouba@example.com",
-  },
-  {
-    id: "7",
-    name: "吴九",
-    group: "B组",
-    gender: "男",
-    grade: "三年级",
-    major: "信息管理",
-    campus: "北校区",
-    phone: "137951482",
-    qq: "546728",
-    wechat: "wujia",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "wujia@example.com",
-  },
-  {
-    id: "8",
-    name: "郑十",
-    group: "C组",
-    gender: "女",
-    grade: "四年级",
-    major: "物联网",
-    campus: "西校区",
-    phone: "139258741",
-    qq: "678321",
-    wechat: "zhengshi",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "zhengshi@example.com",
-  },
-  {
-    id: "9",
-    name: "王十一",
-    group: "A组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "南校区",
-    phone: "187654321",
-    qq: "432156",
-    wechat: "wangshiyi",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "wangshiyi@example.com",
-  },
-  {
-    id: "10",
-    name: "李十二",
-    group: "C组",
-    gender: "女",
-    grade: "三年级",
-    major: "人工智能",
-    campus: "西校区",
-    phone: "135879654",
-    qq: "125763",
-    wechat: "lishier",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "lishier@example.com",
-  },
-  {
-    id: "11",
-    name: "钱十三",
-    group: "A组",
-    gender: "男",
-    grade: "四年级",
-    major: "物联网",
-    campus: "南校区",
-    phone: "187654322",
-    qq: "777321",
-    wechat: "qianshisan",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "qianshisan@example.com",
-  },
-  {
-    id: "12",
-    name: "丁十四",
-    group: "B组",
-    gender: "女",
-    grade: "二年级",
-    major: "大数据",
-    campus: "北校区",
-    phone: "147852369",
-    qq: "888456",
-    wechat: "dingshisi",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "dingshisi@example.com",
-  },
-  {
-    id: "13",
-    name: "杨十五",
-    group: "C组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "西校区",
-    phone: "138741258",
-    qq: "999789",
-    wechat: "yangshiwu",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "yangshiwu@example.com",
-  },
-  {
-    id: "14",
-    name: "吴十六",
-    group: "A组",
-    gender: "女",
-    grade: "三年级",
-    major: "信息管理",
-    campus: "南校区",
-    phone: "139753951",
-    qq: "111654",
-    wechat: "wushiliu",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "wushiliu@example.com",
-  },
-  {
-    id: "15",
-    name: "赵十七",
-    group: "B组",
-    gender: "男",
-    grade: "四年级",
-    major: "物联网",
-    campus: "北校区",
-    phone: "147963852",
-    qq: "222987",
-    wechat: "zhaoshiyi",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "zhaoshiyi@example.com",
-  },
-  {
-    id: "16",
-    name: "孙十八",
-    group: "C组",
-    gender: "女",
-    grade: "二年级",
-    major: "人工智能",
-    campus: "西校区",
-    phone: "187456321",
-    qq: "333432",
-    wechat: "sunshiba",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "sunshiba@example.com",
-  },
+const items = ref([
+  { id: "1", name: "打印机", model: "HP-LJ123", unitPrice: 1500, quantity: 2, unit: "台", shippingCost: 50, totalPrice: 3050, purchaser: "张三", date: "2023-01-15", campus: "南校区", group: "A组", branch: "通信", link: "https://example.com/item1", project: "办公设备更新", remarks: "用于文印室" },
+  { id: "2", name: "投影仪", model: "Epson-EV104", unitPrice: 3000, quantity: 1, unit: "台", shippingCost: 75, totalPrice: 3075, purchaser: "李四", date: "2023-02-10", campus: "北校区", group: "B组", branch: "技术", link: "https://example.com/item2", project: "教学设备购置", remarks: "用于大教室" },
+  { id: "3", name: "办公桌", model: "IKEA-OF234", unitPrice: 500, quantity: 5, unit: "张", shippingCost: 100, totalPrice: 2600, purchaser: "王五", date: "2023-02-18", campus: "西校区", group: "C组", branch: "后勤", link: "https://example.com/item3", project: "家具采购", remarks: "新职员办公使用" },
+  { id: "4", name: "笔记本电脑", model: "Dell-XPS13", unitPrice: 8000, quantity: 3, unit: "台", shippingCost: 150, totalPrice: 24150, purchaser: "赵六", date: "2023-03-05", campus: "南校区", group: "D组", branch: "研发", link: "https://example.com/item4", project: "科研项目A", remarks: "用于软件开发" },
+  { id: "5", name: "文件柜", model: "Steel-FileCab", unitPrice: 1200, quantity: 2, unit: "个", shippingCost: 60, totalPrice: 2460, purchaser: "孙七", date: "2023-03-12", campus: "东校区", group: "E组", branch: "行政", link: "https://example.com/item5", project: "存档室建设", remarks: "用于文件存储" },
+  { id: "6", name: "白板", model: "OffSup-WB400", unitPrice: 300, quantity: 4, unit: "块", shippingCost: 30, totalPrice: 1230, purchaser: "钱八", date: "2023-03-22", campus: "南校区", group: "F组", branch: "技术", link: "https://example.com/item6", project: "会议室设备更新", remarks: "用于团队会议" },
+  { id: "7", name: "显示器", model: "Samsung-M24", unitPrice: 1200, quantity: 3, unit: "台", shippingCost: 80, totalPrice: 3680, purchaser: "王九", date: "2023-04-02", campus: "北校区", group: "G组", branch: "设计", link: "https://example.com/item7", project: "设计部更新", remarks: "用于图形设计" },
+  { id: "8", name: "无线键盘", model: "Logi-K380", unitPrice: 200, quantity: 10, unit: "个", shippingCost: 20, totalPrice: 2020, purchaser: "李十", date: "2023-04-11", campus: "西校区", group: "H组", branch: "行政", link: "https://example.com/item8", project: "办公室补充", remarks: "替换旧设备" },
+  { id: "9", name: "移动硬盘", model: "WD-MyPass", unitPrice: 500, quantity: 4, unit: "个", shippingCost: 25, totalPrice: 2025, purchaser: "张三", date: "2023-04-15", campus: "南校区", group: "A组", branch: "数据管理", link: "https://example.com/item9", project: "数据备份", remarks: "用于数据存储" },
+  { id: "10", name: "剪刀", model: "OffSup-SC300", unitPrice: 15, quantity: 20, unit: "把", shippingCost: 10, totalPrice: 310, purchaser: "李四", date: "2023-04-18", campus: "东校区", group: "B组", branch: "后勤", link: "https://example.com/item10", project: "文具采购", remarks: "日常办公用品" },
+  { id: "11", name: "打印机", model: "HP-LJ123", unitPrice: 1500, quantity: 2, unit: "台", shippingCost: 50, totalPrice: 3050, purchaser: "张三", date: "2023-01-15", campus: "南校区", group: "A组", branch: "通信", link: "https://example.com/item1", project: "办公设备更新", remarks: "用于文印室" },
+  { id: "12", name: "投影仪", model: "Epson-EV104", unitPrice: 3000, quantity: 1, unit: "台", shippingCost: 75, totalPrice: 3075, purchaser: "李四", date: "2023-02-10", campus: "北校区", group: "B组", branch: "技术", link: "https://example.com/item2", project: "教学设备购置", remarks: "用于大教室" },
+  { id: "13", name: "办公桌", model: "IKEA-OF234", unitPrice: 500, quantity: 5, unit: "张", shippingCost: 100, totalPrice: 2600, purchaser: "王五", date: "2023-02-18", campus: "西校区", group: "C组", branch: "后勤", link: "https://example.com/item3", project: "家具采购", remarks: "新职员办公使用" },
+  { id: "14", name: "笔记本电脑", model: "Dell-XPS13", unitPrice: 8000, quantity: 3, unit: "台", shippingCost: 150, totalPrice: 24150, purchaser: "赵六", date: "2023-03-05", campus: "南校区", group: "D组", branch: "研发", link: "https://example.com/item4", project: "科研项目A", remarks: "用于软件开发" },
+  { id: "15", name: "文件柜", model: "Steel-FileCab", unitPrice: 1200, quantity: 2, unit: "个", shippingCost: 60, totalPrice: 2460, purchaser: "孙七", date: "2023-03-12", campus: "东校区", group: "E组", branch: "行政", link: "https://example.com/item5", project: "存档室建设", remarks: "用于文件存储" },
+  { id: "16", name: "白板", model: "OffSup-WB400", unitPrice: 300, quantity: 4, unit: "块", shippingCost: 30, totalPrice: 1230, purchaser: "钱八", date: "2023-03-22", campus: "南校区", group: "F组", branch: "技术", link: "https://example.com/item6", project: "会议室设备更新", remarks: "用于团队会议" },
+  { id: "17", name: "显示器", model: "Samsung-M24", unitPrice: 1200, quantity: 3, unit: "台", shippingCost: 80, totalPrice: 3680, purchaser: "王九", date: "2023-04-02", campus: "北校区", group: "G组", branch: "设计", link: "https://example.com/item7", project: "设计部更新", remarks: "用于图形设计" },
+  { id: "18", name: "无线键盘", model: "Logi-K380", unitPrice: 200, quantity: 10, unit: "个", shippingCost: 20, totalPrice: 2020, purchaser: "李十", date: "2023-04-11", campus: "西校区", group: "H组", branch: "行政", link: "https://example.com/item8", project: "办公室补充", remarks: "替换旧设备" },
+  { id: "19", name: "移动硬盘", model: "WD-MyPass", unitPrice: 500, quantity: 4, unit: "个", shippingCost: 25, totalPrice: 2025, purchaser: "张三", date: "2023-04-15", campus: "南校区", group: "A组", branch: "数据管理", link: "https://example.com/item9", project: "数据备份", remarks: "用于数据存储" },
 ]);
 
+// 用于将数字转换为字符串，并处理与inputtext双向绑定
+const unitPriceStr = computed({
+  // getter，返回 item.unitPrice 的字符串形式
+  get() {
+    return item.value.unitPrice ? item.value.unitPrice.toString() : '';
+  },
+  // setter，更新 item.unitPrice 为用户输入的数字
+  set(value: string) {
+    item.value.unitPrice = parseFloat(value);
+  }
+});
+
+const quantityStr = computed({
+  // getter，返回 item.unitPrice 的字符串形式
+  get() {
+    return item.value.quantity ? item.value.quantity.toString() : '';
+  },
+  // setter，更新 item.unitPrice 为用户输入的数字
+  set(value: string) {
+    item.value.quantity = parseFloat(value);
+  }
+});
+
+const shippingCostStr = computed({
+  // getter，返回 item.unitPrice 的字符串形式
+  get() {
+    return item.value.shippingCost ? item.value.shippingCost.toString() : '';
+  },
+  // setter，更新 item.unitPrice 为用户输入的数字
+  set(value: string) {
+    item.value.shippingCost = parseFloat(value);
+  }
+});
 const exportCSV = () => {
   dataTable.value.exportCSV();
 };
@@ -755,15 +539,15 @@ const exportCSV = () => {
 // 搜索
 const searchNames = (event: { query: string }) => {
   const query = event.query.toLowerCase();
-  filteredNames.value = members.value
-    .filter((member) => member.name.toLowerCase().includes(query))
-    .map((member) => member.name);
+  filteredNames.value = items.value
+    .filter((items) => items.name.toLowerCase().includes(query))
+    .map((items) => items.name);
 };
 
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   const uniqueGroups = [
-    ...new Set(members.value.map((member) => member.group)),
+    ...new Set(items.value.map((items) => items.group)),
   ];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
@@ -773,7 +557,7 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   const uniqueBranches = [
-    ...new Set(members.value.map((member) => member.branch)),
+    ...new Set(items.value.map((item) => item.branch)),
   ];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
@@ -787,134 +571,110 @@ const filters = computed(() => ({
   branch: branchValue.value,
 }));
 
-// 显示添加队员
-const openNew = () => {
-  member.value = {
-    name: "",
-    gender: "",
-    grade: "",
+// 重置物资信息
+const resetItem = () => {
+  item.value = {
     id: "",
-    group: "",
-    identity: "",
-    branch: "",
+    name: "",
+    model: "",
+    unitPrice: 0,
+    quantity: 0,
+    unit: "",
+    shippingCost: 0,
+    totalPrice: 0,
+    purchaser: "",
+    date: "",
     campus: "",
-    major: "",
-    phone: "",
-    email: "",
-    qq: "",
-    wechat: "",
+    group: "",
+    branch: "",
+    link: "",
+    project: "",
+    remarks: "",
   };
-  submitted.value = false;
-  memberDialog.value = true;
 };
 
-// 显示编辑队员
-const editMember = (m: Member) => {
-  member.value = { ...m };
-  memberDialog.value = true;
+// 显示添加物资
+const openNew = () => {
+  resetItem();
+  itemDialog.value = true;
 };
 
-// 显示确认删除队员
-const confirmDeleteMember = (data: Member) => {
-  member.value = data;
-  deleteMemberDialog.value = true;
+// 显示编辑物资
+const editItem = (i: Item) => {
+  item.value = { ...i };
+  itemDialog.value = true;
+};
+
+// 显示确认删除物资
+const confirmDeleteItem = (data: Item) => {
+  item.value = data;
+  deleteItemDialog.value = true;
 };
 
 // 显示确认批量删除
 const confirmDeleteSelected = () => {
-  deleteMembersDialog.value = true;
+  deleteItemsDialog.value = true;
 };
 
-// 上传图片文件
+// 上传文件
 const onAdvancedUpload = () => {
-  showToast("File uploaded!");
+  showToast("文件已上传！");
 };
 
-// 添加、编辑队员
-const saveMember = () => {
+// 保存物资信息（添加或编辑）
+const saveItem = () => {
   submitted.value = true;
 
-  if (validateMember()) {
-    const index = members.value.findIndex((m) => m.id === member.value.id);
-    // 更新现有成员
+  if (validateItem()) {
+    const index = items.value.findIndex((i) => i.id === item.value.id);
     if (index !== -1) {
-      members.value[index] = {
-        ...member.value,
-      };
+      // 更新物资
+      items.value[index] = { ...item.value };
       showToast("编辑成功！");
     } else {
-      // 添加新成员
-      members.value.push({ ...member.value });
+      // 添加新物资
+      items.value.push({ ...item.value });
       showToast("添加成功！");
     }
 
-    memberDialog.value = false;
-    member.value = {
-      name: "",
-      gender: "",
-      grade: "",
-      id: "",
-      group: "",
-      identity: "",
-      branch: "",
-      campus: "",
-      major: "",
-      phone: "",
-      email: "",
-      qq: "",
-      wechat: "",
-    };
+    itemDialog.value = false;
+    resetItem();
   }
 };
 
-// 取消添加、编辑队员
+// 取消编辑或添加
 const hideDialog = () => {
-  memberDialog.value = false;
+  itemDialog.value = false;
   submitted.value = false;
 };
 
-// 删除队员
-const deleteMember = () => {
-  members.value = members.value.filter((m) => m.id !== member.value.id);
-  deleteMemberDialog.value = false;
-  member.value = {
-    name: "",
-    gender: "",
-    grade: "",
-    id: "",
-    group: "",
-    identity: "",
-    branch: "",
-    campus: "",
-    major: "",
-    phone: "",
-    email: "",
-    qq: "",
-    wechat: "",
-  };
+// 删除物资
+const deleteItem = () => {
+  items.value = items.value.filter((i) => i.id !== item.value.id);
+  deleteItemDialog.value = false;
+  resetItem();
   showToast("删除成功！");
 };
 
-// 批量删除队员
-const deleteSelectedMembers = () => {
-  members.value = members.value.filter(
-    (member) => !selectedMembers.value.includes(member)
+// 批量删除
+const deleteSelectedItems = () => {
+  items.value = items.value.filter(
+    (item) => !selectedItems.value.includes(item)
   );
-  deleteMembersDialog.value = false;
-  selectedMembers.value = []; // 清空选中的队员
+  deleteItemsDialog.value = false;
+  selectedItems.value = [];
   showToast("删除成功！");
 };
 
-// 验证队员信息
-const validateMember = () => {
+// 物资信息验证
+const validateItem = () => {
   return (
-    member.value.name?.trim() &&
-    (!member.value.id || /^\d+$/.test(String(member.value.id))) &&
-    (!member.value.phone ||
-      (member.value.phone.length === 9 && /^\d+$/.test(member.value.phone))) &&
-    (!member.value.email ||
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.value.email)) &&
-    (!member.value.qq || /^\d+$/.test(member.value.qq))
+    item.value.name?.trim() && // 验证物资名称是否非空
+    (!item.value.id || /^\d+$/.test(String(item.value.id))) && // 验证物资编号（id）是否为数字
+    (item.value.quantity >= 0) && 
+    (item.value.unitPrice >= 0) && 
+    (item.value.shippingCost >= 0) && 
+    (item.value.totalPrice >= 0)
   );
 };
 
@@ -954,4 +714,5 @@ const showToast = (message: string) => {
   --p-select-hover-border-color: #a16eff;
   --p-select-focus-border-color: #a16eff;
 }
+
 </style>
