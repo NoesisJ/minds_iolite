@@ -361,7 +361,7 @@
     <div class="contentPerson w-full overflow-auto hide-scrollbar">
       <Table
         ref="dataTable"
-        :data="members"
+        :data="finalFilteredMembers"
         :columns="columns"
         :filters="filters"
         v-model:selection="selectedMembers"
@@ -755,6 +755,7 @@ const exportCSV = () => {
 // 搜索
 const searchNames = (event: { query: string }) => {
   const query = event.query.toLowerCase();
+  // 只更新建议列表
   filteredNames.value = members.value
     .filter((member) => member.name.toLowerCase().includes(query))
     .map((member) => member.name);
@@ -762,9 +763,8 @@ const searchNames = (event: { query: string }) => {
 
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
-  const uniqueGroups = [
-    ...new Set(members.value.map((member) => member.group)),
-  ];
+  // 只更新建议列表
+  const uniqueGroups = [...new Set(members.value.map((member) => member.group))];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -772,13 +772,38 @@ const searchGroups = (event: { query: string }) => {
 
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
-  const uniqueBranches = [
-    ...new Set(members.value.map((member) => member.branch)),
-  ];
+  // 只更新建议列表
+  const uniqueBranches = [...new Set(members.value.map((member) => member.branch))];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
 };
+const finalFilteredMembers = computed(() => {
+  let result = [...members.value];
+
+  // 按姓名过滤
+  if (nameValue.value) {
+    result = result.filter(member => 
+      member.name.toLowerCase().includes(nameValue.value.toLowerCase())
+    );
+  }
+
+  // 按组别过滤
+  if (groupValue.value) {
+    result = result.filter(member => 
+      member.group.toLowerCase().includes(groupValue.value.toLowerCase())
+    );
+  }
+
+  // 按兵种过滤
+  if (branchValue.value) {
+    result = result.filter(member => 
+      member.branch.toLowerCase().includes(branchValue.value.toLowerCase())
+    );
+  }
+
+  return result;
+});
 
 // 过滤值
 const filters = computed(() => ({
