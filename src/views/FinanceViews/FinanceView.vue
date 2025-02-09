@@ -24,7 +24,7 @@
           placeholder="类型"
         />
       </div>
-      <div class="buttonGroup flex items-center space-x-2">
+      <div class="buttonGroup flex items-center space-x-3">
         <Button
           icon="pi pi-upload"
           label="导出"
@@ -53,45 +53,47 @@
       </div>
     </div>
 
-    <div class="timeSearch flex items-center h-14 ml-4 mb-2 justify-between w-full">
-  <div class="flex items-center">
-    <DatePicker
-      class=""
-      v-model="startDate"
-      :maxDate="endDate || undefined"
-      dateFormat="yy-mm-dd"
-      placeholder="请选择起始时间"
-    />
-    <DatePicker
-      class="ml-2"
-      v-model="endDate"
-      :minDate="startDate || undefined"
-      dateFormat="yy-mm-dd"
-      placeholder="请选择终止时间"
-    />
-  </div>
-  <!-- 统计模块 -->
-  <div
-    class="h-full bg-[rgb(50,50,89)] rounded-lg flex items-center justify-between p-8 w-[30%] mr-16"
-  >
-    <div class="text-center">
-      <div class="text-white text-sm">该时段</div>
-      <div class="text-white font-bold">¥{{ getTimeRangeCost() }}</div>
+    <div
+      class="timeSearch flex items-center h-14 ml-4 mb-2 justify-between w-full"
+    >
+      <div class="flex items-center">
+        <DatePicker
+          class=""
+          v-model="startDate"
+          :maxDate="endDate || undefined"
+          dateFormat="yy-mm-dd"
+          placeholder="请选择起始时间"
+        />
+        <DatePicker
+          class="ml-2"
+          v-model="endDate"
+          :minDate="startDate || undefined"
+          dateFormat="yy-mm-dd"
+          placeholder="请选择终止时间"
+        />
+      </div>
+      <!-- 统计模块 -->
+      <div
+        class="h-full bg-[rgb(50,50,89)] rounded-lg flex items-center justify-between p-8 w-[30%] mr-16"
+      >
+        <div class="text-center">
+          <div class="text-white text-sm">该时段</div>
+          <div class="text-white font-bold">¥{{ getTimeRangeCost() }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-white text-sm">今日</div>
+          <div class="text-white font-bold">¥{{ getTodayCost() }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-white text-sm">本周</div>
+          <div class="text-white font-bold">¥{{ getWeekCost() }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-white text-sm">本月</div>
+          <div class="text-white font-bold">¥{{ getMonthCost() }}</div>
+        </div>
+      </div>
     </div>
-    <div class="text-center">
-      <div class="text-white text-sm">今日</div>
-      <div class="text-white font-bold">¥{{ getTodayCost() }}</div>
-    </div>
-    <div class="text-center">
-      <div class="text-white text-sm">本周</div>
-      <div class="text-white font-bold">¥{{ getWeekCost() }}</div>
-    </div>
-    <div class="text-center">
-      <div class="text-white text-sm">本月</div>
-      <div class="text-white font-bold">¥{{ getMonthCost() }}</div>
-    </div>
-  </div>
-</div>
 
     <!-- 操作成功提示 -->
     <Toast />
@@ -274,7 +276,14 @@
 
         <!-- 备注 -->
         <InputGroup class="remarks">
-          <InputText v-model="item.remarks" placeholder="备注" />
+          <Textarea
+            id="remarks"
+            v-model="item.remarks"
+            placeholder="请输入备注信息..."
+            rows="8"
+            class="flex-1"
+            autoResize
+          />
         </InputGroup>
       </div>
 
@@ -1240,5 +1249,39 @@ const getDateRange = () => {
 .p-select {
   --p-select-hover-border-color: #a16eff;
   --p-select-focus-border-color: #a16eff;
+}
+
+.remarks {
+  flex: 1;
+  min-width: 300px;
+}
+
+.remarks .p-inputgroup {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.remarks textarea {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.remarks textarea:hover {
+  border-color: #a16eff;
+}
+
+.remarks textarea:focus {
+  border-color: #a16eff;
+  box-shadow: 0 0 0 2px rgba(161, 110, 255, 0.2);
+}
+
+.remarks .p-inputtext {
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>

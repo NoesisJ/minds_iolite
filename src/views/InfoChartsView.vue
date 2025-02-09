@@ -232,7 +232,7 @@ const initCharts = () => {
   }
 };
 
-// 生命周期钩子
+
 onMounted(() => {
   initCharts();
   window.addEventListener('resize', handleResize);
