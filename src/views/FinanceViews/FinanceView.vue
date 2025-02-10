@@ -190,7 +190,7 @@
               />
             </InputGroup>
 
-            <!-- 单价 -->
+            <!-- 运费 -->
             <InputGroup>
               <InputGroupAddon>
                 <i class="pi pi-dollar"></i>
@@ -380,7 +380,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Ref, ref, computed, watch } from "vue";
+import { Ref, ref, computed, watch, onMounted } from "vue";
 import Table from "../../components/Table.vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
@@ -392,9 +392,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-
-// import FileUpload from "primevue/fileupload";
-// import { Input } from "postcss";
+import { financeApi, type Item } from '../../api/finance';
 
 const toast = useToast();
 const dataTable = ref();
@@ -486,25 +484,11 @@ const columns = [
 const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const deleteItemsDialog = ref(false);
-type Item = {
-  id: string;
-  name: string;
-  model: string;
-  unitPrice: number;
-  quantity: number;
-  unit: string;
-  shippingCost: number;
-  totalPrice: number;
-  purchaser: string;
-  date: string;
-  campus: string;
-  group: string;
-  branch: string;
-  link: string;
-  project: string;
-  remarks: string;
-};
 
+// 在items定义后添加
+const items = ref<Item[]>([]);
+
+// 在item定义后添加
 const item = ref<Item>({
   id: "",
   name: "",
@@ -523,389 +507,65 @@ const item = ref<Item>({
   project: "",
   remarks: "",
 });
-
 const submitted = ref(false);
-// 全部队员数据
-const items = ref([
-  {
-    id: "1",
-    name: "打印机",
-    model: "HP-LJ123",
-    unitPrice: 1500,
-    quantity: 2,
-    unit: "台",
-    shippingCost: 50,
-    totalPrice: 3050,
-    purchaser: "张三",
-    date: "2023-01-15",
-    campus: "南校区",
-    group: "A组",
-    branch: "通信",
-    link: "https://example.com/item1",
-    project: "办公设备更新",
-    remarks: "用于文印室",
-  },
-  {
-    id: "2",
-    name: "投影仪",
-    model: "Epson-EV104",
-    unitPrice: 3000,
-    quantity: 1,
-    unit: "台",
-    shippingCost: 75,
-    totalPrice: 3075,
-    purchaser: "李四",
-    date: "2023-02-10",
-    campus: "北校区",
-    group: "B组",
-    branch: "技术",
-    link: "https://example.com/item2",
-    project: "教学设备购置",
-    remarks: "用于大教室",
-  },
-  {
-    id: "3",
-    name: "办公桌",
-    model: "IKEA-OF234",
-    unitPrice: 500,
-    quantity: 5,
-    unit: "张",
-    shippingCost: 100,
-    totalPrice: 2600,
-    purchaser: "王五",
-    date: "2023-02-18",
-    campus: "西校区",
-    group: "C组",
-    branch: "后勤",
-    link: "https://example.com/item3",
-    project: "家具采购",
-    remarks: "新职员办公使用",
-  },
-  {
-    id: "4",
-    name: "笔记本电脑",
-    model: "Dell-XPS13",
-    unitPrice: 8000,
-    quantity: 3,
-    unit: "台",
-    shippingCost: 150,
-    totalPrice: 24150,
-    purchaser: "赵六",
-    date: "2023-03-05",
-    campus: "南校区",
-    group: "D组",
-    branch: "研发",
-    link: "https://example.com/item4",
-    project: "科研项目A",
-    remarks: "用于软件开发",
-  },
-  {
-    id: "5",
-    name: "文件柜",
-    model: "Steel-FileCab",
-    unitPrice: 1200,
-    quantity: 2,
-    unit: "个",
-    shippingCost: 60,
-    totalPrice: 2460,
-    purchaser: "孙七",
-    date: "2023-03-12",
-    campus: "东校区",
-    group: "E组",
-    branch: "行政",
-    link: "https://example.com/item5",
-    project: "存档室建设",
-    remarks: "用于文件存储",
-  },
-  {
-    id: "6",
-    name: "白板",
-    model: "OffSup-WB400",
-    unitPrice: 300,
-    quantity: 4,
-    unit: "块",
-    shippingCost: 30,
-    totalPrice: 1230,
-    purchaser: "钱八",
-    date: "2023-03-22",
-    campus: "南校区",
-    group: "F组",
-    branch: "技术",
-    link: "https://example.com/item6",
-    project: "会议室设备更新",
-    remarks: "用于团队会议",
-  },
-  {
-    id: "7",
-    name: "显示器",
-    model: "Samsung-M24",
-    unitPrice: 1200,
-    quantity: 3,
-    unit: "台",
-    shippingCost: 80,
-    totalPrice: 3680,
-    purchaser: "王九",
-    date: "2023-04-02",
-    campus: "北校区",
-    group: "G组",
-    branch: "设计",
-    link: "https://example.com/item7",
-    project: "设计部更新",
-    remarks: "用于图形设计",
-  },
-  {
-    id: "8",
-    name: "无线键盘",
-    model: "Logi-K380",
-    unitPrice: 200,
-    quantity: 10,
-    unit: "个",
-    shippingCost: 20,
-    totalPrice: 2020,
-    purchaser: "李十",
-    date: "2023-04-11",
-    campus: "西校区",
-    group: "H组",
-    branch: "行政",
-    link: "https://example.com/item8",
-    project: "办公室补充",
-    remarks: "替换旧设备",
-  },
-  {
-    id: "9",
-    name: "移动硬盘",
-    model: "WD-MyPass",
-    unitPrice: 500,
-    quantity: 4,
-    unit: "个",
-    shippingCost: 25,
-    totalPrice: 2025,
-    purchaser: "张三",
-    date: "2023-04-15",
-    campus: "南校区",
-    group: "A组",
-    branch: "数据管理",
-    link: "https://example.com/item9",
-    project: "数据备份",
-    remarks: "用于数据存储",
-  },
-  {
-    id: "10",
-    name: "剪刀",
-    model: "OffSup-SC300",
-    unitPrice: 15,
-    quantity: 20,
-    unit: "把",
-    shippingCost: 10,
-    totalPrice: 310,
-    purchaser: "李四",
-    date: "2023-04-18",
-    campus: "东校区",
-    group: "B组",
-    branch: "后勤",
-    link: "https://example.com/item10",
-    project: "文具采购",
-    remarks: "日常办公用品",
-  },
-  {
-    id: "11",
-    name: "打印机",
-    model: "HP-LJ123",
-    unitPrice: 1500,
-    quantity: 2,
-    unit: "台",
-    shippingCost: 50,
-    totalPrice: 3050,
-    purchaser: "张三",
-    date: "2023-01-15",
-    campus: "南校区",
-    group: "A组",
-    branch: "通信",
-    link: "https://example.com/item1",
-    project: "办公设备更新",
-    remarks: "用于文印室",
-  },
-  {
-    id: "12",
-    name: "投影仪",
-    model: "Epson-EV104",
-    unitPrice: 3000,
-    quantity: 1,
-    unit: "台",
-    shippingCost: 75,
-    totalPrice: 3075,
-    purchaser: "李四",
-    date: "2023-02-10",
-    campus: "北校区",
-    group: "B组",
-    branch: "技术",
-    link: "https://example.com/item2",
-    project: "教学设备购置",
-    remarks: "用于大教室",
-  },
-  {
-    id: "13",
-    name: "办公桌",
-    model: "IKEA-OF234",
-    unitPrice: 500,
-    quantity: 5,
-    unit: "张",
-    shippingCost: 100,
-    totalPrice: 2600,
-    purchaser: "王五",
-    date: "2023-02-18",
-    campus: "西校区",
-    group: "C组",
-    branch: "后勤",
-    link: "https://example.com/item3",
-    project: "家具采购",
-    remarks: "新职员办公使用",
-  },
-  {
-    id: "14",
-    name: "笔记本电脑",
-    model: "Dell-XPS13",
-    unitPrice: 8000,
-    quantity: 3,
-    unit: "台",
-    shippingCost: 150,
-    totalPrice: 24150,
-    purchaser: "赵六",
-    date: "2023-03-05",
-    campus: "南校区",
-    group: "D组",
-    branch: "研发",
-    link: "https://example.com/item4",
-    project: "科研项目A",
-    remarks: "用于软件开发",
-  },
-  {
-    id: "15",
-    name: "文件柜",
-    model: "Steel-FileCab",
-    unitPrice: 1200,
-    quantity: 2,
-    unit: "个",
-    shippingCost: 60,
-    totalPrice: 2460,
-    purchaser: "孙七",
-    date: "2023-03-12",
-    campus: "东校区",
-    group: "E组",
-    branch: "行政",
-    link: "https://example.com/item5",
-    project: "存档室建设",
-    remarks: "用于文件存储",
-  },
-  {
-    id: "16",
-    name: "白板",
-    model: "OffSup-WB400",
-    unitPrice: 300,
-    quantity: 4,
-    unit: "块",
-    shippingCost: 30,
-    totalPrice: 1230,
-    purchaser: "钱八",
-    date: "2023-03-22",
-    campus: "南校区",
-    group: "F组",
-    branch: "技术",
-    link: "https://example.com/item6",
-    project: "会议室设备更新",
-    remarks: "用于团队会议",
-  },
-  {
-    id: "17",
-    name: "显示器",
-    model: "Samsung-M24",
-    unitPrice: 1200,
-    quantity: 3,
-    unit: "台",
-    shippingCost: 80,
-    totalPrice: 3680,
-    purchaser: "王九",
-    date: "2023-04-02",
-    campus: "北校区",
-    group: "G组",
-    branch: "设计",
-    link: "https://example.com/item7",
-    project: "设计部更新",
-    remarks: "用于图形设计",
-  },
-  {
-    id: "18",
-    name: "无线键盘",
-    model: "Logi-K380",
-    unitPrice: 200,
-    quantity: 10,
-    unit: "个",
-    shippingCost: 20,
-    totalPrice: 2020,
-    purchaser: "李十",
-    date: "2023-04-11",
-    campus: "西校区",
-    group: "H组",
-    branch: "行政",
-    link: "https://example.com/item8",
-    project: "办公室补充",
-    remarks: "替换旧设备",
-  },
-  {
-    id: "19",
-    name: "移动硬盘",
-    model: "WD-MyPass",
-    unitPrice: 500,
-    quantity: 4,
-    unit: "个",
-    shippingCost: 25,
-    totalPrice: 2025,
-    purchaser: "张三",
-    date: "2023-04-15",
-    campus: "南校区",
-    group: "A组",
-    branch: "数据管理",
-    link: "https://example.com/item9",
-    project: "数据备份",
-    remarks: "用于数据存储",
-  },
-]);
 
-// 用于将数字转换为字符串，并处理与inputtext双向绑定
-const unitPriceStr = computed({
-  // getter，返回 item.unitPrice 的字符串形式
-  get() {
-    return item.value.unitPrice ? item.value.unitPrice.toString() : "";
-  },
-  // setter，更新 item.unitPrice 为用户输入的数字
-  set(value: string) {
-    item.value.unitPrice = parseFloat(value);
-  },
+// 在item定义后添加计算属性
+const unitPriceStr = computed<string>({
+  get: () => item.value.unitPrice.toString(),
+  set: (val: string) => item.value.unitPrice = parseFloat(val) || 0
 });
 
 const quantityStr = computed({
-  // getter，返回 item.unitPrice 的字符串形式
-  get() {
-    return item.value.quantity ? item.value.quantity.toString() : "";
-  },
-  // setter，更新 item.unitPrice 为用户输入的数字
-  set(value: string) {
-    item.value.quantity = parseFloat(value);
-  },
+  get: () => item.value.quantity.toString(),
+  set: (val) => item.value.quantity = parseInt(val) || 0
 });
 
 const shippingCostStr = computed({
-  // getter，返回 item.unitPrice 的字符串形式
-  get() {
-    return item.value.shippingCost ? item.value.shippingCost.toString() : "";
-  },
-  // setter，更新 item.unitPrice 为用户输入的数字
-  set(value: string) {
-    item.value.shippingCost = parseFloat(value);
-  },
+  get: () => item.value.shippingCost.toString(),
+  set: (val) => item.value.shippingCost = parseFloat(val) || 0
 });
-const exportCSV = () => {
-  dataTable.value.exportCSV();
+
+// 添加生命周期钩子
+onMounted(async () => {
+  try {
+    items.value = await financeApi.getList();
+  } catch (error) {
+    showToast('获取数据失败');
+  }
+});
+
+// 修改保存方法
+const saveItem = async () => {
+  submitted.value = true;
+  
+  if (validateItem()) {
+    try {
+      if (item.value.id) {
+        await financeApi.update(item.value.id, item.value);
+        const index = items.value.findIndex(i => i.id === item.value.id);
+        if (index !== -1) {
+          items.value[index] = { ...item.value };
+        }
+      } else {
+        const newItem = await financeApi.create(item.value);
+        items.value.push(newItem);
+      }
+      showToast("操作成功！");
+      itemDialog.value = false;
+    } catch (error) {
+      showToast('操作失败');
+    }
+  }
+};
+
+// 修改导出方法
+const exportCSV = async () => {
+  try {
+    const blob = await financeApi.export();
+    // 保持原有下载逻辑
+  } catch (error) {
+    showToast('导出失败');
+  }
 };
 
 // 过滤后的数据数组
@@ -919,10 +579,10 @@ const searchNames = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
   filteredNames.value = items.value
-    .filter((item) => item.name.toLowerCase().includes(query))
-    .map((item) => item.name);
+    .filter((item: Item) => item.name.toLowerCase().includes(query))
+    .map((item: Item) => item.name);
   // 更新过滤后的数据
-  filteredByName.value = items.value.filter((item) =>
+  filteredByName.value = items.value.filter((item: Item) =>
     item.name.toLowerCase().includes(query)
   );
 };
@@ -930,12 +590,12 @@ const searchNames = (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueGroups = [...new Set(items.value.map((item) => item.group))];
+  const uniqueGroups = [...new Set(items.value.map((item: Item) => item.group))];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
   // 更新过滤后的数据
-  filteredByGroup.value = items.value.filter((item) =>
+  filteredByGroup.value = items.value.filter((item: Item) =>
     item.group.toLowerCase().includes(query)
   );
 };
@@ -943,12 +603,12 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueBranches = [...new Set(items.value.map((item) => item.branch))];
+  const uniqueBranches = [...new Set(items.value.map((item: Item) => item.branch))];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
   // 更新过滤后的数据
-  filteredByBranch.value = items.value.filter((item) =>
+  filteredByBranch.value = items.value.filter((item: Item) =>
     item.branch.toLowerCase().includes(query)
   );
 };
@@ -969,7 +629,7 @@ const searchByDateRange = () => {
   const end = new Date(endDate.value);
 
   // 更新过滤后的数据
-  filteredByTime.value = items.value.filter((item) => {
+  filteredByTime.value = items.value.filter((item: Item) => {
     const itemDate = new Date(item.date);
     return itemDate >= start && itemDate <= end;
   });
@@ -1007,21 +667,21 @@ const finalFilteredItems = computed(() => {
 
   // 按名称过滤
   if (nameValue.value) {
-    result = result.filter((item) =>
+    result = result.filter((item: Item) =>
       item.name.toLowerCase().includes(nameValue.value.toLowerCase())
     );
   }
 
   // 按组别过滤
   if (groupValue.value) {
-    result = result.filter((item) =>
+    result = result.filter((item: Item) =>
       item.group.toLowerCase().includes(groupValue.value.toLowerCase())
     );
   }
 
   // 按兵种过滤
   if (branchValue.value) {
-    result = result.filter((item) =>
+    result = result.filter((item: Item) =>
       item.branch.toLowerCase().includes(branchValue.value.toLowerCase())
     );
   }
@@ -1030,7 +690,7 @@ const finalFilteredItems = computed(() => {
   if (startDate.value && endDate.value) {
     const start = new Date(startDate.value);
     const end = new Date(endDate.value);
-    result = result.filter((item) => {
+    result = result.filter((item: Item) => {
       const itemDate = new Date(item.date);
       return itemDate >= start && itemDate <= end;
     });
@@ -1057,8 +717,8 @@ const getTodayCost = () => {
   const today = new Date();
   const todayStr = formatDate(today);
   return items.value
-    .filter((item) => item.date === todayStr)
-    .reduce((sum, item) => sum + item.totalPrice, 0)
+    .filter((item: Item) => item.date === todayStr)
+    .reduce((sum: number, item: Item) => sum + item.totalPrice, 0)
     .toFixed(2);
 };
 
@@ -1067,7 +727,7 @@ const getWeekCost = () => {
   const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
   const weekEnd = new Date(today.setDate(today.getDate() - today.getDay() + 6));
   return items.value
-    .filter((item) => {
+    .filter((item: Item) => {
       const itemDate = new Date(item.date);
       return itemDate >= weekStart && itemDate <= weekEnd;
     })
@@ -1080,7 +740,7 @@ const getMonthCost = () => {
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   return items.value
-    .filter((item) => {
+    .filter((item: Item) => {
       const itemDate = new Date(item.date);
       return itemDate >= monthStart && itemDate <= monthEnd;
     })
@@ -1138,27 +798,6 @@ const onAdvancedUpload = () => {
   showToast("文件已上传！");
 };
 
-// 保存物资信息（添加或编辑）
-const saveItem = () => {
-  submitted.value = true;
-
-  if (validateItem()) {
-    const index = items.value.findIndex((i) => i.id === item.value.id);
-    if (index !== -1) {
-      // 更新物资
-      items.value[index] = { ...item.value };
-      showToast("编辑成功！");
-    } else {
-      // 添加新物资
-      items.value.push({ ...item.value });
-      showToast("添加成功！");
-    }
-
-    itemDialog.value = false;
-    resetItem();
-  }
-};
-
 // 取消编辑或添加
 const hideDialog = () => {
   itemDialog.value = false;
@@ -1185,6 +824,7 @@ const deleteSelectedItems = () => {
 
 // 物资信息验证
 const validateItem = () => {
+  resetItem();
   return (
     item.value.name?.trim() && // 验证物资名称是否非空
     (!item.value.id || /^\d+$/.test(String(item.value.id))) && // 验证物资编号（id）是否为数字
@@ -1194,8 +834,6 @@ const validateItem = () => {
     item.value.totalPrice >= 0
   );
 };
-
-// 查询是否有此队员
 
 // 成功提示
 const showToast = (message: string) => {

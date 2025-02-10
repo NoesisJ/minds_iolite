@@ -373,7 +373,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import Table from "../components/Table.vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
@@ -385,6 +385,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import FileUpload from "primevue/fileupload";
+import { memberApi, type Member } from "../api/member";
 
 const toast = useToast();
 const dataTable = ref();
@@ -473,21 +474,6 @@ const columns = [
 const memberDialog = ref(false);
 const deleteMemberDialog = ref(false);
 const deleteMembersDialog = ref(false);
-type Member = {
-  name: string;
-  gender: string;
-  grade: string;
-  id: string;
-  group: string;
-  identity: string;
-  branch: string;
-  campus: string;
-  major: string;
-  phone: string;
-  email: string;
-  qq: string;
-  wechat: string;
-};
 const member = ref<Member>({
   name: "",
   gender: "",
@@ -504,261 +490,35 @@ const member = ref<Member>({
   wechat: "",
 });
 const submitted = ref(false);
-// 全部队员数据
-const members = ref([
-  {
-    id: "1",
-    name: "张三",
-    group: "A组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "南校区",
-    phone: "123456789",
-    qq: "123456",
-    wechat: "zhangsan",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "zhangsan@example.com",
-  },
-  {
-    id: "2",
-    name: "李四",
-    group: "B组",
-    gender: "女",
-    grade: "二年级",
-    major: "软件工程",
-    campus: "北校区",
-    phone: "987654321",
-    qq: "654321",
-    identity: "正式队员",
-    email: "lisi@example.com",
-    wechat: "lisi",
-    branch: "炮兵",
-  },
-  {
-    id: "3",
-    name: "王五",
-    group: "A组",
-    gender: "男",
-    grade: "三年级",
-    major: "人工智能",
-    campus: "南校区",
-    identity: "正式队员",
-    email: "wangwu@example.com",
-    phone: "135246809",
-    qq: "234567",
-    wechat: "wangwu",
-    branch: "特种兵",
-  },
-  {
-    id: "4",
-    name: "赵六",
-    group: "B组",
-    gender: "女",
-    grade: "四年级",
-    identity: "正式队员",
-    email: "zhaoliu@example.com",
-    major: "网络安全",
-    campus: "北校区",
-    phone: "139876543",
-    qq: "765432",
-    wechat: "zhaoliu",
-    branch: "机械兵",
-  },
-  {
-    id: "5",
-    name: "孙七",
-    group: "C组",
-    gender: "男",
-    grade: "一年级",
-    major: "物联网",
-    campus: "西校区",
-    phone: "158963741",
-    qq: "876543",
-    wechat: "sunqi",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "sunqi@example.com",
-  },
-  {
-    id: "6",
-    name: "周八",
-    group: "A组",
-    gender: "女",
-    grade: "二年级",
-    major: "大数据",
-    campus: "南校区",
-    phone: "159753842",
-    qq: "435267",
-    wechat: "zhouba",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "zhouba@example.com",
-  },
-  {
-    id: "7",
-    name: "吴九",
-    group: "B组",
-    gender: "男",
-    grade: "三年级",
-    major: "信息管理",
-    campus: "北校区",
-    phone: "137951482",
-    qq: "546728",
-    wechat: "wujia",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "wujia@example.com",
-  },
-  {
-    id: "8",
-    name: "郑十",
-    group: "C组",
-    gender: "女",
-    grade: "四年级",
-    major: "物联网",
-    campus: "西校区",
-    phone: "139258741",
-    qq: "678321",
-    wechat: "zhengshi",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "zhengshi@example.com",
-  },
-  {
-    id: "9",
-    name: "王十一",
-    group: "A组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "南校区",
-    phone: "187654321",
-    qq: "432156",
-    wechat: "wangshiyi",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "wangshiyi@example.com",
-  },
-  {
-    id: "10",
-    name: "李十二",
-    group: "C组",
-    gender: "女",
-    grade: "三年级",
-    major: "人工智能",
-    campus: "西校区",
-    phone: "135879654",
-    qq: "125763",
-    wechat: "lishier",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "lishier@example.com",
-  },
-  {
-    id: "11",
-    name: "钱十三",
-    group: "A组",
-    gender: "男",
-    grade: "四年级",
-    major: "物联网",
-    campus: "南校区",
-    phone: "187654322",
-    qq: "777321",
-    wechat: "qianshisan",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "qianshisan@example.com",
-  },
-  {
-    id: "12",
-    name: "丁十四",
-    group: "B组",
-    gender: "女",
-    grade: "二年级",
-    major: "大数据",
-    campus: "北校区",
-    phone: "147852369",
-    qq: "888456",
-    wechat: "dingshisi",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "dingshisi@example.com",
-  },
-  {
-    id: "13",
-    name: "杨十五",
-    group: "C组",
-    gender: "男",
-    grade: "一年级",
-    major: "计算机",
-    campus: "西校区",
-    phone: "138741258",
-    qq: "999789",
-    wechat: "yangshiwu",
-    branch: "步兵",
-    identity: "正式队员",
-    email: "yangshiwu@example.com",
-  },
-  {
-    id: "14",
-    name: "吴十六",
-    group: "A组",
-    gender: "女",
-    grade: "三年级",
-    major: "信息管理",
-    campus: "南校区",
-    phone: "139753951",
-    qq: "111654",
-    wechat: "wushiliu",
-    branch: "炮兵",
-    identity: "正式队员",
-    email: "wushiliu@example.com",
-  },
-  {
-    id: "15",
-    name: "赵十七",
-    group: "B组",
-    gender: "男",
-    grade: "四年级",
-    major: "物联网",
-    campus: "北校区",
-    phone: "147963852",
-    qq: "222987",
-    wechat: "zhaoshiyi",
-    branch: "特种兵",
-    identity: "正式队员",
-    email: "zhaoshiyi@example.com",
-  },
-  {
-    id: "16",
-    name: "孙十八",
-    group: "C组",
-    gender: "女",
-    grade: "二年级",
-    major: "人工智能",
-    campus: "西校区",
-    phone: "187456321",
-    qq: "333432",
-    wechat: "sunshiba",
-    branch: "机械兵",
-    identity: "正式队员",
-    email: "sunshiba@example.com",
-  },
-]);
+const members = ref<Member[]>([]);
 
-const exportCSV = () => {
-  dataTable.value.exportCSV();
+onMounted(async () => {
+  try {
+    members.value = await memberApi.getList();
+  } catch (error) {
+    showToast('获取数据失败');
+  }
+});
+
+const exportCSV = async () => {
+  try {
+    const blob = await memberApi.export();
+    // ...保持原有下载逻辑不变
+  } catch (error) {
+    showToast('导出失败，请重试');
+  }
 };
 
 // 搜索
-const searchNames = (event: { query: string }) => {
-  const query = event.query.toLowerCase();
-  // 只更新建议列表
-  filteredNames.value = members.value
-    .filter((member) => member.name.toLowerCase().includes(query))
-    .map((member) => member.name);
+const searchNames = async (event: { query: string }) => {
+  try {
+    filteredNames.value = await memberApi.search({
+      q: event.query,
+      field: 'name'
+    });
+  } catch (error) {
+    filteredNames.value = [];
+  }
 };
 
 const searchGroups = (event: { query: string }) => {
@@ -856,39 +616,28 @@ const onAdvancedUpload = () => {
 };
 
 // 添加、编辑队员
-const saveMember = () => {
+const saveMember = async () => {
   submitted.value = true;
-
+  
   if (validateMember()) {
-    const index = members.value.findIndex((m) => m.id === member.value.id);
-    // 更新现有成员
-    if (index !== -1) {
-      members.value[index] = {
-        ...member.value,
-      };
-      showToast("编辑成功！");
-    } else {
-      // 添加新成员
-      members.value.push({ ...member.value });
-      showToast("添加成功！");
+    try {
+      if (member.value.id) {
+        await memberApi.update(member.value.id, member.value);
+        // 更新本地数据
+        const index = members.value.findIndex(m => m.id === member.value.id);
+        if (index !== -1) {
+          members.value[index] = { ...member.value };
+        }
+        showToast("编辑成功！");
+      } else {
+        const newMember = await memberApi.create(member.value);
+        members.value.push(newMember);
+        showToast("添加成功！");
+      }
+      memberDialog.value = false;
+    } catch (error) {
+      showToast('操作失败，请重试');
     }
-
-    memberDialog.value = false;
-    member.value = {
-      name: "",
-      gender: "",
-      grade: "",
-      id: "",
-      group: "",
-      identity: "",
-      branch: "",
-      campus: "",
-      major: "",
-      phone: "",
-      email: "",
-      qq: "",
-      wechat: "",
-    };
   }
 };
 
@@ -899,35 +648,30 @@ const hideDialog = () => {
 };
 
 // 删除队员
-const deleteMember = () => {
-  members.value = members.value.filter((m) => m.id !== member.value.id);
-  deleteMemberDialog.value = false;
-  member.value = {
-    name: "",
-    gender: "",
-    grade: "",
-    id: "",
-    group: "",
-    identity: "",
-    branch: "",
-    campus: "",
-    major: "",
-    phone: "",
-    email: "",
-    qq: "",
-    wechat: "",
-  };
-  showToast("删除成功！");
+const deleteMember = async () => {
+  try {
+    if (member.value.id) {
+      await memberApi.delete(member.value.id);
+      members.value = members.value.filter((m) => m.id !== member.value.id);
+      deleteMemberDialog.value = false;
+      showToast("删除成功！");
+    }
+  } catch (error) {
+    showToast('删除失败，请重试');
+  }
 };
 
 // 批量删除队员
-const deleteSelectedMembers = () => {
-  members.value = members.value.filter(
-    (member) => !selectedMembers.value.includes(member)
-  );
-  deleteMembersDialog.value = false;
-  selectedMembers.value = []; // 清空选中的队员
-  showToast("删除成功！");
+const deleteSelectedMembers = async () => {
+  try {
+    const ids = selectedMembers.value.map(m => m.id).filter(Boolean) as string[];
+    await memberApi.batchDelete(ids);
+    members.value = members.value.filter(m => !ids.includes(m.id!));
+    deleteMembersDialog.value = false;
+    showToast("批量删除成功！");
+  } catch (error) {
+    showToast('批量删除失败，请重试');
+  }
 };
 
 // 验证队员信息
