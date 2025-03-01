@@ -16,7 +16,7 @@
         @click="toggleFilterLoved"
       ></Button>
     </div>
-    <div class="card relative my-4 overflow-y-scroll flex-grow">
+    <div class="h-[calc(100vh-6.5rem)] relative my-4 overflow-y-scroll flex-grow scrollbar-hide">
       <div class="scroll-gradient top"></div>
       <div class="scroll-gradient bottom"></div>
       <Toast />
@@ -308,17 +308,6 @@ watch(
   background-color: #18181b;
   border-left: 4px solid #f5f5f5;
   transition: background-color 1s ease, border-left 1s ease; /* 添加背景颜色变化的过渡 */
-}
-
-/* 去除滚动条样式 */
-.card {
-  height: calc(100vh - 6.5rem);
-  scrollbar-width: none; /* For Firefox */
-  -ms-overflow-style: none; /* For IE and Edge */
-}
-
-.card::-webkit-scrollbar {
-  display: none; /* For Chrome, Safari, and Edge */
 }
 
 .scroll-gradient {

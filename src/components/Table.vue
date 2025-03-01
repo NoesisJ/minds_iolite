@@ -9,7 +9,7 @@
     scrollable
     :scrollHeight="scrollHeight"
     :tableStyle="tableStyle"
-    class="overflow-auto hide-scrollbar"
+    class="overflow-auto scrollbar-hide"
     v-bind="$attrs"
   >
     <!-- 多选列 -->
@@ -107,14 +107,3 @@ defineExpose({
   dt,
 });
 </script>
-
-<style scoped>
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.hide-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-</style>

@@ -233,7 +233,7 @@
       </Dialog>
   
       <!-- 物资表格 -->
-      <div class="contentMaterial w-full overflow-auto hide-scrollbar">
+      <div class="contentMaterial w-full overflow-auto scrollbar-hide">
         <Table
           ref="dataTable"
           :data="finalFilteredItems"
