@@ -1,43 +1,40 @@
 <template>
   <div class="container w-fit h-[100vh] bg-[#323259] py-[.3rem] px-[.4rem]">
     <!-- <hd-scroll> -->
-      <PanelMenu :model="navMenus" class="w-40 md:w-40">
-        <template #item="{ item }">
-          <router-link
-            v-if="item.route"
-            v-slot="{ href, navigate }"
-            :to="item.route"
-            custom
-          >
-            <a
-              class="flex items-center cursor-pointer px-2 py-1"
-              :href="href"
-              @click="navigate"
-            >
-              <span :class="item.icon" />
-              <span class="ml-2">{{ item.label }}</span>
-            </a>
-          </router-link>
+    <PanelMenu :model="navMenus" class="w-40 md:w-40">
+      <template #item="{ item }">
+        <router-link
+          v-if="item.route"
+          v-slot="{ href, navigate }"
+          :to="item.route"
+          custom
+        >
           <a
-            v-else
             class="flex items-center cursor-pointer px-2 py-1"
+            :href="href"
+            @click="navigate"
           >
             <span :class="item.icon" />
-            <span class="ml-6">{{ item.label }}</span>
-            <span
-              v-if="item.items"
-              class="pi pi-angle-down text-primary ml-auto"
-            />
+            <span class="ml-2">{{ item.label }}</span>
           </a>
-        </template>
-      </PanelMenu>
+        </router-link>
+        <a v-else class="flex items-center cursor-pointer px-2 py-1">
+          <span :class="item.icon" />
+          <span class="ml-6">{{ item.label }}</span>
+          <span
+            v-if="item.items"
+            class="pi pi-angle-down text-primary ml-auto"
+          />
+        </a>
+      </template>
+    </PanelMenu>
     <!-- </hd-scroll> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
 // import hdScroll from "../components/hdScroll.vue";
 import PanelMenu from "primevue/panelmenu";
 
@@ -59,7 +56,7 @@ const navMenus = ref([
     command: () => {
       activeItem.value = "人员管理";
       router.push("/information");
-    }
+    },
   },
   {
     label: "人员分布",
@@ -68,7 +65,7 @@ const navMenus = ref([
     command: () => {
       activeItem.value = "人员分布";
       router.push("/infoCharts");
-    }
+    },
   },
   {
     label: "财务管理",
@@ -83,8 +80,8 @@ const navMenus = ref([
         label: "财务统计",
         icon: "pi pi-chart-pie",
         route: "/finance/charts",
-      }
-    ]
+      },
+    ],
   },
   {
     label: "物资管理",
@@ -99,8 +96,8 @@ const navMenus = ref([
         label: "入库审批",
         icon: "pi pi-filter",
         route: "/material/requestLogs",
-      }
-    ]
+      },
+    ],
   },
   {
     label: "报名管理",
@@ -108,8 +105,8 @@ const navMenus = ref([
     command: () => {
       activeItem.value = "报名管理";
       router.push("/signUp");
-    }
-  }
+    },
+  },
 ]);
 
 // 保存激活项

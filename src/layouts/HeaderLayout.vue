@@ -224,7 +224,8 @@ const useNotificationsState = createGlobalState(() =>
 );
 const notifications = useNotificationsState(); // 使用 localStorage 中存储的通知队列
 const unreadNotifications = computed(() => {
-  return notifications.value.filter((notification) => !notification.read).length;
+  return notifications.value.filter((notification) => !notification.read)
+    .length;
 });
 // 从 localStorage 读取未读设置数
 const useSettingsState = createGlobalState(() =>

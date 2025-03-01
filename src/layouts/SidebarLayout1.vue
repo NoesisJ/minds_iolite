@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 import hdScroll from "../components/hdScroll.vue";
 // 定义接口
 interface MenuItem {
@@ -51,7 +51,7 @@ interface MenuItem {
 
 // 选项模型
 const model = ref<MenuItem[]>([
-{
+  {
     label: "人员管理",
     icon: "pi pi-users",
     to: "/InformationView",
@@ -68,49 +68,55 @@ const model = ref<MenuItem[]>([
       { label: "Test01", icon: "pi pi-fw pi-pencil", to: "/Test01" },
       { label: "Test02", icon: "pi pi-fw pi-pencil", to: "/Test02" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  },{
+  },
+  {
     label: "选项3",
     icon: "pi pi-fw pi-home",
     items: [
       { label: "子选项3.1", icon: "pi pi-fw pi-pencil", to: "/subroute3-1" },
       { label: "子选项3.2", icon: "pi pi-fw pi-pencil", to: "/subroute3-2" },
     ],
-  }
+  },
 ]);
 // 如果有子菜单则展开
 const submenuOpen = ref<string | null>(null);
@@ -155,13 +161,12 @@ const items = computed(() => model.value);
 .nav-item:hover {
   color: rgb(168, 132, 244);
 }
-.nav-childItem{
+.nav-childItem {
   margin-top: 10px;
-  padding:  10.4px 0;
+  padding: 10.4px 0;
 }
 
 .nav-item i {
   margin-right: 1em;
 }
-
 </style>

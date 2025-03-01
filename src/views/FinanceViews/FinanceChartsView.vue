@@ -1,6 +1,6 @@
 <template>
   <div class="chartsGroup">
-    <div ref="monthChartContainer" style="width: 50%; height: 100vh "></div>
+    <div ref="monthChartContainer" style="width: 50%; height: 100vh"></div>
     <div ref="pieChartContainer" style="width: 50%; height: 100vh"></div>
   </div>
 </template>
@@ -19,14 +19,14 @@ onMounted(() => {
 
     const option = {
       legend: {
-        top: '2%',          // 设置图例距顶部的距离
-        left: 'center',    // 设置图例居中
+        top: "2%", // 设置图例距顶部的距离
+        left: "center", // 设置图例居中
         textStyle: {
-        fontFamily: 'Arial',  // 设置字体
-        fontSize: 14,         // 设置字体大小
-        fontWeight: 'normal', // 设置字体粗细
-        color: '#fff',        // 设置字体颜色
-    },
+          fontFamily: "Arial", // 设置字体
+          fontSize: 14, // 设置字体大小
+          fontWeight: "normal", // 设置字体粗细
+          color: "#fff", // 设置字体颜色
+        },
       },
       tooltip: {
         trigger: "axis",
@@ -46,10 +46,9 @@ onMounted(() => {
       xAxis: { type: "category" },
       yAxis: { gridIndex: 0 },
       // 设置曲线图的位置
-      grid: { 
+      grid: {
         top: "45%",
-        bottom: "15%", 
-        
+        bottom: "15%",
       },
       series: [
         {

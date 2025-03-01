@@ -496,7 +496,7 @@ onMounted(async () => {
   try {
     members.value = await memberApi.getList();
   } catch (error) {
-    showToast('获取数据失败');
+    showToast("获取数据失败");
   }
 });
 
@@ -505,7 +505,7 @@ const exportCSV = async () => {
     const blob = await memberApi.export();
     // ...保持原有下载逻辑不变
   } catch (error) {
-    showToast('导出失败，请重试');
+    showToast("导出失败，请重试");
   }
 };
 
@@ -514,7 +514,7 @@ const searchNames = async (event: { query: string }) => {
   try {
     filteredNames.value = await memberApi.search({
       q: event.query,
-      field: 'name'
+      field: "name",
     });
   } catch (error) {
     filteredNames.value = [];
@@ -524,7 +524,9 @@ const searchNames = async (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueGroups = [...new Set(members.value.map((member) => member.group))];
+  const uniqueGroups = [
+    ...new Set(members.value.map((member) => member.group)),
+  ];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -533,7 +535,9 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueBranches = [...new Set(members.value.map((member) => member.branch))];
+  const uniqueBranches = [
+    ...new Set(members.value.map((member) => member.branch)),
+  ];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
@@ -543,21 +547,21 @@ const finalFilteredMembers = computed(() => {
 
   // 按姓名过滤
   if (nameValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.name.toLowerCase().includes(nameValue.value.toLowerCase())
     );
   }
 
   // 按组别过滤
   if (groupValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.group.toLowerCase().includes(groupValue.value.toLowerCase())
     );
   }
 
   // 按兵种过滤
   if (branchValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.branch.toLowerCase().includes(branchValue.value.toLowerCase())
     );
   }
@@ -618,13 +622,13 @@ const onAdvancedUpload = () => {
 // 添加、编辑队员
 const saveMember = async () => {
   submitted.value = true;
-  
+
   if (validateMember()) {
     try {
       if (member.value.id) {
         await memberApi.update(member.value.id, member.value);
         // 更新本地数据
-        const index = members.value.findIndex(m => m.id === member.value.id);
+        const index = members.value.findIndex((m) => m.id === member.value.id);
         if (index !== -1) {
           members.value[index] = { ...member.value };
         }
@@ -636,7 +640,7 @@ const saveMember = async () => {
       }
       memberDialog.value = false;
     } catch (error) {
-      showToast('操作失败，请重试');
+      showToast("操作失败，请重试");
     }
   }
 };
@@ -657,20 +661,22 @@ const deleteMember = async () => {
       showToast("删除成功！");
     }
   } catch (error) {
-    showToast('删除失败，请重试');
+    showToast("删除失败，请重试");
   }
 };
 
 // 批量删除队员
 const deleteSelectedMembers = async () => {
   try {
-    const ids = selectedMembers.value.map(m => m.id).filter(Boolean) as string[];
+    const ids = selectedMembers.value
+      .map((m) => m.id)
+      .filter(Boolean) as string[];
     await memberApi.batchDelete(ids);
-    members.value = members.value.filter(m => !ids.includes(m.id!));
+    members.value = members.value.filter((m) => !ids.includes(m.id!));
     deleteMembersDialog.value = false;
     showToast("批量删除成功！");
   } catch (error) {
-    showToast('批量删除失败，请重试');
+    showToast("批量删除失败，请重试");
   }
 };
 

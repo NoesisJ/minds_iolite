@@ -33,7 +33,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "notifications",
         name: "notifications",
-        component: () => import("../views/FunctionalViews/NotificationsView.vue"),
+        component: () =>
+          import("../views/FunctionalViews/NotificationsView.vue"),
       },
       {
         path: "settings",

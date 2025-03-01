@@ -392,7 +392,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-import { financeApi, type Item } from '../../api/finance';
+import { financeApi, type Item } from "../../api/finance";
 
 const toast = useToast();
 const dataTable = ref();
@@ -512,17 +512,17 @@ const submitted = ref(false);
 // 在item定义后添加计算属性
 const unitPriceStr = computed<string>({
   get: () => item.value.unitPrice.toString(),
-  set: (val: string) => item.value.unitPrice = parseFloat(val) || 0
+  set: (val: string) => (item.value.unitPrice = parseFloat(val) || 0),
 });
 
 const quantityStr = computed({
   get: () => item.value.quantity.toString(),
-  set: (val) => item.value.quantity = parseInt(val) || 0
+  set: (val) => (item.value.quantity = parseInt(val) || 0),
 });
 
 const shippingCostStr = computed({
   get: () => item.value.shippingCost.toString(),
-  set: (val) => item.value.shippingCost = parseFloat(val) || 0
+  set: (val) => (item.value.shippingCost = parseFloat(val) || 0),
 });
 
 // 添加生命周期钩子
@@ -530,19 +530,19 @@ onMounted(async () => {
   try {
     items.value = await financeApi.getList();
   } catch (error) {
-    showToast('获取数据失败');
+    showToast("获取数据失败");
   }
 });
 
 // 修改保存方法
 const saveItem = async () => {
   submitted.value = true;
-  
+
   if (validateItem()) {
     try {
       if (item.value.id) {
         await financeApi.update(item.value.id, item.value);
-        const index = items.value.findIndex(i => i.id === item.value.id);
+        const index = items.value.findIndex((i) => i.id === item.value.id);
         if (index !== -1) {
           items.value[index] = { ...item.value };
         }
@@ -553,7 +553,7 @@ const saveItem = async () => {
       showToast("操作成功！");
       itemDialog.value = false;
     } catch (error) {
-      showToast('操作失败');
+      showToast("操作失败");
     }
   }
 };
@@ -564,7 +564,7 @@ const exportCSV = async () => {
     const blob = await financeApi.export();
     // 保持原有下载逻辑
   } catch (error) {
-    showToast('导出失败');
+    showToast("导出失败");
   }
 };
 
@@ -590,7 +590,9 @@ const searchNames = (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueGroups = [...new Set(items.value.map((item: Item) => item.group))];
+  const uniqueGroups = [
+    ...new Set(items.value.map((item: Item) => item.group)),
+  ];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -603,7 +605,9 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueBranches = [...new Set(items.value.map((item: Item) => item.branch))];
+  const uniqueBranches = [
+    ...new Set(items.value.map((item: Item) => item.branch)),
+  ];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );

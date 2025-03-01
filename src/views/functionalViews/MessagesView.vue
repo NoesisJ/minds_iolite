@@ -16,7 +16,9 @@
         @click="toggleFilterLoved"
       ></Button>
     </div>
-    <div class="h-[calc(100vh-6.5rem)] relative my-4 overflow-y-scroll flex-grow scrollbar-hide">
+    <div
+      class="h-[calc(100vh-6.5rem)] relative my-4 overflow-y-scroll flex-grow scrollbar-hide"
+    >
       <div class="scroll-gradient top"></div>
       <div class="scroll-gradient bottom"></div>
       <Toast />
@@ -267,7 +269,10 @@ watch(
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 1s ease, transform 0.5s ease, background-color 1s ease,
+  transition:
+    opacity 1s ease,
+    transform 0.5s ease,
+    background-color 1s ease,
     border-left 1s ease; /* 添加背景色的平滑过渡 */
 }
 
@@ -283,7 +288,9 @@ watch(
 
 .fade-move-enter-active,
 .fade-move-leave-active {
-  transition: all 0.5s ease, background-color 1s ease;
+  transition:
+    all 0.5s ease,
+    background-color 1s ease;
 }
 
 .fade-move-enter,
@@ -294,7 +301,10 @@ watch(
 
 /* 移动过渡 */
 .fade-move-move {
-  transition: transform 0.5s, background-color 1s ease, border-left 1s ease; /* 包含背景色的过渡 */
+  transition:
+    transform 0.5s,
+    background-color 1s ease,
+    border-left 1s ease; /* 包含背景色的过渡 */
 }
 
 /* 设置未读消息的背景颜色 */
@@ -307,7 +317,9 @@ watch(
 .read-message {
   background-color: #18181b;
   border-left: 4px solid #f5f5f5;
-  transition: background-color 1s ease, border-left 1s ease; /* 添加背景颜色变化的过渡 */
+  transition:
+    background-color 1s ease,
+    border-left 1s ease; /* 添加背景颜色变化的过渡 */
 }
 
 .scroll-gradient {
