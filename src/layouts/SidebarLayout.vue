@@ -1,5 +1,5 @@
 <template>
-  <div class="container w-fit h-[100vh] bg-[#323259] py-[.3rem] px-[.4rem]">
+  <div class="container w-fit bg-[#323259] py-[.3rem] px-[.4rem]">
     <!-- <hd-scroll> -->
     <PanelMenu :model="navMenus" class="w-40 md:w-40">
       <template #item="{ item }">

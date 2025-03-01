@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
+#app {
+  user-select: none;
+  shape-outside: margin-box;
+}
+
+body {
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
 .scrollbar-hide {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */

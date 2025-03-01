@@ -1,7 +1,7 @@
 <template>
-  <div class="layoutHub flex flex-col h-screen w-screen">
+  <div class="flex flex-col h-screen w-screen">
     <HeaderLayout />
-    <ContentLayout />
+    <ContentLayout class="flex-1" />
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="contentLayout flex flex-row">
-    <SidebarLayout />
+  <div class="flex flex-row">
+    <SidebarLayout class="h-full" />
     <!-- Main content -->
     <div class="flex-1">
       <router-view v-slot="{ Component }">

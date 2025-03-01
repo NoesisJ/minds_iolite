@@ -1,84 +1,82 @@
 <template>
-  <div class="header-layout z-10 shadow-xl">
-    <div
-      class="h-[4.75rem] p-2 pl-[1.25rem] bg-[#323259] flex justify-between items-center"
-      data-tauri-drag-region
-    >
-      <div class="flex flex-row items-center space-x-8 pl-1">
-        <!-- Page Name -->
-        <i
-          class="pi pi-bars pr-[2rem] border-r-[2px] border-[#1b1b38] text-[#b4b4db]"
-          data-tauri-drag-region
-          style="font-size: 1.5rem"
-        ></i>
-        <h1
-          class="text-large"
-          style="font-size: 1.5rem; font-family: inter; font-weight: 400"
-          data-tauri-drag-region
-        >
-          吉甲终端
-        </h1>
-      </div>
+  <div
+    class="header-layout z-10 shadow-xl py-4 px-[1.25rem] bg-[#323259] flex justify-between items-center"
+    data-tauri-drag-region
+  >
+    <div class="flex flex-row items-center space-x-8 pl-1">
+      <!-- Page Name -->
+      <i
+        class="pi pi-bars pr-[2rem] border-r-[2px] border-[#1b1b38] text-[#b4b4db]"
+        data-tauri-drag-region
+        style="font-size: 1.5rem"
+      ></i>
+      <h1
+        class="text-large"
+        style="font-size: 1.5rem; font-family: inter; font-weight: 400"
+        data-tauri-drag-region
+      >
+        吉甲终端
+      </h1>
+    </div>
 
-      <!-- Message,settings,etc -->
-      <div class="flex flex-row space-x-6 ml-auto mr-20 mt-2 text-[#b4b4db]">
-        <OverlayBadge
-          :value="unreadMessages"
-          severity="info"
-          size="small"
-          class="cursor-pointer"
-          @click="openMessageWindow"
-        >
-          <i class="pi pi-envelope" style="font-size: 1.5rem"></i>
-        </OverlayBadge>
+    <!-- Message,settings,etc -->
+    <div class="flex flex-row space-x-6 ml-auto mr-20 mt-2 text-[#b4b4db]">
+      <OverlayBadge
+        :value="unreadMessages"
+        severity="info"
+        size="small"
+        class="cursor-pointer"
+        @click="openMessageWindow"
+      >
+        <i class="pi pi-envelope" style="font-size: 1.5rem"></i>
+      </OverlayBadge>
 
-        <Divider layout="vertical" />
+      <Divider layout="vertical" />
 
-        <OverlayBadge
-          :value="unreadNotifications"
-          severity="info"
-          size="small"
-          class="cursor-pointer"
-          @click="openNotificationWindow"
-        >
-          <i class="pi pi-bell" style="font-size: 1.5rem"></i>
-        </OverlayBadge>
+      <OverlayBadge
+        :value="unreadNotifications"
+        severity="info"
+        size="small"
+        class="cursor-pointer"
+        @click="openNotificationWindow"
+      >
+        <i class="pi pi-bell" style="font-size: 1.5rem"></i>
+      </OverlayBadge>
 
-        <Divider layout="vertical" />
+      <Divider layout="vertical" />
 
-        <OverlayBadge
-          :value="unreadSettings"
-          severity="info"
-          size="small"
-          class="cursor-pointer"
-          @click="openSettingsWindow"
-        >
-          <i class="pi pi-cog" style="font-size: 1.5rem"></i>
-        </OverlayBadge>
-      </div>
+      <OverlayBadge
+        :value="unreadSettings"
+        severity="info"
+        size="small"
+        class="cursor-pointer"
+        @click="openSettingsWindow"
+      >
+        <i class="pi pi-cog" style="font-size: 1.5rem"></i>
+      </OverlayBadge>
+    </div>
 
-      <!-- Native Buttons -->
-      <div v-if="isTauri">
-        <Button
-          icon="pi pi-minus"
-          aria-label="Minimize"
-          class="native-button"
-          @click="getCurrentWebviewWindow().minimize()"
-        />
-        <Button
-          :icon="maximizeIcon"
-          aria-label="Maximize"
-          class="native-button"
-          @click="toggleMaximize"
-        />
+    <!-- Native Buttons -->
+    <div v-if="isTauri">
+      <Button
+        icon="pi pi-minus"
+        aria-label="Minimize"
+        class="native-button"
+        @click="getCurrentWebviewWindow().minimize()"
+      />
+      <Button
+        :icon="maximizeIcon"
+        aria-label="Maximize"
+        class="native-button"
+        @click="toggleMaximize"
+      />
 
-        <Button
-          icon="pi pi-times"
-          aria-label="Close"
-          class="native-button"
-          @click="getCurrentWebviewWindow().close()"
-        />
-      </div>
+      <Button
+        icon="pi pi-times"
+        aria-label="Close"
+        class="native-button"
+        @click="getCurrentWebviewWindow().close()"
+      />
     </div>
   </div>
 </template>
