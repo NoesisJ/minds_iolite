@@ -1,18 +1,18 @@
 <template>
   <div
-    class="header-layout z-10 shadow-xl py-4 px-[1.25rem] bg-[#323259] flex justify-between items-center"
+    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[#b8d0df] flex justify-between items-center"
     data-tauri-drag-region
   >
-    <div class="flex flex-row items-center space-x-8 pl-1">
+    <div class="flex flex-row items-center space-x-6">
       <!-- Page Name -->
       <i
-        class="pi pi-bars pr-[2rem] border-r-[2px] border-[#1b1b38] text-[#b4b4db]"
+        class="pi pi-bars text-[#114b79]"
         data-tauri-drag-region
         style="font-size: 1.5rem"
       ></i>
+      <div class="h-7 w-[1.7px] bg-[#114b79] rounded-md"></div>
       <h1
-        class="text-large"
-        style="font-size: 1.5rem; font-family: inter; font-weight: 400"
+        class="text-2xl text-[#114b79] font-[500]"
         data-tauri-drag-region
       >
         吉甲终端
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Message,settings,etc -->
-    <div class="flex flex-row space-x-6 ml-auto mr-20 mt-2 text-[#b4b4db]">
+    <div class="flex flex-row space-x-3 ml-auto mr-20 mt-3 text-[#114b79]">
       <OverlayBadge
         :value="unreadMessages"
         severity="info"
@@ -28,7 +28,7 @@
         class="cursor-pointer"
         @click="openMessageWindow"
       >
-        <i class="pi pi-envelope" style="font-size: 1.5rem"></i>
+        <i class="pi pi-envelope" style="font-size: 1.2rem"></i>
       </OverlayBadge>
 
       <Divider layout="vertical" />
@@ -40,7 +40,7 @@
         class="cursor-pointer"
         @click="openNotificationWindow"
       >
-        <i class="pi pi-bell" style="font-size: 1.5rem"></i>
+        <i class="pi pi-bell" style="font-size: 1.2rem"></i>
       </OverlayBadge>
 
       <Divider layout="vertical" />
@@ -52,58 +52,51 @@
         class="cursor-pointer"
         @click="openSettingsWindow"
       >
-        <i class="pi pi-cog" style="font-size: 1.5rem"></i>
+        <i class="pi pi-cog" style="font-size: 1.2rem"></i>
       </OverlayBadge>
     </div>
 
     <!-- Native Buttons -->
-    <div v-if="isTauri">
+    <div v-if="isTauri" class="flex flex-row space-x-3">
       <Button
         icon="pi pi-minus"
         aria-label="Minimize"
         class="native-button"
-        @click="getCurrentWebviewWindow().minimize()"
+        @click="appStore.minimizeWindow"
       />
       <Button
-        :icon="maximizeIcon"
+        :icon="isMaximized ? 'pi pi-window-minimize' : 'pi pi-expand'"
         aria-label="Maximize"
         class="native-button"
-        @click="toggleMaximize"
+        @click="appStore.toggleMaximizeWindow"
       />
 
       <Button
         icon="pi pi-times"
         aria-label="Close"
         class="native-button"
-        @click="getCurrentWebviewWindow().close()"
+        @click="appStore.closeWindow"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { computed } from "vue";
 import Button from "primevue/button";
 import OverlayBadge from "primevue/overlaybadge";
 import Divider from "primevue/divider";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { createGlobalState, useStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
+import { useApp } from "@/hooks/useApp";
+import { storeToRefs } from "pinia";
+
+const appStore = useApp();
+const { isTauri, isMaximized } = storeToRefs(appStore);
+
 const router = useRouter();
-const isTauri = (window as any).__TAURI__;
-const maximizeIcon = ref("pi pi-expand"); // 初始图标
 // 组件挂载时检查窗口最大化状态，并设置初始图标
-onMounted(async () => {
-  if (isTauri) {
-    // console.log("Running in Tauri");
-    const webviewWindow = getCurrentWebviewWindow();
-    const isMaximized = await webviewWindow.isMaximized();
-    maximizeIcon.value = isMaximized ? "pi pi-window-minimize" : "pi pi-expand";
-  } else {
-    // console.log("Running in browser");
-  }
-});
 
 // 从 localStorage 读取整个消息队列
 const useMessagesState = createGlobalState(() =>
@@ -226,6 +219,7 @@ const unreadNotifications = computed(() => {
     .length;
 });
 // 从 localStorage 读取未读设置数
+// C-spell-checker:disable
 const useSettingsState = createGlobalState(() =>
   useStorage("settings", [
     {
@@ -298,19 +292,6 @@ const unreadSettings = computed(() => {
 //   unreadSettings.value = settings ? parseInt(settings) : unreadSettings.value;
 // };
 
-// 切换窗口大小
-const toggleMaximize = async () => {
-  const window = getCurrentWebviewWindow();
-  const isMaximized = await window.isMaximized(); // 等待 Promise 完成
-
-  if (isMaximized) {
-    window.unmaximize();
-    maximizeIcon.value = "pi pi-expand";
-  } else {
-    window.maximize();
-    maximizeIcon.value = "pi pi-clone";
-  }
-};
 // 打开消息窗口
 const openMessageWindow = () => {
   router.push("/functional/messages");
@@ -329,8 +310,7 @@ const openSettingsWindow = () => {
 .native-button {
   height: 2.125rem;
   width: 2.125rem;
-  margin-right: 0.5rem;
-  background-color: #a16eff;
+  background-color: #00668a;
   border: none;
   color: #ffffff;
 }

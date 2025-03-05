@@ -186,3 +186,9 @@ defineExpose({
   onCancel,
 });
 </script>
+
+<style scoped>
+.p-dialog {
+  --p-dialog-background: #f8f8fa;
+}
+</style>

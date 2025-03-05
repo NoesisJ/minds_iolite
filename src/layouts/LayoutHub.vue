@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-screen w-screen">
-    <HeaderLayout />
-    <ContentLayout class="flex-1" />
+  <div class="flex flex-col h-full w-full">
+    <HeaderLayout class="w-full" />
+    <ContentLayout class="w-full h-full" />
   </div>
 </template>
 

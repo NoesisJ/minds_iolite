@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "minds_iolite",
+        "title": "main",
         "width": 1260,
         "height": 800,
         "minWidth": 1260,

@@ -2,7 +2,7 @@
   <div class="flex flex-row">
     <SidebarLayout class="h-full" />
     <!-- Main content -->
-    <div class="flex-1">
+    <div class="w-[calc(100%-var(--sidebar-width))] h-full p-3">
       <router-view v-slot="{ Component }">
         <transition name="slide-fade" mode="out-in">
           <component :is="Component" />

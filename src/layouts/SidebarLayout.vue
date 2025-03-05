@@ -1,7 +1,7 @@
 <template>
-  <div class="container w-fit bg-[#323259] py-[.3rem] px-[.4rem]">
+  <div class="w-[var(--sidebar-width)] bg-[#b8d0df] border-r-[1px] border-[#77a3be] py-3">
     <!-- <hd-scroll> -->
-    <PanelMenu :model="navMenus" class="w-40 md:w-40">
+    <PanelMenu :model="navMenus" class="w-40 mx-auto">
       <template #item="{ item }">
         <router-link
           v-if="item.route"
@@ -119,7 +119,7 @@ watch(activeItem, (newItem) => {
 
 <style scoped>
 .p-panelmenu {
-  gap: 0.15rem;
+  gap: 0.4rem;
 }
 
 .p-panelmenu-panel {
@@ -127,6 +127,8 @@ watch(activeItem, (newItem) => {
 }
 
 .p-panelmenu {
-  --p-panelmenu-item-focus-background: #a16eff;
+  --p-panelmenu-panel-background: #a2c6dc;
+  --p-panelmenu-panel-border-color: #77a3be;
+  --p-panelmenu-item-focus-background: #65aedf;
 }
 </style>

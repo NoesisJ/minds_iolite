@@ -11,6 +11,10 @@ body,
   shape-outside: margin-box;
 }
 
+:root {
+  --sidebar-width: 11rem;
+}
+
 body {
   overflow: hidden;
   user-select: none;
