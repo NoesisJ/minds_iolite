@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: "https://example.com/api",
-  timeout: 10000,
+  baseURL: 'http://localhost:8080/api',
+  timeout: 10000
 });
 
 // 统一错误处理
 const handleError = (error: unknown) => {
-  console.error("API Error:", error);
+  console.error('API Error:', error);
   throw error;
 };
 
@@ -15,7 +15,7 @@ export const memberApi = {
   // 获取成员列表
   getList: async () => {
     try {
-      const { data } = await api.get("/members");
+      const { data } = await api.get('/members');
       return data;
     } catch (error) {
       return handleError(error);
@@ -35,7 +35,7 @@ export const memberApi = {
   // 创建成员
   create: async (member: Member) => {
     try {
-      const { data } = await api.post("/members", member);
+      const { data } = await api.post('/members', member);
       return data;
     } catch (error) {
       return handleError(error);
@@ -65,7 +65,7 @@ export const memberApi = {
   // 批量删除
   batchDelete: async (ids: string[]) => {
     try {
-      await api.delete("/members/batch", { data: { ids } });
+      await api.delete('/members/batch', { data: { ids } });
       return true;
     } catch (error) {
       return handleError(error);
@@ -75,8 +75,8 @@ export const memberApi = {
   // 导出CSV
   export: async () => {
     try {
-      const response = await api.get("/members/export", {
-        responseType: "blob",
+      const response = await api.get('/members/export', {
+        responseType: 'blob'
       });
       return response.data;
     } catch (error) {
@@ -87,12 +87,12 @@ export const memberApi = {
   // 搜索建议
   search: async (params: { q: string; field: string }) => {
     try {
-      const { data } = await api.get("/members/search", { params });
+      const { data } = await api.get('/members/search', { params });
       return data;
     } catch (error) {
       return handleError(error);
     }
-  },
+  }
 };
 
 export type Member = {

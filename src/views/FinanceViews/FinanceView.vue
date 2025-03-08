@@ -365,7 +365,7 @@
     </Dialog>
 
     <!-- 物资表格 -->
-    <div class="contentMaterial w-full overflow-auto scrollbar-hide">
+    <div class="contentMaterial w-full overflow-auto hide-scrollbar">
       <!-- 使用最终过滤后的数据 -->
       <Table
         ref="dataTable"
@@ -392,7 +392,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-import { financeApi, type Item } from "../../api/finance";
+import { financeApi, type Item, type FinancialItem } from '../../api/finance';
 
 const toast = useToast();
 const dataTable = ref();
@@ -409,18 +409,8 @@ const filteredBranches = ref<string[]>([]);
 // 表格选中项
 const selectedItems = ref<Item[]>([]);
 
-// 添加、修改队员下拉框数据
-const genders = ref([
-  { name: "男", code: "M" },
-  { name: "女", code: "FM" },
-]);
-const years = ref([
-  { name: "2020", code: "1" },
-  { name: "2021", code: "2" },
-  { name: "2022", code: "3" },
-  { name: "2023", code: "4" },
-  { name: "2024", code: "5" },
-]);
+// 添加、修改下拉框数据
+// 年份下拉框数据已移除，因为未使用
 const groups = ref([
   { name: "机械组", code: "NY" },
   { name: "AI组", code: "RM" },
@@ -443,23 +433,7 @@ const campuses = ref([
   { name: "南湖", code: "RM" },
   { name: "南岭", code: "LDN" },
 ]);
-const majors = ref([
-  { name: "计算机", code: "NY" },
-  { name: "软件工程", code: "RM" },
-  { name: "人工智能", code: "LDN" },
-  { name: "网络安全", code: "IST" },
-  { name: "物联网", code: "PRS" },
-  { name: "大数据", code: "WTF" },
-  { name: "信息管理", code: "WTF" },
-]);
-const identities = ref([
-  { name: "梯队队员", code: "NY" },
-  { name: "正式队员", code: "RM" },
-  { name: "组长", code: "LDN" },
-  { name: "已退队", code: "IST" },
-  { name: "已毕业", code: "PRS" },
-  { name: "已转专业", code: "WTF" },
-]);
+// 专业下拉框数据已移除，因为未使用
 
 // 列配置
 const columns = [
@@ -512,17 +486,17 @@ const submitted = ref(false);
 // 在item定义后添加计算属性
 const unitPriceStr = computed<string>({
   get: () => item.value.unitPrice.toString(),
-  set: (val: string) => (item.value.unitPrice = parseFloat(val) || 0),
+  set: (val: string) => item.value.unitPrice = parseFloat(val) || 0
 });
 
 const quantityStr = computed({
   get: () => item.value.quantity.toString(),
-  set: (val) => (item.value.quantity = parseInt(val) || 0),
+  set: (val) => item.value.quantity = parseInt(val) || 0
 });
 
 const shippingCostStr = computed({
   get: () => item.value.shippingCost.toString(),
-  set: (val) => (item.value.shippingCost = parseFloat(val) || 0),
+  set: (val) => item.value.shippingCost = parseFloat(val) || 0
 });
 
 // 添加生命周期钩子
@@ -530,41 +504,66 @@ onMounted(async () => {
   try {
     items.value = await financeApi.getList();
   } catch (error) {
-    showToast("获取数据失败");
+    showToast('获取数据失败');
   }
 });
 
 // 修改保存方法
 const saveItem = async () => {
   submitted.value = true;
-
+  
   if (validateItem()) {
     try {
+      // 将Item类型转换为FinancialItem类型
+      const financialItem: FinancialItem = {
+        id: item.value.id,
+        title: item.value.name,
+        amount: item.value.totalPrice,
+        type: "支出", // 默认为支出类型
+        category: item.value.branch,
+        date: item.value.date,
+        paymentMethod: "其他", // 默认支付方式
+        description: `${item.value.model} - ${item.value.remarks}`,
+        responsible: item.value.purchaser,
+        project: item.value.project,
+        receipt: item.value.link,
+        status: "已完成" // 默认状态
+      };
+      
       if (item.value.id) {
-        await financeApi.update(item.value.id, item.value);
-        const index = items.value.findIndex((i) => i.id === item.value.id);
+        await financeApi.update(item.value.id, financialItem);
+        const index = items.value.findIndex(i => i.id === item.value.id);
         if (index !== -1) {
           items.value[index] = { ...item.value };
         }
       } else {
-        const newItem = await financeApi.create(item.value);
+        const newItem = await financeApi.create(financialItem);
         items.value.push(newItem);
       }
       showToast("操作成功！");
       itemDialog.value = false;
     } catch (error) {
-      showToast("操作失败");
+      showToast('操作失败');
     }
   }
 };
 
-// 修改导出方法
+// 导出CSV方法
 const exportCSV = async () => {
   try {
     const blob = await financeApi.export();
-    // 保持原有下载逻辑
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `财务数据_${formatDate(new Date())}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    showToast('导出成功');
   } catch (error) {
-    showToast("导出失败");
+    showToast('导出失败', 'error', '错误');
   }
 };
 
@@ -590,9 +589,7 @@ const searchNames = (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueGroups = [
-    ...new Set(items.value.map((item: Item) => item.group)),
-  ];
+  const uniqueGroups = [...new Set(items.value.map((item: Item) => item.group))];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -605,9 +602,7 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueBranches = [
-    ...new Set(items.value.map((item: Item) => item.branch)),
-  ];
+  const uniqueBranches = [...new Set(items.value.map((item: Item) => item.branch))];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
@@ -618,26 +613,6 @@ const searchBranches = (event: { query: string }) => {
 };
 
 // 时间搜索函数
-const searchByDateRange = () => {
-  if (!startDate.value || !endDate.value) {
-    toast.add({
-      severity: "warn",
-      summary: "提示",
-      detail: "请选择完整的日期范围",
-      life: 3000,
-    });
-    return;
-  }
-
-  const start = new Date(startDate.value);
-  const end = new Date(endDate.value);
-
-  // 更新过滤后的数据
-  filteredByTime.value = items.value.filter((item: Item) => {
-    const itemDate = new Date(item.date);
-    return itemDate >= start && itemDate <= end;
-  });
-};
 
 // 监听输入值的变化
 watch(nameValue, (newValue) => {
@@ -798,9 +773,6 @@ const confirmDeleteSelected = () => {
 };
 
 // 上传文件
-const onAdvancedUpload = () => {
-  showToast("文件已上传！");
-};
 
 // 取消编辑或添加
 const hideDialog = () => {
@@ -809,29 +781,47 @@ const hideDialog = () => {
 };
 
 // 删除物资
-const deleteItem = () => {
-  items.value = items.value.filter((i) => i.id !== item.value.id);
-  deleteItemDialog.value = false;
-  resetItem();
-  showToast("删除成功！");
+const deleteItem = async () => {
+  try {
+    if (item.value.id) {
+      await financeApi.delete(item.value.id);
+      items.value = items.value.filter((i) => i.id !== item.value.id);
+      deleteItemDialog.value = false;
+      resetItem();
+      showToast("删除成功！");
+    }
+  } catch (error) {
+    showToast('删除失败，请重试');
+  }
 };
 
 // 批量删除
-const deleteSelectedItems = () => {
-  items.value = items.value.filter(
-    (item) => !selectedItems.value.includes(item)
-  );
-  deleteItemsDialog.value = false;
-  selectedItems.value = [];
-  showToast("删除成功！");
+const deleteSelectedItems = async () => {
+  try {
+    const ids = selectedItems.value.map(item => item.id).filter(Boolean) as string[];
+    
+    if (ids.length > 0) {
+      await financeApi.batchDelete(ids);
+      items.value = items.value.filter(
+        (item) => !selectedItems.value.includes(item)
+      );
+      deleteItemsDialog.value = false;
+      selectedItems.value = [];
+      showToast("批量删除成功！");
+    }
+  } catch (error) {
+    showToast('批量删除失败，请重试');
+  }
 };
 
 // 物资信息验证
 const validateItem = () => {
-  resetItem();
+  // 计算总价
+  item.value.totalPrice = (item.value.unitPrice * item.value.quantity) + item.value.shippingCost;
+  
   return (
     item.value.name?.trim() && // 验证物资名称是否非空
-    (!item.value.id || /^\d+$/.test(String(item.value.id))) && // 验证物资编号（id）是否为数字
+    (!item.value.id || typeof item.value.id === 'string') && // 验证物资编号（id）
     item.value.quantity >= 0 &&
     item.value.unitPrice >= 0 &&
     item.value.shippingCost >= 0 &&
@@ -839,11 +829,11 @@ const validateItem = () => {
   );
 };
 
-// 成功提示
-const showToast = (message: string) => {
+// 提示消息
+const showToast = (message: string, severity: "success" | "info" | "warn" | "error" | "secondary" | "contrast" = "success", summary: string = "成功") => {
   toast.add({
-    severity: "success",
-    summary: "成功",
+    severity: severity,
+    summary: summary,
     detail: message,
     life: 3000,
   });
@@ -861,12 +851,6 @@ const formatDate = (date: Date | null): string => {
 };
 
 // 获取时间段
-const getDateRange = () => {
-  return {
-    startDate: formatDate(startDate.value),
-    endDate: formatDate(endDate.value),
-  };
-};
 </script>
 
 <style scoped>

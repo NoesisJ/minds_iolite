@@ -67,16 +67,16 @@
         <div class="min-w-[350px] flex flex-col gap-6">
           <!-- 姓名 -->
           <div>
-            <label for="name" class="block font-bold mb-3">姓名</label>
+            <label for="nickname" class="block font-bold mb-3">姓名</label>
             <InputText
-              id="name"
-              v-model.trim="member.name"
+              id="nickname"
+              v-model.trim="member.nickname"
               required="true"
               autofocus
-              :invalid="submitted && !member.name"
+              :invalid="submitted && !member.nickname"
               fluid
             />
-            <small v-if="submitted && !member.name" class="text-red-500"
+            <small v-if="submitted && !member.nickname" class="text-red-500"
               >Name is required.</small
             >
           </div>
@@ -89,7 +89,7 @@
                 <i class="pi pi-mars"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.gender"
+                v-model="member.sex"
                 :options="genders"
                 optionLabel="name"
                 optionValue="name"
@@ -103,11 +103,11 @@
                 <i class="pi pi-calendar"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.grade"
+                v-model="member.age"
                 :options="years"
                 optionLabel="name"
                 optionValue="name"
-                placeholder="入学年份"
+                placeholder="年龄"
               />
             </InputGroup>
 
@@ -130,7 +130,7 @@
                 <i class="pi pi-id-card"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.group"
+                v-model="member.jlugroup"
                 :options="groups"
                 optionLabel="name"
                 optionValue="name"
@@ -158,7 +158,7 @@
                 <i class="pi pi-ethereum"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.branch"
+                v-model="member.subjects"
                 :options="branches"
                 optionLabel="name"
                 optionValue="name"
@@ -172,7 +172,7 @@
                 <i class="pi pi-map-marker"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.campus"
+                v-model="member.school"
                 :options="campuses"
                 optionLabel="name"
                 optionValue="name"
@@ -186,7 +186,7 @@
                 <i class="pi pi-map"></i>
               </InputGroupAddon>
               <Select
-                v-model="member.major"
+                v-model="member.study"
                 :options="majors"
                 optionLabel="name"
                 optionValue="name"
@@ -307,7 +307,7 @@
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
         <span v-if="member"
-          >您确定要删除<b>{{ member.name }}</b
+          >您确定要删除<b>{{ member.nickname }}</b
           >吗?
         </span>
       </div>
@@ -358,7 +358,7 @@
     </Dialog>
 
     <!-- 信息表格 -->
-    <div class="contentPerson w-full overflow-auto scrollbar-hide">
+    <div class="contentPerson w-full overflow-auto hide-scrollbar">
       <Table
         ref="dataTable"
         :data="finalFilteredMembers"
@@ -385,7 +385,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import FileUpload from "primevue/fileupload";
-import { memberApi, type Member } from "../api/member";
+import { dataApi, type DataItem } from "../api/data";
 
 const toast = useToast();
 const dataTable = ref();
@@ -399,7 +399,7 @@ const filteredGroups = ref<string[]>([]);
 const filteredBranches = ref<string[]>([]);
 
 // 表格选中项
-const selectedMembers = ref<Member[]>([]);
+const selectedMembers = ref<DataItem[]>([]);
 
 // 添加、修改队员下拉框数据
 const genders = ref([
@@ -455,15 +455,15 @@ const identities = ref([
 
 // 列配置
 const columns = [
-  { field: "name", header: "姓名", sortable: true, frozen: true },
-  { field: "gender", header: "性别" },
-  { field: "grade", header: "年级" },
-  { field: "id", header: "学号" },
-  { field: "group", header: "组别" },
-  { field: "identity", header: "在队身份" },
-  { field: "branch", header: "兵种" },
-  { field: "campus", header: "校区" },
-  { field: "major", header: "专业" },
+  { field: "nickname", header: "姓名", sortable: true, frozen: true },
+  { field: "sex", header: "性别" },
+  { field: "age", header: "年龄" },
+  { field: "id", header: "ID" },
+  { field: "jlugroup", header: "组别" },
+  { field: "identity", header: "身份" },
+  { field: "subjects", header: "专业" },
+  { field: "school", header: "校区" },
+  { field: "study", header: "学习" },
   { field: "phone", header: "电话" },
   { field: "email", header: "邮箱" },
   { field: "qq", header: "QQ" },
@@ -474,48 +474,90 @@ const columns = [
 const memberDialog = ref(false);
 const deleteMemberDialog = ref(false);
 const deleteMembersDialog = ref(false);
-const member = ref<Member>({
-  name: "",
-  gender: "",
-  grade: "",
-  id: "",
-  group: "",
+const member = ref<DataItem>({
+  id: 0,
+  nickname: "",
+  sex: "",
+  age: "",
+  jlugroup: "",
   identity: "",
-  branch: "",
-  campus: "",
-  major: "",
+  study: "",
+  school: "",
+  subjects: "",
   phone: "",
   email: "",
   qq: "",
   wechat: "",
 });
 const submitted = ref(false);
-const members = ref<Member[]>([]);
+const members = ref<DataItem[]>([]);
 
 onMounted(async () => {
   try {
-    members.value = await memberApi.getList();
+    members.value = await dataApi.getAllData();
   } catch (error) {
-    showToast("获取数据失败");
+    showToast('获取数据失败');
   }
 });
 
 const exportCSV = async () => {
   try {
-    const blob = await memberApi.export();
+    // 获取所有数据并手动创建CSV内容
+    const data = await dataApi.getAllData();
+    // 这里可以添加将数据转换为CSV的逻辑
+    // 例如使用第三方库或手动构建CSV字符串
+    // 然后创建blob对象
+    const csvContent = convertToCSV(data);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     // ...保持原有下载逻辑不变
   } catch (error) {
-    showToast("导出失败，请重试");
+    showToast('导出失败，请重试');
   }
+};
+
+// 辅助函数：将数据转换为CSV格式
+const convertToCSV = (data: DataItem[]) => {
+  // 定义CSV的表头
+  const header = ['ID', '姓名', '性别', '年龄', '组别', '身份', '学习', '学校', '专业', '电话', '邮箱', 'QQ', '微信'];
+  // 将表头转换为CSV行
+  const csvRows = [header.join(',')];
+  
+  // 将每条数据转换为CSV行
+  for (const item of data) {
+    const values = [
+      item.id,
+      item.nickname,
+      item.sex,
+      item.age,
+      item.jlugroup,
+      item.identity,
+      item.study,
+      item.school,
+      item.subjects,
+      item.phone,
+      item.email,
+      item.qq,
+      item.wechat
+    ];
+    // 处理可能包含逗号的值
+    const escapedValues = values.map(value => 
+      typeof value === 'string' && value.includes(',') ? `"${value}"` : value
+    );
+    csvRows.push(escapedValues.join(','));
+  }
+  
+  return csvRows.join('\n');
 };
 
 // 搜索
 const searchNames = async (event: { query: string }) => {
   try {
-    filteredNames.value = await memberApi.search({
-      q: event.query,
-      field: "name",
-    });
+    // 获取所有数据并在前端进行过滤
+    const allData = await dataApi.getAllData();
+    const query = event.query.toLowerCase();
+    filteredNames.value = allData
+      .filter(item => item.nickname.toLowerCase().includes(query))
+      .map(item => item.nickname);
   } catch (error) {
     filteredNames.value = [];
   }
@@ -524,9 +566,7 @@ const searchNames = async (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueGroups = [
-    ...new Set(members.value.map((member) => member.group)),
-  ];
+  const uniqueGroups = [...new Set(members.value.map((member) => member.jlugroup))];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -535,9 +575,7 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueBranches = [
-    ...new Set(members.value.map((member) => member.branch)),
-  ];
+  const uniqueBranches = [...new Set(members.value.map((member) => member.subjects))];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
@@ -547,22 +585,22 @@ const finalFilteredMembers = computed(() => {
 
   // 按姓名过滤
   if (nameValue.value) {
-    result = result.filter((member) =>
-      member.name.toLowerCase().includes(nameValue.value.toLowerCase())
+    result = result.filter(member => 
+      member.nickname.toLowerCase().includes(nameValue.value.toLowerCase())
     );
   }
 
   // 按组别过滤
   if (groupValue.value) {
-    result = result.filter((member) =>
-      member.group.toLowerCase().includes(groupValue.value.toLowerCase())
+    result = result.filter(member => 
+      member.jlugroup.toLowerCase().includes(groupValue.value.toLowerCase())
     );
   }
 
   // 按兵种过滤
   if (branchValue.value) {
-    result = result.filter((member) =>
-      member.branch.toLowerCase().includes(branchValue.value.toLowerCase())
+    result = result.filter(member => 
+      member.subjects.toLowerCase().includes(branchValue.value.toLowerCase())
     );
   }
 
@@ -571,23 +609,23 @@ const finalFilteredMembers = computed(() => {
 
 // 过滤值
 const filters = computed(() => ({
-  name: nameValue.value,
-  group: groupValue.value,
-  branch: branchValue.value,
+  nickname: nameValue.value,
+  jlugroup: groupValue.value,
+  subjects: branchValue.value,
 }));
 
 // 显示添加队员
 const openNew = () => {
   member.value = {
-    name: "",
-    gender: "",
-    grade: "",
-    id: "",
-    group: "",
+    id: 0,
+    nickname: "",
+    sex: "",
+    age: "",
+    jlugroup: "",
     identity: "",
-    branch: "",
-    campus: "",
-    major: "",
+    study: "",
+    school: "",
+    subjects: "",
     phone: "",
     email: "",
     qq: "",
@@ -622,25 +660,27 @@ const onAdvancedUpload = () => {
 // 添加、编辑队员
 const saveMember = async () => {
   submitted.value = true;
-
+  
   if (validateMember()) {
     try {
       if (member.value.id) {
-        await memberApi.update(member.value.id, member.value);
+        await dataApi.updateData(member.value.id, member.value);
         // 更新本地数据
-        const index = members.value.findIndex((m) => m.id === member.value.id);
+        const index = members.value.findIndex(m => m.id === member.value.id);
         if (index !== -1) {
           members.value[index] = { ...member.value };
         }
         showToast("编辑成功！");
       } else {
-        const newMember = await memberApi.create(member.value);
+        // 创建新成员时，需要排除id字段
+        const { id, ...dataToCreate } = member.value;
+        const newMember = await dataApi.createData(dataToCreate);
         members.value.push(newMember);
         showToast("添加成功！");
       }
       memberDialog.value = false;
     } catch (error) {
-      showToast("操作失败，请重试");
+      showToast('操作失败，请重试');
     }
   }
 };
@@ -655,35 +695,38 @@ const hideDialog = () => {
 const deleteMember = async () => {
   try {
     if (member.value.id) {
-      await memberApi.delete(member.value.id);
+      await dataApi.deleteData(member.value.id);
       members.value = members.value.filter((m) => m.id !== member.value.id);
       deleteMemberDialog.value = false;
       showToast("删除成功！");
     }
   } catch (error) {
-    showToast("删除失败，请重试");
+    showToast('删除失败，请重试');
   }
 };
 
 // 批量删除队员
 const deleteSelectedMembers = async () => {
   try {
-    const ids = selectedMembers.value
-      .map((m) => m.id)
-      .filter(Boolean) as string[];
-    await memberApi.batchDelete(ids);
-    members.value = members.value.filter((m) => !ids.includes(m.id!));
+    const ids = selectedMembers.value.map(m => m.id).filter(Boolean) as number[];
+    
+    // 由于dataApi没有批量删除方法，使用循环逐个删除
+    for (const id of ids) {
+      await dataApi.deleteData(id);
+    }
+    
+    members.value = members.value.filter(m => !ids.includes(m.id));
     deleteMembersDialog.value = false;
     showToast("批量删除成功！");
   } catch (error) {
-    showToast("批量删除失败，请重试");
+    showToast('批量删除失败，请重试');
   }
 };
 
 // 验证队员信息
 const validateMember = () => {
   return (
-    member.value.name?.trim() &&
+    member.value.nickname?.trim() &&
     (!member.value.id || /^\d+$/.test(String(member.value.id))) &&
     (!member.value.phone ||
       (member.value.phone.length === 9 && /^\d+$/.test(member.value.phone))) &&

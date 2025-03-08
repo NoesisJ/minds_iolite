@@ -1,56 +1,60 @@
-import axios from "axios";
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: "https://example.com/api/finance",
-  timeout: 10000,
+  baseURL: 'http://localhost:8080/api',
+  timeout: 10000
 });
 
 const handleError = (error: unknown) => {
-  console.error("API Error:", error);
+  console.error('API Error:', error);
   throw error;
 };
 
 export const financeApi = {
-  // 获取物资列表
-  getList: async (): Promise<Item[]> => {
+  // 获取财务数据列表
+  getList: async () => {
     try {
-      const { data } = await api.get("/items");
-      return data.map((item: any) => ({
-        ...item,
-        unitPrice: Number(item.unitPrice) || 0,
-        quantity: Number(item.quantity) || 0,
-        shippingCost: Number(item.shippingCost) || 0,
-        totalPrice: Number(item.totalPrice) || 0,
-      }));
-    } catch (error) {
-      return handleError(error);
-    }
-  },
-
-  // 创建物资
-  create: async (item: Item) => {
-    try {
-      const { data } = await api.post("/items", item);
+      const { data } = await api.get('/financial');
       return data;
     } catch (error) {
       return handleError(error);
     }
   },
 
-  // 更新物资
-  update: async (id: string, item: Item) => {
+  // 获取单个财务数据
+  get: async (id: string) => {
     try {
-      const { data } = await api.put(`/items/${id}`, item);
+      const { data } = await api.get(`/financial/${id}`);
       return data;
     } catch (error) {
       return handleError(error);
     }
   },
 
-  // 删除物资
+  // 创建财务数据
+  create: async (item: FinancialItem) => {
+    try {
+      const { data } = await api.post('/financial', item);
+      return data;
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  // 更新财务数据
+  update: async (id: string, item: FinancialItem) => {
+    try {
+      const { data } = await api.put(`/financial/${id}`, item);
+      return data;
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  // 删除财务数据
   delete: async (id: string) => {
     try {
-      await api.delete(`/items/${id}`);
+      await api.delete(`/financial/${id}`);
       return true;
     } catch (error) {
       return handleError(error);
@@ -60,7 +64,7 @@ export const financeApi = {
   // 批量删除
   batchDelete: async (ids: string[]) => {
     try {
-      await api.delete("/items/batch", { data: { ids } });
+      await api.delete('/financial/batch', { data: { ids } });
       return true;
     } catch (error) {
       return handleError(error);
@@ -70,14 +74,30 @@ export const financeApi = {
   // 导出CSV
   export: async () => {
     try {
-      const response = await api.get("/items/export", {
-        responseType: "blob",
+      const response = await api.get('/financial/export', {
+        responseType: 'blob'
       });
       return response.data;
     } catch (error) {
       return handleError(error);
     }
-  },
+  }
+};
+
+// 财务数据类型定义
+export type FinancialItem = {
+  id?: string;
+  title: string;
+  amount: number;
+  type: string; // 收入/支出
+  category: string;
+  date: string;
+  paymentMethod: string;
+  description: string;
+  responsible: string;
+  project?: string;
+  receipt?: string;
+  status: string;
 };
 
 export type Item = {
