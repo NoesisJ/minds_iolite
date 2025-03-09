@@ -392,7 +392,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-import { financeApi, type Item, type FinancialItem } from '../../api/finance';
+import { financeApi, type Item } from '../../api/finance';
 
 const toast = useToast();
 const dataTable = ref();
@@ -502,7 +502,26 @@ const shippingCostStr = computed({
 // 添加生命周期钩子
 onMounted(async () => {
   try {
-    items.value = await financeApi.getList();
+    const data = await financeApi.getList();
+    // 将后端数据映射到前端显示格式
+    items.value = data.map((item: any) => ({
+      id: item.id.toString(),
+      name: item.name,
+      model: item.model,
+      unitPrice: parseFloat(item.price) || 0,
+      quantity: parseInt(item.quantity) || 0,
+      unit: item.unit,
+      shippingCost: parseFloat(item.extra_price) || 0,
+      totalPrice: (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0) + (parseFloat(item.extra_price) || 0),
+      purchaser: item.purchaser,
+      date: item.post_date,
+      campus: item.campus,
+      group: item.group_name,
+      branch: item.troop_type_project,
+      link: item.purchase_link,
+      project: item.troop_type_project,
+      remarks: item.remarks
+    }));
   } catch (error) {
     showToast('获取数据失败');
   }
@@ -514,20 +533,22 @@ const saveItem = async () => {
   
   if (validateItem()) {
     try {
-      // 将Item类型转换为FinancialItem类型
-      const financialItem: FinancialItem = {
+      // 将Item类型转换为后端需要的格式
+      const financialItem = {
         id: item.value.id,
-        title: item.value.name,
-        amount: item.value.totalPrice,
-        type: "支出", // 默认为支出类型
-        category: item.value.branch,
-        date: item.value.date,
-        paymentMethod: "其他", // 默认支付方式
-        description: `${item.value.model} - ${item.value.remarks}`,
-        responsible: item.value.purchaser,
-        project: item.value.project,
-        receipt: item.value.link,
-        status: "已完成" // 默认状态
+        name: item.value.name,
+        model: item.value.model,
+        quantity: item.value.quantity.toString(),
+        unit: item.value.unit,
+        price: item.value.unitPrice.toString(),
+        extra_price: item.value.shippingCost.toString(),
+        purchase_link: item.value.link,
+        post_date: item.value.date,
+        purchaser: item.value.purchaser,
+        campus: item.value.campus,
+        group_name: item.value.group,
+        troop_type_project: item.value.branch,
+        remarks: item.value.remarks
       };
       
       if (item.value.id) {
@@ -538,7 +559,26 @@ const saveItem = async () => {
         }
       } else {
         const newItem = await financeApi.create(financialItem);
-        items.value.push(newItem);
+        // 将返回的数据转换为前端格式
+        const formattedItem = {
+          id: newItem.id.toString(),
+          name: newItem.name,
+          model: newItem.model,
+          unitPrice: parseFloat(newItem.price) || 0,
+          quantity: parseInt(newItem.quantity) || 0,
+          unit: newItem.unit,
+          shippingCost: parseFloat(newItem.extra_price) || 0,
+          totalPrice: (parseFloat(newItem.price) || 0) * (parseInt(newItem.quantity) || 0) + (parseFloat(newItem.extra_price) || 0),
+          purchaser: newItem.purchaser,
+          date: newItem.post_date,
+          campus: newItem.campus,
+          group: newItem.group_name,
+          branch: newItem.troop_type_project,
+          link: newItem.purchase_link,
+          project: newItem.troop_type_project,
+          remarks: newItem.remarks
+        };
+        items.value.push(formattedItem);
       }
       showToast("操作成功！");
       itemDialog.value = false;
