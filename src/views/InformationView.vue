@@ -358,7 +358,7 @@
     </Dialog>
 
     <!-- 信息表格 -->
-    <div class="contentPerson w-full overflow-auto hide-scrollbar">
+    <div class="contentPerson w-full overflow-auto scrollbar-hide">
       <Table
         ref="dataTable"
         :data="finalFilteredMembers"
