@@ -1,5 +1,7 @@
+// 数据库对应表名为Data（注意大小写），以下是用到的数据名的对应关系，上为前端，下为数据库
+//id,name,gender,grade,group,identity,branch,campus,major,phone,email,qq,wechat
+//id,nickname,sex,age,jlugroup,identity,study,school,subjects,phone,email,qq,wechat
 import axios from 'axios';
-
 // 定义数据类型接口，与后端返回的数据结构保持一致
 export interface DataItem {
   id: number;

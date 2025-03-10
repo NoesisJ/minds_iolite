@@ -4,7 +4,7 @@ import { ref } from 'vue';
 // 创建一个响应式变量来跟踪API状态
 export const apiStatus = ref({
   connected: false,
-  lastError: null,
+  lastError: null as string | null,
   retrying: false
 });
 

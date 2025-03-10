@@ -17,6 +17,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
 import type { EChartsOption, PieSeriesOption, BarSeriesOption } from "echarts";
+import { dataApi } from "../api/data";
 
 // 类型定义
 interface ChartDataItem {
@@ -149,44 +150,87 @@ const getBarOption = (title: string, data: BarData): EChartsOption => {
   };
 };
 
-// 初始化图表
-const initChart = (el: HTMLElement, option: EChartsOption, key: string) => {
-  const chart = echarts.init(el);
-  chart.setOption(option);
-  chartInstances.value[key] = chart;
-  return chart;
-};
 
-// 模拟数据获取
-const getData = () => {
-  const subjectData: ChartDataItem[] = [
-    { value: 335, name: "Computer Science" },
-    { value: 310, name: "Mechanical Engineering" },
-    { value: 234, name: "Physics" },
-  ];
 
-  const campusData: ChartDataItem[] = [
-    { value: 500, name: "North Campus" },
-    { value: 300, name: "South Campus" },
-    { value: 200, name: "West Campus" },
-  ];
-
-  const groupData: BarData = {
-    types: ["Group A", "Group B", "Group C"],
-    sums: [120, 150, 180],
-  };
-
-  const divisionData: BarData = {
-    types: ["Division 1", "Division 2", "Division 3"],
-    sums: [75, 100, 125],
-  };
-
-  return {
-    subjectData,
-    campusData,
-    groupData,
-    divisionData,
-  };
+// 从后端获取数据并处理成图表所需格式
+const getData = async () => {
+  try {
+    // 获取所有人员数据
+    const allData = await dataApi.getAllData();
+    
+    // 处理专业(subjects)数据
+    const subjectsMap = new Map<string, number>();
+    allData.forEach(item => {
+      if (item.subjects) {
+        const count = subjectsMap.get(item.subjects) || 0;
+        subjectsMap.set(item.subjects, count + 1);
+      }
+    });
+    const subjectData: ChartDataItem[] = Array.from(subjectsMap.entries()).map(([name, value]) => ({
+      value,
+      name
+    }));
+    
+    // 处理校区(school)数据 - 只统计前卫南区、南岭校区和南湖校区
+    const targetCampuses = ['前卫南区', '南岭校区', '南湖校区'];
+    const campusMap = new Map<string, number>();
+    targetCampuses.forEach(campus => campusMap.set(campus, 0));
+    
+    allData.forEach(item => {
+      if (item.school && targetCampuses.includes(item.school)) {
+        const count = campusMap.get(item.school) || 0;
+        campusMap.set(item.school, count + 1);
+      }
+    });
+    const campusData: ChartDataItem[] = Array.from(campusMap.entries()).map(([name, value]) => ({
+      value,
+      name
+    }));
+    
+    // 处理组别(jlugroup)数据
+    const groupMap = new Map<string, number>();
+    allData.forEach(item => {
+      if (item.jlugroup) {
+        const count = groupMap.get(item.jlugroup) || 0;
+        groupMap.set(item.jlugroup, count + 1);
+      }
+    });
+    const groupEntries = Array.from(groupMap.entries());
+    const groupData: BarData = {
+      types: groupEntries.map(([name]) => name),
+      sums: groupEntries.map(([, value]) => value),
+    };
+    
+    // 处理兵种(study)数据
+    const branchMap = new Map<string, number>();
+    allData.forEach(item => {
+      if (item.study) {
+        const count = branchMap.get(item.study) || 0;
+        branchMap.set(item.study, count + 1);
+      }
+    });
+    const branchEntries = Array.from(branchMap.entries());
+    const divisionData: BarData = {
+      types: branchEntries.map(([name]) => name),
+      sums: branchEntries.map(([, value]) => value),
+    };
+    
+    return {
+      subjectData,
+      campusData,
+      groupData,
+      divisionData,
+    };
+  } catch (error) {
+    console.error('获取数据失败:', error);
+    // 发生错误时返回空数据
+    return {
+      subjectData: [],
+      campusData: [],
+      groupData: { types: [], sums: [] },
+      divisionData: { types: [], sums: [] },
+    };
+  }
 };
 
 // 处理窗口大小变化
@@ -197,39 +241,75 @@ const handleResize = () => {
 };
 
 // 初始化所有图表
-const initCharts = () => {
-  const data = getData();
-
-  if (subjectChartRef.value) {
-    initChart(
-      subjectChartRef.value,
-      getPieOption("专业分布", data.subjectData),
-      "subject"
-    );
-  }
-
-  if (campusChartRef.value) {
-    initChart(
-      campusChartRef.value,
-      getPieOption("校区分布", data.campusData),
-      "campus"
-    );
-  }
-
-  if (groupChartRef.value) {
-    initChart(
-      groupChartRef.value,
-      getBarOption("组别分布", data.groupData),
-      "group"
-    );
-  }
-
-  if (divisionChartRef.value) {
-    initChart(
-      divisionChartRef.value,
-      getBarOption("兵种分布", data.divisionData),
-      "division"
-    );
+const initCharts = async () => {
+  // 显示加载状态
+  const loadingOptions = {
+    text: '数据加载中...',
+    color: '#ee82ee',
+    textColor: '#fff',
+    maskColor: 'rgba(0, 0, 0, 0.2)',
+    zlevel: 0
+  };
+  
+  // 先初始化图表实例
+  const charts = {
+    subject: subjectChartRef.value ? echarts.init(subjectChartRef.value) : null,
+    campus: campusChartRef.value ? echarts.init(campusChartRef.value) : null,
+    group: groupChartRef.value ? echarts.init(groupChartRef.value) : null,
+    division: divisionChartRef.value ? echarts.init(divisionChartRef.value) : null
+  };
+  
+  // 显示加载动画
+  Object.values(charts).forEach(chart => chart?.showLoading(loadingOptions));
+  
+  try {
+    // 获取数据
+    const data = await getData();
+    
+    // 隐藏加载动画
+    Object.values(charts).forEach(chart => chart?.hideLoading());
+    
+    // 设置图表数据
+    if (charts.subject) {
+      charts.subject.setOption(getPieOption("专业分布", data.subjectData));
+      chartInstances.value["subject"] = charts.subject;
+    }
+    
+    if (charts.campus) {
+      charts.campus.setOption(getPieOption("校区分布", data.campusData));
+      chartInstances.value["campus"] = charts.campus;
+    }
+    
+    if (charts.group) {
+      charts.group.setOption(getBarOption("组别分布", data.groupData));
+      chartInstances.value["group"] = charts.group;
+    }
+    
+    if (charts.division) {
+      charts.division.setOption(getBarOption("兵种分布", data.divisionData));
+      chartInstances.value["division"] = charts.division;
+    }
+  } catch (error) {
+    console.error('初始化图表失败:', error);
+    // 隐藏加载动画
+    Object.values(charts).forEach(chart => chart?.hideLoading());
+    
+    // 显示错误信息
+    Object.values(charts).forEach(chart => {
+      if (chart) {
+        chart.setOption({
+          title: {
+            text: '数据加载失败',
+            left: 'center',
+            top: 'center',
+            textStyle: {
+              color: '#ee82ee',
+              fontSize: 20
+            }
+          }
+        });
+      }
+    });
   }
 };
 
