@@ -1,5 +1,7 @@
 <template>
-  <div class="w-[var(--sidebar-width)] bg-[#b8d0df] border-r-[1px] border-[#77a3be] py-3">
+  <div
+    class="w-[var(--sidebar-width)] bg-[#b8d0df] border-r-[1px] border-[#77a3be] py-3"
+  >
     <!-- <hd-scroll> -->
     <PanelMenu :model="navMenus" class="w-40 mx-auto">
       <template #item="{ item }">

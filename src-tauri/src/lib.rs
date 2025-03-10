@@ -1,6 +1,4 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-mod app;
-
 use tauri_plugin_window_state::{Builder, StateFlags};
 
 #[tauri::command]
