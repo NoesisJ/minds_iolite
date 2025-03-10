@@ -29,7 +29,12 @@
         :frozen="col.frozen"
       >
         <template #body="slotProps">
-          <template v-if="['unitPrice', 'shippingCost', 'totalPrice'].includes(col.field) && slotProps.data[col.field]">
+          <template
+            v-if="
+              ['unitPrice', 'shippingCost', 'totalPrice'].includes(col.field) &&
+              slotProps.data[col.field]
+            "
+          >
             {{ slotProps.data[col.field].toFixed(2) }}
           </template>
           <template v-else-if="col.field === 'branch'">

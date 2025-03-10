@@ -11,10 +11,7 @@
         style="font-size: 1.5rem"
       ></i>
       <div class="h-7 w-[1.7px] bg-[#114b79] rounded-md"></div>
-      <h1
-        class="text-2xl text-[#114b79] font-[500]"
-        data-tauri-drag-region
-      >
+      <h1 class="text-2xl text-[#114b79] font-[500]" data-tauri-drag-region>
         吉甲终端
       </h1>
     </div>

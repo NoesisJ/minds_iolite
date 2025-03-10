@@ -6,6 +6,7 @@
         "inputgroupaddon",
         "inputtext",
         "keyfilter",
+        "unlisten",
         "vueuse",
         "wechat"
     ]
