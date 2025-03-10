@@ -17,14 +17,7 @@ export const useApp = defineStore("app", {
       this.isInitialized = true;
     },
     async initialize() {
-      if (this.isTauri) {
-        await windowManager.initialize();
-
-        window.addEventListener("beforeunload", async () => {
-          await windowManager.saveState();
-          await windowManager.cleanup();
-        });
-      }
+      if (this.isTauri) await windowManager.initialize();
     },
 
     // Window
