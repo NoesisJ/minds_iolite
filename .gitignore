@@ -1,3 +1,6 @@
+# Node modules
+node_modules
+
 # Logs
 logs
 *.log
@@ -7,19 +10,38 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Build output
+package-lock.json
+yarn.lock
+Cargo.lock
 dist
 dist-ssr
+build
 *.local
+*.timestamp-*.mjs
+stats.html
+
+# OS generated files
+.DS_Store
+Thumbs.db
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-index.html
+
+# Tauri private key
+~
+~/*
+.tauri/*.key
+.tauri/*.key.pub
+.env
+
+/temp
+/data
