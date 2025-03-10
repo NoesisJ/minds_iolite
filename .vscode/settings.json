@@ -5,7 +5,9 @@
         "inputgroup",
         "inputgroupaddon",
         "inputtext",
+        "jlugroup",
         "keyfilter",
+        "lucide",
         "unlisten",
         "vueuse",
         "wechat"

@@ -22,7 +22,11 @@ app
   .use(ConfirmationService)
   .use(PrimeVue, {
     theme: { preset: Aura },
-    options: { prefix: "p" },
+    options: {
+      prefix: "p",
+      darkModeSelector: false,
+      cssLayer: false,
+    },
   })
   .directive("keyfilter", KeyFilter)
   .directive("styleclass", StyleClass)

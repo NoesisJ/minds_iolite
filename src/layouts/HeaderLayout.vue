@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[#b8d0df] flex justify-between items-center"
+    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[#b8d0df] flex justify-between items-center h-[var(--header-height)]"
     data-tauri-drag-region
   >
     <div class="flex flex-row items-center space-x-6">

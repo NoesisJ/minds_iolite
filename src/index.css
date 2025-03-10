@@ -13,12 +13,32 @@ body,
 
 :root {
   --sidebar-width: 11rem;
+  --header-height: 4rem;
+
+  --p-inputtext-background: #f3f4f6;
 }
 
 body {
   overflow: hidden;
   user-select: none;
   cursor: default;
+}
+
+@layer utilities {
+  @keyframes slidein {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slidein {
+    animation: slidein 0.3s ease-out;
+  }
 }
 
 .scrollbar-hide {

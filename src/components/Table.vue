@@ -7,10 +7,10 @@
     :rows="rows"
     :filters="filters"
     scrollable
-    :scrollHeight="scrollHeight"
     :tableStyle="tableStyle"
     class="overflow-auto scrollbar-hide"
     v-bind="$attrs"
+    paginator
   >
     <!-- 多选列 -->
     <Column
@@ -83,7 +83,6 @@ interface Props {
   showSelection?: boolean;
   showActions?: boolean;
   rows?: number;
-  scrollHeight?: string;
   tableStyle?: string;
   filters?: Record<string, any>;
   selection?: any[];
@@ -92,8 +91,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showSelection: true,
   showActions: true,
-  rows: 14,
-  scrollHeight: "calc(100vh - 8.5rem)",
+  rows: 5,
   tableStyle: "min-width: 1500px; height: fit;",
   filters: () => ({}),
   selection: () => [],
@@ -124,3 +122,9 @@ defineExpose({
   dt,
 });
 </script>
+
+<style scoped>
+.p-datatable-tbody > tr {
+  --p-datatable-row-background: #fff;
+}
+</style>

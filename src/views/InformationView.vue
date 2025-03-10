@@ -1,60 +1,13 @@
 <template>
-  <div class="personInformation w-full flex-grow flex flex-col overflow-auto">
+  <div class="h-full w-full flex flex-col gap-2">
+    <Toast ref="toast" />
     <!-- Header -->
-    <div
-      class="header w-full h-[4.5rem] pl-[1rem] pr-[3rem] flex justify-between items-center gap-2"
-    >
-      <div class="searchGroup flex items-center space-x-2">
-        <AutoComplete
-          v-model="nameValue"
-          :suggestions="filteredNames"
-          @complete="searchNames"
-          placeholder="姓名"
-        />
-        <AutoComplete
-          v-model="groupValue"
-          :suggestions="filteredGroups"
-          @complete="searchGroups"
-          placeholder="组别"
-        />
-        <AutoComplete
-          v-model="branchValue"
-          :suggestions="filteredBranches"
-          @complete="searchBranches"
-          placeholder="兵种"
-        />
-      </div>
-      <div class="buttonGroup flex items-center space-x-2">
-        <Button
-          icon="pi pi-upload"
-          label="导出"
-          severity="info"
-          class="header-button"
-          @click="exportCSV()"
-        />
-        <Button
-          icon="pi pi-plus"
-          label="添加"
-          severity="help"
-          class="header-button"
-          raised
-          @click="openNew"
-        />
-        <Button
-          icon="pi pi-trash"
-          label="删除"
-          severity="danger"
-          class="header-button"
-          outlined
-          raised
-          @click="confirmDeleteSelected"
-          :disabled="!selectedMembers || !selectedMembers.length"
-        />
-      </div>
-    </div>
-
-    <!-- 操作成功提示 -->
-    <Toast />
+    <HeaderComponent
+      :members="members"
+      :selectedMembers="selectedMembers"
+      @openNew="openNew"
+      @confirmDeleteSelected="confirmDeleteSelected"
+    />
 
     <!-- 添加、编辑队员对话框 -->
     <Dialog
@@ -117,8 +70,10 @@
                 <i class="pi pi-info"></i>
               </InputGroupAddon>
               <InputText
-                v-model="member.id"
-                :invalid="submitted && !!member.id && !/^\d+$/.test(member.id)"
+                :value="String(member.id)"
+                :invalid="
+                  submitted && !!member.id && !/^\d+$/.test(String(member.id))
+                "
                 placeholder="学号"
                 v-keyfilter="{ pattern: /^\d+$/, validateOnly: true }"
               />
@@ -297,68 +252,22 @@
       </template>
     </Dialog>
 
-    <!-- 确认单个删除对话框 -->
-    <Dialog
+    <!-- 确认删除对话框 -->
+    <DeleteDialog
       v-model:visible="deleteMemberDialog"
-      :style="{ width: '450px' }"
-      header="Confirm"
-      :modal="true"
-    >
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="member"
-          >您确定要删除<b>{{ member.nickname }}</b
-          >吗?
-        </span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          severity="secondary"
-          text
-          @click="deleteMemberDialog = false"
-        />
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          severity="help"
-          @click="deleteMember"
-        />
-      </template>
-    </Dialog>
-
-    <!-- 确认批量删除对话框 -->
-    <Dialog
+      :message="`您确定要删除 ${selectedMember?.nickname} 吗？`"
+      @confirm="deleteMember"
+    />
+    <DeleteDialog
       v-model:visible="deleteMembersDialog"
-      :style="{ width: '450px' }"
-      header="Confirm"
-      :modal="true"
-    >
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="selectedMembers">您确定要删除选中的项吗?</span>
-      </div>
-      <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          severity="secondary"
-          text
-          @click="deleteMembersDialog = false"
-        />
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          severity="help"
-          text
-          @click="deleteSelectedMembers"
-        />
-      </template>
-    </Dialog>
+      message="您确定要删除选中的项吗？"
+      @confirm="deleteSelectedMembers"
+    />
 
     <!-- 信息表格 -->
-    <div class="contentPerson w-full overflow-auto scrollbar-hide">
+    <div
+      class="contentPerson w-full h-[calc(100%-3rem)] overflow-auto scrollbar-hide"
+    >
       <Table
         ref="dataTable"
         :data="finalFilteredMembers"
@@ -374,32 +283,38 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import Table from "../components/Table.vue";
-import AutoComplete from "primevue/autocomplete";
+import Table from "@/components/Table.vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import Toast from "primevue/toast";
-import { useToast } from "primevue/usetoast";
+import Toast from "@/components/ui/Toast.vue";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import FileUpload from "primevue/fileupload";
-import { dataApi, type DataItem } from "../api/data";
+import DeleteDialog from "@/components/information/DeleteDialog.vue";
+import { dataApi } from "@/api/data";
+import { DataItem } from "@/types/information";
+import HeaderComponent from "@/components/information/HeaderComponent.vue";
 
-const toast = useToast();
+const toast = ref<InstanceType<typeof Toast> | null>(null);
+
+// Data
+const members = ref<DataItem[]>([]);
+const selectedMembers = ref<DataItem[]>([]);
+const selectedMember = ref<DataItem | null>(null);
+
+// Dialog visibility
+const memberDialog = ref(false);
+const deleteMemberDialog = ref(false);
+const deleteMembersDialog = ref(false);
+
 const dataTable = ref();
 
 // 搜索值
 const nameValue = ref("");
 const groupValue = ref("");
 const branchValue = ref("");
-const filteredNames = ref<string[]>([]);
-const filteredGroups = ref<string[]>([]);
-const filteredBranches = ref<string[]>([]);
-
-// 表格选中项
-const selectedMembers = ref<DataItem[]>([]);
 
 // 添加、修改队员下拉框数据
 const genders = ref([
@@ -470,10 +385,6 @@ const columns = [
   { field: "wechat", header: "微信" },
 ];
 
-// 控制添加队员对话框的显示
-const memberDialog = ref(false);
-const deleteMemberDialog = ref(false);
-const deleteMembersDialog = ref(false);
 const member = ref<DataItem>({
   id: 0,
   nickname: "",
@@ -490,139 +401,33 @@ const member = ref<DataItem>({
   wechat: "",
 });
 const submitted = ref(false);
-const members = ref<DataItem[]>([]);
 
 onMounted(async () => {
   try {
     members.value = await dataApi.getAllData();
   } catch (error) {
-    showToast("获取数据失败");
+    toast.value?.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to fetch members.",
+    });
   }
 });
 
-const exportCSV = async () => {
-  try {
-    // 获取所有数据并手动创建CSV内容
-    const data = await dataApi.getAllData();
-    // 这里可以添加将数据转换为CSV的逻辑
-    // 例如使用第三方库或手动构建CSV字符串
-    // 然后创建blob对象
-    const csvContent = convertToCSV(data);
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    // ...保持原有下载逻辑不变
-  } catch (error) {
-    showToast("导出失败，请重试");
-  }
-};
-
-// 辅助函数：将数据转换为CSV格式
-const convertToCSV = (data: DataItem[]) => {
-  // 定义CSV的表头
-  const header = [
-    "ID",
-    "姓名",
-    "性别",
-    "年龄",
-    "组别",
-    "身份",
-    "学习",
-    "学校",
-    "专业",
-    "电话",
-    "邮箱",
-    "QQ",
-    "微信",
-  ];
-  // 将表头转换为CSV行
-  const csvRows = [header.join(",")];
-
-  // 将每条数据转换为CSV行
-  for (const item of data) {
-    const values = [
-      item.id,
-      item.nickname,
-      item.sex,
-      item.age,
-      item.jlugroup,
-      item.identity,
-      item.study,
-      item.school,
-      item.subjects,
-      item.phone,
-      item.email,
-      item.qq,
-      item.wechat,
-    ];
-    // 处理可能包含逗号的值
-    const escapedValues = values.map((value) =>
-      typeof value === "string" && value.includes(",") ? `"${value}"` : value
-    );
-    csvRows.push(escapedValues.join(","));
-  }
-
-  return csvRows.join("\n");
-};
-
-// 搜索
-const searchNames = async (event: { query: string }) => {
-  try {
-    // 获取所有数据并在前端进行过滤
-    const allData = await dataApi.getAllData();
-    const query = event.query.toLowerCase();
-    filteredNames.value = allData
-      .filter((item) => item.nickname.toLowerCase().includes(query))
-      .map((item) => item.nickname);
-  } catch (error) {
-    filteredNames.value = [];
-  }
-};
-
-const searchGroups = (event: { query: string }) => {
-  const query = event.query.toLowerCase();
-  // 只更新建议列表
-  const uniqueGroups = [
-    ...new Set(members.value.map((member) => member.jlugroup)),
-  ];
-  filteredGroups.value = uniqueGroups.filter((group) =>
-    group.toLowerCase().includes(query)
-  );
-};
-
-const searchBranches = (event: { query: string }) => {
-  const query = event.query.toLowerCase();
-  // 只更新建议列表
-  const uniqueBranches = [
-    ...new Set(members.value.map((member) => member.subjects)),
-  ];
-  filteredBranches.value = uniqueBranches.filter((branch) =>
-    branch.toLowerCase().includes(query)
-  );
-};
+// Filtered members based on search
 const finalFilteredMembers = computed(() => {
-  let result = [...members.value];
-
-  // 按姓名过滤
-  if (nameValue.value) {
-    result = result.filter((member) =>
-      member.nickname.toLowerCase().includes(nameValue.value.toLowerCase())
-    );
-  }
-
-  // 按组别过滤
-  if (groupValue.value) {
-    result = result.filter((member) =>
-      member.jlugroup.toLowerCase().includes(groupValue.value.toLowerCase())
-    );
-  }
-
-  // 按兵种过滤
-  if (branchValue.value) {
-    result = result.filter((member) =>
-      member.subjects.toLowerCase().includes(branchValue.value.toLowerCase())
-    );
-  }
-
-  return result;
+  return members.value.filter((member) => {
+    const nameMatch = member.nickname
+      .toLowerCase()
+      .includes(nameValue.value.toLowerCase());
+    const groupMatch = member.jlugroup
+      .toLowerCase()
+      .includes(groupValue.value.toLowerCase());
+    const branchMatch = member.subjects
+      .toLowerCase()
+      .includes(branchValue.value.toLowerCase());
+    return nameMatch && groupMatch && branchMatch;
+  });
 });
 
 // 过滤值
@@ -634,7 +439,7 @@ const filters = computed(() => ({
 
 // 显示添加队员
 const openNew = () => {
-  member.value = {
+  selectedMember.value = {
     id: 0,
     nickname: "",
     sex: "",
@@ -649,30 +454,35 @@ const openNew = () => {
     qq: "",
     wechat: "",
   };
-  submitted.value = false;
   memberDialog.value = true;
 };
 
 // 显示编辑队员
-const editMember = (m: Member) => {
-  member.value = { ...m };
+const editMember = (member: DataItem) => {
+  selectedMember.value = { ...member };
   memberDialog.value = true;
 };
 
-// 显示确认删除队员
-const confirmDeleteMember = (data: Member) => {
-  member.value = data;
+// Confirm delete member
+const confirmDeleteMember = (member: DataItem) => {
+  selectedMember.value = member;
   deleteMemberDialog.value = true;
 };
 
-// 显示确认批量删除
+// Confirm delete selected members
 const confirmDeleteSelected = () => {
-  deleteMembersDialog.value = true;
+  if (selectedMembers.value.length > 0) {
+    deleteMembersDialog.value = true;
+  }
 };
 
 // 上传图片文件
 const onAdvancedUpload = () => {
-  showToast("File uploaded!");
+  toast.value?.add({
+    severity: "success",
+    summary: "Success",
+    detail: "File Uploaded",
+  });
 };
 
 // 添加、编辑队员
@@ -688,17 +498,29 @@ const saveMember = async () => {
         if (index !== -1) {
           members.value[index] = { ...member.value };
         }
-        showToast("编辑成功！");
+        toast.value?.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Member updated.",
+        });
       } else {
         // 创建新成员时，需要排除id字段
         const { id, ...dataToCreate } = member.value;
         const newMember = await dataApi.createData(dataToCreate);
         members.value.push(newMember);
-        showToast("添加成功！");
+        toast.value?.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Member created.",
+        });
       }
       memberDialog.value = false;
     } catch (error) {
-      showToast("操作失败，请重试");
+      toast.value?.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to save member.",
+      });
     }
   }
 };
@@ -712,14 +534,25 @@ const hideDialog = () => {
 // 删除队员
 const deleteMember = async () => {
   try {
-    if (member.value.id) {
-      await dataApi.deleteData(member.value.id);
-      members.value = members.value.filter((m) => m.id !== member.value.id);
+    if (selectedMember.value?.id) {
+      await dataApi.deleteData(selectedMember.value.id);
+      members.value = members.value.filter(
+        (m) => m.id !== selectedMember.value?.id
+      );
       deleteMemberDialog.value = false;
-      showToast("删除成功！");
+      toast.value?.add({
+        severity: "success",
+        summary: "Success",
+        detail: "Member deleted.",
+      });
     }
   } catch (error) {
-    showToast("删除失败，请重试");
+    deleteMembersDialog.value = false;
+    toast.value?.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to delete member.",
+    });
   }
 };
 
@@ -731,15 +564,22 @@ const deleteSelectedMembers = async () => {
       .filter(Boolean) as number[];
 
     // 由于dataApi没有批量删除方法，使用循环逐个删除
-    for (const id of ids) {
-      await dataApi.deleteData(id);
-    }
+    for (const id of ids) await dataApi.deleteData(id);
 
     members.value = members.value.filter((m) => !ids.includes(m.id));
     deleteMembersDialog.value = false;
-    showToast("批量删除成功！");
+    toast.value?.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Selected members deleted.",
+    });
   } catch (error) {
-    showToast("批量删除失败，请重试");
+    deleteMembersDialog.value = false;
+    toast.value?.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to delete selected members.",
+    });
   }
 };
 
@@ -757,39 +597,11 @@ const validateMember = () => {
 };
 
 // 查询是否有此队员
-
-// 成功提示
-const showToast = (message: string) => {
-  toast.add({
-    severity: "success",
-    summary: "成功",
-    detail: message,
-    life: 3000,
-  });
-};
 </script>
 
 <style scoped>
-.header-button {
-  height: 2.2rem;
-  width: 6rem;
-  font-size: 1rem;
-  font-weight: 900;
-  margin-right: 0.5rem;
-}
-
 .p-fileupload {
   width: 30rem;
   overflow: hidden;
-}
-
-.p-inputtext {
-  --p-inputtext-hover-border-color: #a16eff;
-  --p-inputtext-focus-border-color: #a16eff;
-}
-
-.p-select {
-  --p-select-hover-border-color: #a16eff;
-  --p-select-focus-border-color: #a16eff;
 }
 </style>
