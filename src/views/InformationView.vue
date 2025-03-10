@@ -496,7 +496,7 @@ onMounted(async () => {
   try {
     members.value = await dataApi.getAllData();
   } catch (error) {
-    showToast('获取数据失败');
+    showToast("获取数据失败");
   }
 });
 
@@ -508,20 +508,34 @@ const exportCSV = async () => {
     // 例如使用第三方库或手动构建CSV字符串
     // 然后创建blob对象
     const csvContent = convertToCSV(data);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     // ...保持原有下载逻辑不变
   } catch (error) {
-    showToast('导出失败，请重试');
+    showToast("导出失败，请重试");
   }
 };
 
 // 辅助函数：将数据转换为CSV格式
 const convertToCSV = (data: DataItem[]) => {
   // 定义CSV的表头
-  const header = ['ID', '姓名', '性别', '年龄', '组别', '身份', '学习', '学校', '专业', '电话', '邮箱', 'QQ', '微信'];
+  const header = [
+    "ID",
+    "姓名",
+    "性别",
+    "年龄",
+    "组别",
+    "身份",
+    "学习",
+    "学校",
+    "专业",
+    "电话",
+    "邮箱",
+    "QQ",
+    "微信",
+  ];
   // 将表头转换为CSV行
-  const csvRows = [header.join(',')];
-  
+  const csvRows = [header.join(",")];
+
   // 将每条数据转换为CSV行
   for (const item of data) {
     const values = [
@@ -537,16 +551,16 @@ const convertToCSV = (data: DataItem[]) => {
       item.phone,
       item.email,
       item.qq,
-      item.wechat
+      item.wechat,
     ];
     // 处理可能包含逗号的值
-    const escapedValues = values.map(value => 
-      typeof value === 'string' && value.includes(',') ? `"${value}"` : value
+    const escapedValues = values.map((value) =>
+      typeof value === "string" && value.includes(",") ? `"${value}"` : value
     );
-    csvRows.push(escapedValues.join(','));
+    csvRows.push(escapedValues.join(","));
   }
-  
-  return csvRows.join('\n');
+
+  return csvRows.join("\n");
 };
 
 // 搜索
@@ -556,8 +570,8 @@ const searchNames = async (event: { query: string }) => {
     const allData = await dataApi.getAllData();
     const query = event.query.toLowerCase();
     filteredNames.value = allData
-      .filter(item => item.nickname.toLowerCase().includes(query))
-      .map(item => item.nickname);
+      .filter((item) => item.nickname.toLowerCase().includes(query))
+      .map((item) => item.nickname);
   } catch (error) {
     filteredNames.value = [];
   }
@@ -566,7 +580,9 @@ const searchNames = async (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueGroups = [...new Set(members.value.map((member) => member.jlugroup))];
+  const uniqueGroups = [
+    ...new Set(members.value.map((member) => member.jlugroup)),
+  ];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -575,7 +591,9 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 只更新建议列表
-  const uniqueBranches = [...new Set(members.value.map((member) => member.subjects))];
+  const uniqueBranches = [
+    ...new Set(members.value.map((member) => member.subjects)),
+  ];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
@@ -585,21 +603,21 @@ const finalFilteredMembers = computed(() => {
 
   // 按姓名过滤
   if (nameValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.nickname.toLowerCase().includes(nameValue.value.toLowerCase())
     );
   }
 
   // 按组别过滤
   if (groupValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.jlugroup.toLowerCase().includes(groupValue.value.toLowerCase())
     );
   }
 
   // 按兵种过滤
   if (branchValue.value) {
-    result = result.filter(member => 
+    result = result.filter((member) =>
       member.subjects.toLowerCase().includes(branchValue.value.toLowerCase())
     );
   }
@@ -660,13 +678,13 @@ const onAdvancedUpload = () => {
 // 添加、编辑队员
 const saveMember = async () => {
   submitted.value = true;
-  
+
   if (validateMember()) {
     try {
       if (member.value.id) {
         await dataApi.updateData(member.value.id, member.value);
         // 更新本地数据
-        const index = members.value.findIndex(m => m.id === member.value.id);
+        const index = members.value.findIndex((m) => m.id === member.value.id);
         if (index !== -1) {
           members.value[index] = { ...member.value };
         }
@@ -680,7 +698,7 @@ const saveMember = async () => {
       }
       memberDialog.value = false;
     } catch (error) {
-      showToast('操作失败，请重试');
+      showToast("操作失败，请重试");
     }
   }
 };
@@ -701,25 +719,27 @@ const deleteMember = async () => {
       showToast("删除成功！");
     }
   } catch (error) {
-    showToast('删除失败，请重试');
+    showToast("删除失败，请重试");
   }
 };
 
 // 批量删除队员
 const deleteSelectedMembers = async () => {
   try {
-    const ids = selectedMembers.value.map(m => m.id).filter(Boolean) as number[];
-    
+    const ids = selectedMembers.value
+      .map((m) => m.id)
+      .filter(Boolean) as number[];
+
     // 由于dataApi没有批量删除方法，使用循环逐个删除
     for (const id of ids) {
       await dataApi.deleteData(id);
     }
-    
-    members.value = members.value.filter(m => !ids.includes(m.id));
+
+    members.value = members.value.filter((m) => !ids.includes(m.id));
     deleteMembersDialog.value = false;
     showToast("批量删除成功！");
   } catch (error) {
-    showToast('批量删除失败，请重试');
+    showToast("批量删除失败，请重试");
   }
 };
 
