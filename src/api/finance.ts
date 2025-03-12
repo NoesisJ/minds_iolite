@@ -160,12 +160,11 @@ export type FinancialItem = {
   post_date: string;
   purchaser: string;
   campus: string;
-  group_name: string;
-  troop_type_project: string;
+  group: string;
+  branch: string;
   remarks: string;
 };
 
-// 前端显示用的数据类型
 export type Item = {
   id?: string;
   name: string;

@@ -516,8 +516,8 @@ onMounted(async () => {
       purchaser: item.purchaser,
       date: item.post_date,
       campus: item.campus,
-      group: item.group_name,
-      branch: item.troop_type_project,
+      group: item.group,
+      branch: item.branch,
       link: item.purchase_link,
       project: item.troop_type_project,
       remarks: item.remarks
@@ -546,8 +546,8 @@ const saveItem = async () => {
         post_date: item.value.date,
         purchaser: item.value.purchaser,
         campus: item.value.campus,
-        group_name: item.value.group,
-        troop_type_project: item.value.branch,
+        group: item.value.group,
+        branch: item.value.branch,
         remarks: item.value.remarks
       };
       
@@ -572,8 +572,8 @@ const saveItem = async () => {
           purchaser: newItem.purchaser,
           date: newItem.post_date,
           campus: newItem.campus,
-          group: newItem.group_name,
-          branch: newItem.troop_type_project,
+          group: newItem.group,
+          branch: newItem.branch,
           link: newItem.purchase_link,
           project: newItem.troop_type_project,
           remarks: newItem.remarks
