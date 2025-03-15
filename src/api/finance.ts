@@ -161,7 +161,7 @@ export type FinancialItem = {
   purchaser: string;
   campus: string;
   group: string;
-  troop_type: string;
+  branch: string;
   remarks: string;
 };
 

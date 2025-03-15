@@ -392,7 +392,6 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-import Textarea from "primevue/textarea";
 import { financeApi, type Item } from '../../api/finance';
 
 const toast = useToast();
@@ -520,7 +519,7 @@ onMounted(async () => {
       group: item.group,
       branch: item.branch,
       link: item.purchase_link,
-      project: item.troop_type,
+      project: item.troop_type_project,
       remarks: item.remarks
     }));
   } catch (error) {
@@ -548,7 +547,7 @@ const saveItem = async () => {
         purchaser: item.value.purchaser,
         campus: item.value.campus,
         group: item.value.group,
-        troop_type: item.value.branch,
+        branch: item.value.branch,
         remarks: item.value.remarks
       };
       
@@ -574,9 +573,9 @@ const saveItem = async () => {
           date: newItem.post_date,
           campus: newItem.campus,
           group: newItem.group,
-          branch: newItem.troop_type,
+          branch: newItem.branch,
           link: newItem.purchase_link,
-          project: newItem.troop_type,
+          project: newItem.troop_type_project,
           remarks: newItem.remarks
         };
         items.value.push(formattedItem);
