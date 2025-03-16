@@ -1,16 +1,17 @@
 <template>
   <div class="chartsGroup">
-    <div class="date-selector">
-      <label for="startDate">选择起始月份：</label>
-      <input 
-        type="month" 
-        id="startDate" 
-        v-model="startDateStr" 
-        @change="handleDateChange" 
-        class="date-input"
+    <div ref="groupChartContainer" style="width: 50%; height: 100vh"></div>
+    <div class="center-date-selector">
+      <DatePicker
+        v-model="startDate"
+        dateFormat="yy-mm"
+        placeholder="请选择起始月份"
+        class="date-picker"
+        @date-select="handleDateChange"
+        view="month"
+        :showIcon="true"
       />
     </div>
-    <div ref="groupChartContainer" style="width: 50%; height: 100vh"></div>
     <div ref="branchChartContainer" style="width: 50%; height: 100vh"></div>
   </div>
 </template>
@@ -18,8 +19,58 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
+import type { EChartsOption, PieSeriesOption, LineSeriesOption } from "echarts";
 import { financeApi } from "../../api/finance.ts";
+import DatePicker from "primevue/datepicker";
 // import type { Item } from "../../api/finance.ts";
+
+// 莫奈风格配色方案
+const monetColors = [
+  "#8CB4D2", // 淡蓝色
+  "#A6C9E2", // 浅蓝色
+  "#D4C1E0", // 淡紫色
+  "#BBD7E7", // 天蓝色
+  "#AED2CD", // 青色
+  "#C7DDE8", // 浅灰蓝色
+  "#E0C8D3", // 浅粉色
+  "#D8E8F2", // 极淡的蓝色
+  "#C5DCDB", // 浅绿蓝色
+  "#DBDFEA", // 淡蓝灰色
+];
+
+// 基础配置
+const baseChartConfig = {
+  backgroundColor: "#f8f8fa", // 使用应用的背景色
+  title: {
+    fontFamily: "'Noto Serif', serif", // 更典雅的字体
+    fontSize: 18,
+    fontWeight: "normal",
+    color: "#114b79", // 莫奈风格的深蓝色
+    left: "center",
+    top: "5%",
+  },
+  tooltip: {
+    trigger: "item" as const,
+    formatter: "{a} <br/>{b} : {c} ({d}%)",
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    borderColor: "#b8d0df",
+    borderWidth: 1,
+    textStyle: {
+      color: "#114b79",
+    },
+    shadowBlur: 15,
+    shadowColor: "rgba(184, 208, 223, 0.2)",
+  },
+};
+
+// 标签样式配置
+const labelStyle = {
+  show: true,
+  fontFamily: "'Noto Sans', sans-serif",
+  fontSize: 13,
+  color: "#114b79", // 深蓝灰色
+  formatter: "{b}: {d}%",
+};
 
 // 图表容器引用
 const groupChartContainer = ref<HTMLDivElement | null>(null); // 组别财务图表容器
@@ -29,13 +80,13 @@ const branchChartContainer = ref<HTMLDivElement | null>(null); // 兵种财务�
 const chartInstances = ref<{ [key: string]: echarts.ECharts }>({});
 
 // 日期选择器
-const startDateStr = ref(getDefaultStartDate());
+const startDate = ref(getDefaultStartDate());
 
 // 获取默认起始日期（当前日期前6个月）
 function getDefaultStartDate() {
   const date = new Date();
   date.setMonth(date.getMonth() - 5); 
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  return date;
 }
 
 // 处理日期变更
@@ -47,10 +98,14 @@ const handleDateChange = () => {
 // 获取从指定日期开始的6个月的月份名称
 const getLastSixMonths = () => {
   const months = [];
-  const startDate = new Date(startDateStr.value);
+  const startDateValue = startDate.value;
+  
+  if (!startDateValue) return [];
+  
+  const startDateObj = new Date(startDateValue);
   
   for (let i = 0; i < 6; i++) {
-    const month = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+    const month = new Date(startDateObj.getFullYear(), startDateObj.getMonth() + i, 1);
     const monthName = month.toLocaleDateString('zh-CN', { month: 'short', year: 'numeric' });
     months.push(monthName);
   }
@@ -61,7 +116,10 @@ const getLastSixMonths = () => {
 const processFinanceData = (data: any[] = []) => {
   // 安全校验
   if (!Array.isArray(data)) return { groupChartData: [], branchChartData: [] };
-  console.log('处理财务数据开始，原始数据:', JSON.stringify(data.slice(0, 2)));
+  
+  // 定义有效的组别和兵种类别
+  const validGroups = ['机械', '电控', '运营', '软件', 'AI', '视觉'];
+  const validBranches = ['英雄', '步兵', '工程', '场地', '哨兵', '无人机', '通用'];
   
   // 按组别和兵种分类的数据
   const groupData: { [key: string]: { [month: string]: number } } = {};
@@ -72,39 +130,48 @@ const processFinanceData = (data: any[] = []) => {
   
   // 映射API返回的字段名称
   const mapItem = (item: any) => {
-    const group = item.group || item.group_name || '';
-    
-    // 改进兵种字段的处理逻辑
-    // 尝试从多个可能的字段中获取兵种信息
-    let branch = '';
-    if (item.branch && item.branch !== '') {
-      branch = item.branch;
-    } else if (item.troop_type_project && item.troop_type_project !== '') {
-      branch = item.troop_type_project;
-    } else if (item.troop_type && item.troop_type !== '') {
-      branch = item.troop_type;
-    } else if (item.project && item.project !== '') {
-      // 如果有项目字段，可以作为兵种分类的备选
-      branch = item.project;
-    } else {
-      // 如果没有任何兵种相关信息，根据组别分配默认兵种
-      const groupToBranchMap: {[key: string]: string} = {
-        '机械': '机械兵种',
-        '电控': '电控兵种',
-        '运营': '运营兵种',
-        '软件': '软件兵种',
-        'AI': 'AI兵种',
-        '视觉': '视觉兵种'
+    // 检查item是否为有效对象
+    if (!item || typeof item !== 'object') {
+      return {
+        group: '未分配',
+        branch: '未分配',
+        date: new Date().toISOString().split('T')[0],
+        unitPrice: 0,
+        shippingCost: 0,
+        quantity: 0
       };
-      branch = groupToBranchMap[item.group || item.group_name || ''] || '未分类';
     }
     
-    const date = item.date || item.post_date || '';
-    const unitPrice = item.unitPrice !== undefined ? Number(item.unitPrice) : Number(item.price || 0);
-    const shippingCost = item.shippingCost !== undefined ? Number(item.shippingCost) : Number(item.extra_price || 0);
+    // 获取组别值 - 只使用group字段
+    const rawGroup = item.group_name;
+    
+    // 如果组别为空，尝试从troop_type字段获取
+    let group = '';
+    if (!rawGroup && item.troop_type) {
+      // 根据troop_type推断组别
+      const troopType = item.troop_type.trim().toLowerCase();
+      if (['机械', '电控', '运营', '软件', 'AI', '视觉'].some(g => troopType.includes(g))) {
+        group = troopType;
+      }
+    }
+    
+    // 如果仍然为空，使用validGroups中的值进行匹配
+    if (!group) {
+      group = validGroups.find(g => g.trim().toLowerCase() === rawGroup.trim().toLowerCase()) || '未分配';
+    }
+    
+    // 获取兵种值 - 优先使用troop_type字段，如果为空则尝试使用branch字段
+    let rawBranch = item.troop_type || item.branch || '';
+    
+    const branch = validBranches.find(b => b.trim().toLowerCase() === rawBranch.trim().toLowerCase()) || '未分配';
+    
+    const date = item.post_date || item.date || '';
+    const unitPrice = Number(item.price || item.unitPrice || 0);
+    const shippingCost = Number(item.extra_price || item.shippingCost || 0);
     const quantity = Number(item.quantity || 0);
     
-    return {
+    // 输出映射后的结果
+    const result = {
       ...item,
       group,
       branch,
@@ -113,19 +180,16 @@ const processFinanceData = (data: any[] = []) => {
       shippingCost,
       quantity
     };
+    
+    return result;
   };
   
   // 映射并过滤有效项
   const mappedItems = data.map(mapItem);
   const validItems = mappedItems.filter(item => {
-    // 确保项目至少有组别信息，兵种可以使用默认值'未分类'
-    return item && (item.group || item.group_name);
+    // 确保项目至少有组别信息
+    return item && item.group;
   });
-  
-  console.log('映射后有效数据条目数:', validItems.length);
-  if (validItems.length > 0) {
-    console.log('样本数据:', JSON.stringify(validItems[0]));
-  }
   
   // 初始化数据结构
   validItems.forEach(item => {
@@ -148,18 +212,16 @@ const processFinanceData = (data: any[] = []) => {
     // 安全访问对象属性
     const safeNumber = (value: any) => Math.max(Number(value) || 0, 0);
     
-    // 获取组别和兵种，确保使用映射后的值
+    // 获取组别和兵种
     const group = item.group || '';
     const branch = item.branch || '';
     
     if (months.includes(itemMonth) && groupData[group] && branchData[branch]) {
-      // 手动计算总价
+      // 计算总价
       const unitPrice = safeNumber(item.unitPrice);
       const quantity = safeNumber(item.quantity);
       const shippingCost = safeNumber(item.shippingCost);
       const totalPrice = unitPrice * quantity + shippingCost;
-      
-      console.log(`项目[${item.name}] - 单价:${unitPrice}, 数量:${quantity}, 运费:${shippingCost}, 总价:${totalPrice}`);
       
       if (group && groupData[group] && groupData[group][itemMonth] !== undefined) {
         groupData[group][itemMonth] += totalPrice;
@@ -177,20 +239,16 @@ const processFinanceData = (data: any[] = []) => {
       ['product', ...months]
     ];
     
-    console.log('格式化前的数据结构:', JSON.stringify(data));
-    
     Object.keys(data).forEach(key => {
       const rowData = [key];
       months.forEach(month => {
         // 将数值转换为字符串类型以匹配ECharts期望的数据类型，并保留两位小数
         const value = data[key][month];
-        console.log(`${key} - ${month}: 原始值=${value}, 类型=${typeof value}`);
         // 格式化为两位小数
         const formattedValue = Number(value).toFixed(2);
         rowData.push(String(formattedValue));
       });
       result.push(rowData);
-      console.log(`${key}的行数据:`, rowData);
     });
     
     return result;
@@ -207,7 +265,7 @@ const initCharts = async () => {
   try {
     // 获取财务数据
     const response = await financeApi.getList();
-    console.log('API响应数据结构:', JSON.parse(JSON.stringify(response)));
+    
     
     // 修改数据获取逻辑，检查response的不同属性
     let financeData = [];
@@ -216,14 +274,9 @@ const initCharts = async () => {
     } else if (response && Array.isArray(response)) {
       financeData = response;
     }
-    console.log('原始数据条目数:', financeData.length);
     
     // 处理后的数据输出
     const { groupChartData, branchChartData } = processFinanceData(financeData);
-    
-    // 处理后数据输出
-    console.log('处理后组别数据结构:', groupChartData);
-    console.log('处理后兵种数据结构:', branchChartData);
     
     // 初始化组别财务图表
     if (groupChartContainer.value) {
@@ -316,12 +369,15 @@ const initCharts = async () => {
 };
 
 // 生成图表配置
-const getChartOption = (title: string, data: any[]) => {
+const getChartOption = (title: string, data: any[]): EChartsOption => {
   console.log(`生成${title}图表配置，数据结构:`, JSON.stringify(data));
+  
+  // 合并基础配置
   return {
+    ...baseChartConfig,
     title: {
+      ...baseChartConfig.title,
       text: title,
-      left: 'center',
       top: '2%',
       textStyle: {
         color: '#000',
@@ -353,38 +409,37 @@ const getChartOption = (title: string, data: any[]) => {
       top: "45%",
       bottom: "15%",
     },
-    series: [
+    series: [  
       ...Array(data.length - 1).fill(0).map((_, index) => {
-        console.log(`创建第${index+1}条线图系列，对应数据行:`, data[index+1]);
         return {
-          type: "line",
+          type: "line" as const,
           smooth: true,
-          seriesLayoutBy: "row",
-          emphasis: { focus: "series" },
-        };
+          seriesLayoutBy: "row" as const,
+          emphasis: { focus: "series" as const },
+          // 使用莫奈风格颜色
+          color: monetColors[index % monetColors.length]
+        } as LineSeriesOption;
       }),
       {
-        type: "pie",
+        type: "pie" as const,
         id: "pie",
         radius: "25%",
         // 设置饼图的位置
         center: ["50%", "25%"],
-        emphasis: { focus: "self" },
+        emphasis: { focus: "self" as const },
         label: {
+          ...labelStyle,
           formatter: "{b}: {@" + data[0][1] + "} ({d}%)",
-          // 以下设置字体样式
-          fontFamily: "Arial",
-          fontSize: 15,
-          fontWeight: "normal",
-          color: "#000",
         },
+        // 使用莫奈风格颜色
+        color: monetColors,
         // 设置数据
         encode: {
           itemName: "product",
           value: data[0][1],
           tooltip: data[0][1],
         },
-      },
+      } as PieSeriesOption,
     ],
   };
 };
@@ -449,11 +504,25 @@ onUnmounted(() => {
 <style scoped>
 .chartsGroup {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+}
+
+.center-date-selector {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.date-picker {
+  min-width: 200px;
 }
 
 .date-selector {
@@ -475,7 +544,7 @@ onUnmounted(() => {
   color: #000;
 }
 
-label {
+label{
   font-size: 16px;
   font-weight: bold;
 }

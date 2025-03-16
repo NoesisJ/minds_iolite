@@ -516,10 +516,10 @@ onMounted(async () => {
       purchaser: item.purchaser,
       date: item.post_date,
       campus: item.campus,
-      group: item.group,
-      branch: item.branch,
+      group: item.group_name,
+      branch: item.troop_type,
       link: item.purchase_link,
-      project: item.troop_type_project,
+      project: item.project,
       remarks: item.remarks
     }));
   } catch (error) {
@@ -546,8 +546,9 @@ const saveItem = async () => {
         post_date: item.value.date,
         purchaser: item.value.purchaser,
         campus: item.value.campus,
-        group: item.value.group,
-        branch: item.value.branch,
+        group_name: item.value.group,
+        troop_type: item.value.branch,
+        project: item.value.project,
         remarks: item.value.remarks
       };
       
@@ -573,9 +574,9 @@ const saveItem = async () => {
           date: newItem.post_date,
           campus: newItem.campus,
           group: newItem.group,
-          branch: newItem.branch,
+          branch: newItem.troop_type,
           link: newItem.purchase_link,
-          project: newItem.troop_type_project,
+          project: newItem.project,
           remarks: newItem.remarks
         };
         items.value.push(formattedItem);

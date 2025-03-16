@@ -160,8 +160,9 @@ export type FinancialItem = {
   post_date: string;
   purchaser: string;
   campus: string;
-  group: string;
-  branch: string;
+  group_name: string;
+  troop_type: string;
+  project: string;
   remarks: string;
 };
 
