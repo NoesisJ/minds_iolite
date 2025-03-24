@@ -1,56 +1,47 @@
 <template>
   <div
-    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[#b8d0df] flex justify-between items-center h-[var(--header-height)]"
+    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[var(--material-red)] flex justify-between items-center h-[var(--header-height)]"
     data-tauri-drag-region
   >
     <div class="flex flex-row items-center space-x-6">
-      <!-- Page Name -->
-      <i
-        class="pi pi-bars text-[#114b79]"
-        data-tauri-drag-region
-        style="font-size: 1.5rem"
-      ></i>
-      <div class="h-7 w-[1.7px] bg-[#114b79] rounded-md"></div>
-      <h1 class="text-2xl text-[#114b79] font-[500]" data-tauri-drag-region>
-        吉甲终端
-      </h1>
+      <a href="#" class="cursor-pointer">
+        <i
+          class="pi pi-bars text-white"
+          data-tauri-drag-region
+          style="font-size: 1.5rem"
+        ></i>
+      </a>
+      <a
+        href="#"
+        class="cursor-pointer border-l-1 border-[#1f1f1f] px-[1.25rem] py-0"
+      >
+        <h1 class="text-2xl text-white font-[500]" data-tauri-drag-region>
+          Minds-Iolite
+        </h1>
+      </a>
     </div>
 
     <!-- Message,settings,etc -->
-    <div class="flex flex-row space-x-3 ml-auto mr-20 mt-3 text-[#114b79]">
-      <OverlayBadge
-        :value="unreadMessages"
-        severity="info"
-        size="small"
-        class="cursor-pointer"
+    <div class="flex flex-row items-center space-x-3 ml-auto mr-20 text-white">
+      <i
+        class="pi pi-envelope cursor-pointer"
+        style="font-size: 1.2rem"
         @click="openMessageWindow"
-      >
-        <i class="pi pi-envelope" style="font-size: 1.2rem"></i>
-      </OverlayBadge>
+      ></i>
 
       <Divider layout="vertical" />
-
-      <OverlayBadge
-        :value="unreadNotifications"
-        severity="info"
-        size="small"
-        class="cursor-pointer"
+      <i
+        class="pi pi-bell cursor-pointer"
+        style="font-size: 1.2rem"
         @click="openNotificationWindow"
-      >
-        <i class="pi pi-bell" style="font-size: 1.2rem"></i>
-      </OverlayBadge>
+      ></i>
 
       <Divider layout="vertical" />
-
-      <OverlayBadge
-        :value="unreadSettings"
-        severity="info"
-        size="small"
-        class="cursor-pointer"
+      <i
+        class="pi pi-cog cursor-pointer"
+        style="font-size: 1.2rem"
         @click="openSettingsWindow"
-      >
-        <i class="pi pi-cog" style="font-size: 1.2rem"></i>
-      </OverlayBadge>
+      ></i>
     </div>
 
     <!-- Native Buttons -->
@@ -307,7 +298,7 @@ const openSettingsWindow = () => {
 .native-button {
   height: 2.125rem;
   width: 2.125rem;
-  background-color: #00668a;
+  background-color: var(--material-item-header);
   border: none;
   color: #ffffff;
 }
@@ -316,7 +307,12 @@ const openSettingsWindow = () => {
   color: #ffffff;
 }
 .p-button {
-  --p-button-primary-hover-border-color: #38bcf6;
-  --p-button-primary-hover-background: #38bcf6;
+  --p-button-primary-active-background: var(--material-item-bg-hover);
+  --p-button-primary-hover-background: var(--material-item-bg-hover);
+}
+
+.p-badge.p-badge-info {
+  --p-badge-info-background: var(--material-item-bg);
+  --p-badge-info-color: white;
 }
 </style>

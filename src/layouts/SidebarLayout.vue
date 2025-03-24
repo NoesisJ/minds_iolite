@@ -1,73 +1,83 @@
 <template>
-  <div
-    class="w-[var(--sidebar-width)] bg-[#b8d0df] border-r-[1px] border-[#77a3be] py-3"
-  >
-    <!-- <hd-scroll> -->
-    <PanelMenu :model="navMenus" class="w-40 mx-auto">
-      <template #item="{ item }">
-        <router-link
-          v-if="item.route"
-          v-slot="{ href, navigate }"
-          :to="item.route"
-          custom
-        >
-          <a
-            class="flex items-center cursor-pointer px-2 py-1"
-            :href="href"
-            @click="navigate"
-          >
-            <span :class="item.icon" />
-            <span class="ml-2">{{ item.label }}</span>
-          </a>
-        </router-link>
-        <a v-else class="flex items-center cursor-pointer px-2 py-1">
-          <span :class="item.icon" />
-          <span class="ml-6">{{ item.label }}</span>
-          <span
-            v-if="item.items"
-            class="pi pi-angle-down text-primary ml-auto"
-          />
-        </a>
+  <div class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] py-3">
+    <TogglePanel
+      v-for="item in navMenus"
+      :key="item.label"
+      :is-active="isItemActive(item)"
+      :default-open="shouldExpand(item)"
+      :route-path="item.route"
+      :has-children="!!item.items"
+      @header-click="navigateTo"
+    >
+      <template #header>
+        <span :class="item.icon" />
+        <span class="menu-label">{{ item.label }}</span>
       </template>
-    </PanelMenu>
-    <!-- </hd-scroll> -->
+
+      <template v-if="item.items" #content>
+        <TogglePanel
+          v-for="subItem in item.items"
+          :key="subItem.label"
+          :is-active="isSubItemActive(subItem)"
+          :route-path="subItem.route"
+          @header-click="navigateTo"
+        >
+          <template #header>
+            <span :class="subItem.icon" />
+            <span class="menu-label">{{ subItem.label }}</span>
+          </template>
+        </TogglePanel>
+      </template>
+    </TogglePanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
-// import hdScroll from "../components/hdScroll.vue";
-import PanelMenu from "primevue/panelmenu";
+import TogglePanel from "@/components/ui/TogglePanel.vue";
 
 const router = useRouter();
-const savedActiveItem = localStorage.getItem("activeMenuItem");
-const activeItem = ref(savedActiveItem || "人员管理");
 
-// 检查当前路由是否匹配
-const checkActiveState = (route: string) => {
-  return router.currentRoute.value.path === route;
+interface NavItem {
+  label: string;
+  icon: string;
+  route?: string;
+  items?: NavItem[];
+}
+
+const isItemActive = (item: NavItem) => {
+  console.log(router.currentRoute.value.path);
+  console.log(item.route);
+  if (item.route) return router.currentRoute.value.path === item.route;
+  return item.items?.some(
+    (subItem) => router.currentRoute.value.path === subItem.route
+  );
 };
 
-// 更新导航菜单配置
-const navMenus = ref([
+const isSubItemActive = (subItem: NavItem) => {
+  return router.currentRoute.value.path === subItem.route;
+};
+
+const shouldExpand = (item: NavItem) => {
+  return item.items?.some(
+    (subItem) => router.currentRoute.value.path === subItem.route
+  );
+};
+
+const navigateTo = (path: string) => {
+  if (path) router.push(path);
+};
+
+const navMenus = [
   {
     label: "人员管理",
     icon: "pi pi-users",
-    expanded: checkActiveState("/information"),
-    command: () => {
-      activeItem.value = "人员管理";
-      router.push("/information");
-    },
+    route: "/information",
   },
   {
     label: "人员分布",
     icon: "pi pi-chart-bar",
-    expanded: checkActiveState("/infoCharts"),
-    command: () => {
-      activeItem.value = "人员分布";
-      router.push("/infoCharts");
-    },
+    route: "/infoCharts",
   },
   {
     label: "财务管理",
@@ -104,33 +114,7 @@ const navMenus = ref([
   {
     label: "报名管理",
     icon: "pi pi-cog",
-    command: () => {
-      activeItem.value = "报名管理";
-      router.push("/signUp");
-    },
+    route: "/signUp",
   },
-]);
-
-// 保存激活项
-watch(activeItem, (newItem) => {
-  if (newItem) {
-    localStorage.setItem("activeMenuItem", newItem);
-  }
-});
+];
 </script>
-
-<style scoped>
-.p-panelmenu {
-  gap: 0.4rem;
-}
-
-.p-panelmenu-panel {
-  height: 2.5rem;
-}
-
-.p-panelmenu {
-  --p-panelmenu-panel-background: #a2c6dc;
-  --p-panelmenu-panel-border-color: #77a3be;
-  --p-panelmenu-item-focus-background: #65aedf;
-}
-</style>

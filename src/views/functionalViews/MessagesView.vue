@@ -1,5 +1,5 @@
 <template>
-  <div class="messageview w-full overflow-hidden flex">
+  <div class="h-full w-full flex">
     <div class="functional w-[14rem]">
       <Button
         label="Mark All as Read"
@@ -17,7 +17,7 @@
       ></Button>
     </div>
     <div
-      class="h-[calc(100vh-6.5rem)] relative my-4 overflow-y-scroll flex-grow scrollbar-hide"
+      class="h-[calc(100%+1.5rem)] mt-[-0.75rem] relative overflow-y-scroll flex-grow scrollbar-hide"
     >
       <div class="scroll-gradient top"></div>
       <div class="scroll-gradient bottom"></div>
@@ -332,11 +332,11 @@ watch(
 
 .scroll-gradient.top {
   top: -100;
-  background: linear-gradient(to bottom, #1b1b38, transparent);
+  background: linear-gradient(to bottom, var(--material-bg-light), transparent);
 }
 
 .scroll-gradient.bottom {
   bottom: 0;
-  background: linear-gradient(to top, #1b1b38, transparent);
+  background: linear-gradient(to top, var(--material-bg-light), transparent);
 }
 </style>

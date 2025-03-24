@@ -16,6 +16,15 @@ body,
   --header-height: 4rem;
 
   --p-inputtext-background: #f3f4f6;
+
+  --material-red: #e91d63;
+  --material-bg-dark: #1f1f1f;
+  --material-bg-light: #303030;
+  --material-item-header: #404040;
+  --material-item-bg: #353535;
+  --material-item-bg-hover: #282828;
+  --material-item-bg-selected: #171717;
+  --material-item-bg-selected-hover: #282828;
 }
 
 body {
