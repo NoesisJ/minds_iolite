@@ -116,5 +116,10 @@ const navMenus = [
     icon: "pi pi-cog",
     route: "/signUp",
   },
+  {
+    label: "AI助手",
+    icon: "pi pi-comments", // 或使用 pi pi-robot 等适合AI的图标
+    route: "/agent",
+  }
 ];
 </script>

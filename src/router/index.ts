@@ -76,6 +76,11 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/agent",
+    name: "agent",
+    component: () => import("../views/AgentView.vue"),
+  }
 ];
 
 const router = createRouter({
