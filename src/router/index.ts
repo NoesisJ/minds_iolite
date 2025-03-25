@@ -80,7 +80,18 @@ const routes: Array<RouteRecordRaw> = [
     path: "/agent",
     name: "agent",
     component: () => import("../views/AgentView.vue"),
-  }
+  },
+  {
+    path: "/charts",
+    name: "charts",
+    children: [
+      {
+        path: "echarts",
+        name: "echarts",
+        component: () => import("../views/chartViews/echartsView.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

@@ -118,8 +118,19 @@ const navMenus = [
   },
   {
     label: "AI助手",
-    icon: "pi pi-comments", // 或使用 pi pi-robot 等适合AI的图标
+    icon: "pi pi-comments",
     route: "/agent",
-  }
+  },
+  {
+    label: "图表",
+    icon: "pi pi-chart-bar",
+    items: [
+      {
+        label: "ECharts",
+        icon: "pi pi-chart-bar",
+        route: "/charts/echarts",
+      },
+    ],
+  },
 ];
 </script>
