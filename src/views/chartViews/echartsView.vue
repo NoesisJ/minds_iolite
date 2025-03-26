@@ -1,15 +1,14 @@
 <template>
   <div class="charts-container p-4">
-
+    <h1 class="text-xl font-semibold mb-6 text-white">数据可视化仪表板</h1>
+    
     <!-- 图表网格 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <!-- 柱状图卡片 -->
+      <!-- 平滑折线图卡片 -->
       <div class="chart-card">
         <div class="chart-header">
           <h2 class="text-lg">平滑折线图</h2>
         </div>
-        <!-- 柱状图 -->
         <div class="chart-wrapper">
           <SmoothLineChart 
             :xAxisData="barData.xAxis.data"
@@ -21,12 +20,11 @@
         </div>
       </div>
       
-      <!-- 折线图卡片 -->
+      <!-- 时间轴折线图卡片 -->
       <div class="chart-card">
         <div class="chart-header">
           <h2 class="text-lg">时间轴折线图</h2>
         </div>
-        <!-- 折线图 -->
         <div class="chart-wrapper">
           <TimeSeriesLineChart
             seriesName="趋势数据"
@@ -39,17 +37,114 @@
         </div>
       </div>
       
-      <!-- 联动图卡片 -->
+      <!-- 基础饼图卡片 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="text-lg">基础饼图</h2>
+        </div>
+        <div class="chart-wrapper">
+          <BasicPieChart 
+            title="访问来源"
+            subtitle="流量分析"
+            seriesName="访问来源"
+            :pieData="pieData"
+            :colorPalette="pieColors"
+            legendPosition="right"
+            :radius="'75%'"
+            :customOptions="{
+              series: [{
+                center: ['50%', '55%']
+              }]
+            }"
+          />
+        </div>
+      </div>
+      
+      <!-- 雷达图卡片 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="text-lg">能力雷达图</h2>
+        </div>
+        <div class="chart-wrapper">
+          <RadarChart 
+            title="能力评估"
+            seriesName="能力分布"
+            :indicators="radarIndicators"
+            :seriesData="radarData"
+            :colorPalette="['#4E9BFF', '#FF7B92']"
+            legendPosition="bottom"
+            :customOptions="{
+              radar: {
+                radius: '70%',
+                center: ['50%', '50%']
+              },
+              legend: {
+                bottom: '0%',
+                padding: [0, 0, 10, 0]
+              }
+            }"
+          />
+        </div>
+      </div>
+      
+      <!-- 联动折线饼图 -->
       <div class="chart-card">
         <div class="chart-header">
           <h2 class="text-lg">联动折线饼图</h2>
         </div>
-        <!-- 联动折线图 -->
         <div class="chart-wrapper">
           <InteractivePieLineChart 
             :chartData="productData"
             :colorPalette="['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']"
             :darkMode="true"
+          />
+        </div>
+      </div>
+      
+      <!-- 混合折柱图 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="text-lg">混合折柱图</h2>
+        </div>
+        <div class="chart-wrapper">
+          <MixBarLineChart 
+            title="气象数据统计"
+            :xAxisData="['周一', '周二', '周三', '周四', '周五', '周六', '周日']"
+            :barData1="[20, 49, 70, 232, 256, 767, 1356]"
+            :barData2="[26, 59, 90, 264, 287, 707, 1756]"
+            :lineData="[20, 22, 33, 45, 63, 102, 203]"
+            :seriesNames="['蒸发量', '降水量', '温度']"
+            :yAxisNames="['水量', '温度']"
+            :yAxisUnits="['ml', '°C']"
+            :colorPalette="['#5470c6', '#91cc75', '#ee6666']"
+            :customOptions="{
+              grid: {
+                top: '80px',
+                bottom: '8%',
+                left: '3%', 
+                right: '5%',
+                containLabel: true
+              },
+              legend: {
+                top: '50px'
+              }
+            }"
+          />
+        </div>
+      </div>
+      
+      <!-- 大数据面积图 -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="text-lg">大数据面积图</h2>
+        </div>
+        <div class="chart-wrapper">
+          <AreaLineChart 
+            title="股票趋势"
+            seriesName="股价"
+            lineColor="#6366f1"
+            :areaColors="['rgba(99, 102, 241, 0.8)', 'rgba(99, 102, 241, 0.1)']"
+            :zoomRange="{ start: 0, end: 15 }"
           />
         </div>
       </div>
@@ -62,112 +157,92 @@ import { ref, onMounted } from 'vue';
 import SmoothLineChart from '@/components/charts/SmoothLineChart.vue';
 import InteractivePieLineChart from '@/components/charts/InteractivePieLineChart.vue';
 import TimeSeriesLineChart from '@/components/charts/TimeSeriesLineChart.vue';
+import BasicPieChart from '@/components/charts/BasicPieChart.vue';
+import RadarChart from '@/components/charts/RadarChart.vue';
+import MixBarLineChart from '@/components/charts/MixBarLineChart.vue';
+import AreaLineChart from '@/components/charts/AreaLineChart.vue';
 
 // 饼图数据和颜色
 const pieColors = ['#4E9BFF', '#FFC233', '#38BFFF', '#FF7B92', '#4DE6A8'];
 const pieData = [
-  { value: 1048, name: '美国' },
-  { value: 735, name: '德国' },
-  { value: 580, name: '法国' },
-  { value: 484, name: '加拿大' },
-  { value: 300, name: '俄罗斯' }
+  { value: 1048, name: '搜索引擎' },
+  { value: 735, name: '直接访问' },
+  { value: 580, name: '邮件营销' },
+  { value: 484, name: '联盟广告' },
+  { value: 300, name: '视频广告' }
 ];
 
-// 饼图自定义配置
-const pieOptions = ref({
-  series: [{
-    type: 'pie',
-    radius: '70%',
-    center: ['50%', '55%'],
-    data: pieData,
-    itemStyle: {
-      borderRadius: 4,
-      borderColor: '#333',
-      borderWidth: 2
-    },
-    label: {
-      show: true,
-      formatter: '{b}: {d}%',
-      position: 'outside',
-      alignTo: 'labelLine',
-      bleedMargin: 5
-    },
-    labelLine: {
-      length: 15,
-      length2: 10,
-      maxSurfaceAngle: 80
-    },
-    emphasis: {
-      focus: 'series',
-      itemStyle: {
-        shadowBlur: 10,
-        shadowOffsetX: 0,
-        shadowColor: 'rgba(0, 0, 0, 0.5)'
+// 饼图配置
+const pieOptions = {
+  series: [
+    {
+      name: '访问来源',
+      type: 'pie',
+      radius: '70%',
+      data: pieData,
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
       }
     }
-  }],
-  color: pieColors,
-  tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b}: {c} ({d}%)'
-  },
-  legend: {
-    show: false
-  }
-});
+  ]
+};
 
 // 柱状图数据
-const barData = ref({
+const barData = {
   xAxis: {
     type: 'category',
     data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
   },
   yAxis: {
-    type: 'value',
-    max: 450
+    type: 'value'
   },
-  series: [{
-    data: [10, 52, 200, 334, 390, 330, 220],
-    type: 'bar'
-  }]
-});
-
-// 柱状图自定义配置
-const barOptions = ref({
-  series: [{
-    type: 'bar',
-    barWidth: '60%',
-    itemStyle: {
-      borderRadius: [4, 4, 0, 0]
-    },
-    emphasis: {
-      itemStyle: {
-        shadowBlur: 10,
-        shadowOffsetX: 0,
-        shadowColor: 'rgba(0, 0, 0, 0.5)'
-      }
+  series: [
+    {
+      data: [120, 200, 150, 80, 70, 110, 130],
+      type: 'bar'
     }
-  }],
-  grid: {
-    left: '5%',
-    right: '5%',
-    top: '5%',
-    bottom: '8%',
-    containLabel: true
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'shadow'
+  ]
+};
+
+// 柱状图配置
+const barOptions = {
+  xAxis: {
+    axisLabel: {
+      rotate: 0
     }
   }
-});
+};
+
+// 雷达图数据
+const radarIndicators = [
+  { name: '技术能力', max: 100 },
+  { name: '团队协作', max: 100 },
+  { name: '问题解决', max: 100 },
+  { name: '沟通能力', max: 100 },
+  { name: '创新思维', max: 100 },
+  { name: '项目管理', max: 100 }
+];
+
+const radarData = [
+  {
+    name: '个人评估',
+    value: [80, 90, 85, 70, 75, 65]
+  },
+  {
+    name: '团队平均',
+    value: [70, 80, 75, 85, 65, 75]
+  }
+];
 
 // 生成时间序列数据
 const generateTimeData = () => {
+  const data = [];
   const now = new Date();
   const oneDay = 24 * 3600 * 1000;
-  let data = [];
   let start = now.getTime() - 90 * oneDay;
   
   for (let i = 0; i < 90; i++) {
@@ -200,7 +275,7 @@ const timeSeriesData = ref(generateTimeData());
 <style scoped>
 .charts-container {
   background-color: #1a1a1a;
-  min-height: 100vh; /* 确保容器至少占满整个视口高度 */
+  min-height: 100vh;
 }
 
 .chart-card {
@@ -224,7 +299,10 @@ const timeSeriesData = ref(generateTimeData());
 .chart-wrapper {
   padding: 1rem;
   flex: 1;
-  aspect-ratio: 4/3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 350px;
 }
 
 .legend-container {
