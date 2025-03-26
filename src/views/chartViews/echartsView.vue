@@ -12,7 +12,19 @@
           <SmoothLineChart 
             :xAxisData="barData.xAxis.data"
             :seriesData="barData.series[0].data"
-            :customOptions="barOptions"
+            :customOptions="{
+              tooltip: {
+                show: true,
+                trigger: 'axis',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }"
             themeColor="#4E9BFF"
             :darkMode="true"
           />
@@ -32,6 +44,19 @@
             areaColor="rgba(99, 102, 241, 0.2)"
             :zoomRange="{ start: 10, end: 90 }"
             :darkMode="true"
+            :customOptions="{
+              tooltip: {
+                show: true,
+                trigger: 'axis',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }"
           />
         </div>
       </div>
@@ -53,7 +78,18 @@
             :customOptions="{
               series: [{
                 center: ['50%', '55%']
-              }]
+              }],
+              tooltip: {
+                show: true,
+                trigger: 'item',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
             }"
           />
         </div>
@@ -73,6 +109,17 @@
             :colorPalette="['#4E9BFF', '#FF7B92']"
             legendPosition="bottom"
             :customOptions="{
+              tooltip: {
+                show: true,
+                trigger: 'item',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              },
               radar: {
                 radius: '60%',
                 center: ['50%', '45%']
@@ -94,7 +141,21 @@
         </div>
         <div class="chart-wrapper">
           <InteractivePieLineChart 
-            :chartData="productData"
+            :pieData="productData"
+            :lineData="timeSeriesData"
+            :customOptions="{
+              tooltip: {
+                show: true,
+                trigger: 'item',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }"
             :colorPalette="['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']"
             :darkMode="true"
           />
@@ -127,6 +188,17 @@
               },
               legend: {
                 top: '50px'
+              },
+              tooltip: {
+                show: true,
+                trigger: 'axis',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
               }
             }"
           />
@@ -145,6 +217,19 @@
             lineColor="#6366f1"
             :areaColors="['rgba(99, 102, 241, 0.8)', 'rgba(99, 102, 241, 0.1)']"
             :zoomRange="{ start: 0, end: 15 }"
+            :customOptions="{
+              tooltip: {
+                show: true,
+                trigger: 'axis',
+                confine: true,
+                z: 100,
+                backgroundColor: 'rgba(50,50,50,0.9)',
+                borderColor: '#666',
+                textStyle: {
+                  color: '#fff'
+                }
+              }
+            }"
           />
         </div>
       </div>
