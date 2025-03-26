@@ -90,6 +90,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "echarts",
         component: () => import("../views/chartViews/echartsView.vue"),
       },
+      {
+        path: "highcharts",
+        name: "highcharts",
+        component: () => import("../views/chartViews/highchartsView.vue"),
+      },
     ],
   },
 ];

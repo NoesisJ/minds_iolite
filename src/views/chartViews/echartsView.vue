@@ -1,6 +1,5 @@
 <template>
   <div class="charts-container p-4">
-    <h1 class="text-xl font-semibold mb-6 text-white">数据可视化仪表板</h1>
     
     <!-- 图表网格 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -75,12 +74,13 @@
             legendPosition="bottom"
             :customOptions="{
               radar: {
-                radius: '70%',
-                center: ['50%', '50%']
+                radius: '60%',
+                center: ['50%', '45%']
               },
               legend: {
-                bottom: '0%',
-                padding: [0, 0, 10, 0]
+                bottom: '5%',
+                padding: [0, 0, 20, 0],
+                itemGap: 30
               }
             }"
           />
@@ -154,13 +154,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import SmoothLineChart from '@/components/charts/SmoothLineChart.vue';
-import InteractivePieLineChart from '@/components/charts/InteractivePieLineChart.vue';
-import TimeSeriesLineChart from '@/components/charts/TimeSeriesLineChart.vue';
-import BasicPieChart from '@/components/charts/BasicPieChart.vue';
-import RadarChart from '@/components/charts/RadarChart.vue';
-import MixBarLineChart from '@/components/charts/MixBarLineChart.vue';
-import AreaLineChart from '@/components/charts/AreaLineChart.vue';
+import SmoothLineChart from '@/components/charts/echarts/SmoothLineChart.vue';
+import InteractivePieLineChart from '@/components/charts/echarts/InteractivePieLineChart.vue';
+import TimeSeriesLineChart from '@/components/charts/echarts/TimeSeriesLineChart.vue';
+import BasicPieChart from '@/components/charts/echarts/BasicPieChart.vue';
+import RadarChart from '@/components/charts/echarts/RadarChart.vue';
+import MixBarLineChart from '@/components/charts/echarts/MixBarLineChart.vue';
+import AreaLineChart from '@/components/charts/echarts/AreaLineChart.vue';
 
 // 饼图数据和颜色
 const pieColors = ['#4E9BFF', '#FFC233', '#38BFFF', '#FF7B92', '#4DE6A8'];
@@ -276,6 +276,7 @@ const timeSeriesData = ref(generateTimeData());
 .charts-container {
   background-color: #1a1a1a;
   min-height: 100vh;
+  padding-bottom: 2rem;
 }
 
 .chart-card {
@@ -297,12 +298,12 @@ const timeSeriesData = ref(generateTimeData());
 }
 
 .chart-wrapper {
-  padding: 1rem;
+  padding: 1.5rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 350px;
+  min-height: 420px;
 }
 
 .legend-container {

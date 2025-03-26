@@ -130,6 +130,11 @@ const navMenus = [
         icon: "pi pi-chart-bar",
         route: "/charts/echarts",
       },
+      {
+        label: "HighCharts",
+        icon: "pi pi-chart-bar",
+        route: "/charts/highcharts",
+      }
     ],
   },
 ];
