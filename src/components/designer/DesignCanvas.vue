@@ -24,9 +24,13 @@
           class="region border border-dashed border-gray-300 dark:border-gray-600 p-3 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
           :class="[
             'region-' + region.name.toLowerCase(),
-            selectedRegionId === region.id ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-500' : ''
+            selectedRegionId === region.id ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-500' : '',
+            isDraggingOver && currentDropTarget === region.id ? 'border-blue-500 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/30' : ''
           ]"
           @click.stop="selectRegion(region.id)"
+          @dragover.prevent="onDragOver($event, region.id)"
+          @dragleave="onDragLeave"
+          @drop="onDrop($event, region.id)"
         >
           <div class="region-header mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex justify-between items-center">
             <span>{{ region.name }}</span>
@@ -35,17 +39,35 @@
             </n-tag>
           </div>
           
-          <div class="region-content min-h-[50px] flex items-center justify-center">
+          <div class="region-content min-h-[50px]">
+            <!-- 空区域提示 -->
             <template v-if="region.components.length === 0">
-              <div class="empty-hint text-center text-sm text-gray-500 dark:text-gray-400">
+              <div class="empty-hint text-center text-sm text-gray-500 dark:text-gray-400 py-8">
                 <n-icon :component="AddCircleOutline" size="20" class="mb-1" />
                 <div>将组件拖放到此处</div>
               </div>
             </template>
+            
+            <!-- 渲染区域内组件 -->
             <template v-else>
-              <!-- 组件渲染将在下一阶段实现 -->
-              <div class="text-center text-sm text-gray-600 dark:text-gray-300">
-                {{ region.components.length }} 个组件
+              <div 
+                v-for="component in region.components" 
+                :key="component.id"
+                class="component-instance mb-2 p-2 border border-gray-200 dark:border-gray-700 rounded"
+                :class="{'bg-blue-50 dark:bg-blue-900/20 border-blue-400': selectedComponentId === component.id}"
+                @click.stop="selectComponent(component.id)"
+              >
+                <!-- 组件预览 -->
+                <component-preview :component="component" />
+                
+                <!-- 组件操作按钮 -->
+                <div class="component-actions flex justify-end mt-1">
+                  <n-button quaternary circle size="small" @click.stop="deleteComponent(component.id)">
+                    <template #icon>
+                      <n-icon><CloseOutline /></n-icon>
+                    </template>
+                  </n-button>
+                </div>
               </div>
             </template>
           </div>
@@ -56,19 +78,36 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { AppsOutline, AddCircleOutline } from '@vicons/ionicons5';
+import { AppsOutline, AddCircleOutline, CloseOutline } from '@vicons/ionicons5';
+import ComponentPreview from './ComponentPreview.vue';
 
 const designerStore = useDesignerStore();
 
 // 计算属性
 const currentPage = computed(() => designerStore.currentPage);
 const selectedRegionId = computed(() => designerStore.selectedRegionId);
+const selectedComponentId = computed(() => designerStore.selectedComponentId);
+const isDragging = computed(() => designerStore.isDragging);
+
+// 拖放状态
+const isDraggingOver = ref(false);
+const currentDropTarget = ref('');
 
 // 选择区域
 const selectRegion = (regionId: string) => {
   designerStore.selectRegion(regionId);
+};
+
+// 选择组件
+const selectComponent = (componentId: string) => {
+  designerStore.selectComponent(componentId);
+};
+
+// 删除组件
+const deleteComponent = (componentId: string) => {
+  designerStore.deleteComponent(componentId);
 };
 
 // 获取布局类名
@@ -82,6 +121,29 @@ const getLayoutClass = (layoutType: string) => {
       return 'grid-rows-[auto_1fr_auto]';
     default:
       return '';
+  }
+};
+
+// 拖拽处理
+const onDragOver = (event: DragEvent, regionId: string) => {
+  isDraggingOver.value = true;
+  currentDropTarget.value = regionId;
+};
+
+const onDragLeave = () => {
+  isDraggingOver.value = false;
+  currentDropTarget.value = '';
+};
+
+const onDrop = (event: DragEvent, regionId: string) => {
+  isDraggingOver.value = false;
+  currentDropTarget.value = '';
+  
+  if (event.dataTransfer) {
+    const componentId = event.dataTransfer.getData('componentId');
+    if (componentId) {
+      designerStore.addComponentToRegion(componentId, regionId);
+    }
   }
 };
 </script>

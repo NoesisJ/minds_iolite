@@ -3,13 +3,13 @@
     <div class="left-section flex items-center space-x-4">
       <h1 class="text-xl font-semibold text-gray-800 dark:text-white">页面设计器</h1>
       
-      <div class="page-title" v-if="currentPage">
-        <n-input 
-          v-model:value="pageTitle" 
-          placeholder="页面标题" 
-          class="w-48"
-        />
-      </div>
+      <n-button type="primary" size="small" @click="createNewPage">
+        <template #icon>
+          <n-icon><AddOutline /></n-icon>
+        </template>
+        新页面
+      </n-button>
+      
     </div>
     
     <div class="right-section flex items-center space-x-2">
@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { SaveOutline, EyeOutline, CheckmarkOutline } from '@vicons/ionicons5';
+import { SaveOutline, EyeOutline, CheckmarkOutline, AddOutline } from '@vicons/ionicons5';
 
 const designerStore = useDesignerStore();
 const currentPage = computed(() => designerStore.currentPage);
@@ -60,6 +60,13 @@ watch(pageTitle, (title) => {
     }
   }
 });
+
+// 创建新页面
+const createNewPage = () => {
+  const pageName = `page-${designerStore.pages.length + 1}`;
+  const pageTitle = `新页面 ${designerStore.pages.length + 1}`;
+  designerStore.createPage(pageName, pageTitle);
+};
 </script>
 
 <style scoped>
