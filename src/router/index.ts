@@ -97,6 +97,11 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/designer',
+    name: 'designer',
+    component: () => import("../views/designer/DesignerView.vue")
+  },
 ];
 
 const router = createRouter({

@@ -1,0 +1,69 @@
+/* 设计器主题样式覆盖 */
+.designer-view {
+  /* 基础色彩变量 */
+  --designer-bg-primary: #f8f9fa;
+  --designer-bg-secondary: #ffffff;
+  --designer-border-color: #e5e7eb;
+  --designer-text-primary: #333;
+  --designer-text-secondary: #666;
+  --designer-accent-color: #2563eb;
+  
+  /* 区域样式 */
+  --region-border-color: #ccc;
+  --region-bg-hover: rgba(37, 99, 235, 0.1);
+  --region-selected-border: #2563eb;
+  --region-selected-bg: rgba(37, 99, 235, 0.05);
+}
+
+/* 深色模式 */
+.dark .designer-view {
+  --designer-bg-primary: #1a1a1a;
+  --designer-bg-secondary: #2a2a2a;
+  --designer-border-color: #3a3a3a;
+  --designer-text-primary: #e0e0e0;
+  --designer-text-secondary: #aaa;
+  --region-border-color: #444;
+  --region-bg-hover: rgba(59, 130, 246, 0.2);
+  --region-selected-border: #3b82f6;
+  --region-selected-bg: rgba(59, 130, 246, 0.1);
+}
+
+/* 覆盖Naive UI在设计器中的样式 */
+.designer-view .n-button {
+  font-family: inherit;
+}
+
+.designer-view .n-tabs-tab {
+  color: var(--designer-text-secondary);
+}
+
+.designer-view .n-tabs-tab.n-tabs-tab--active {
+  color: var(--designer-accent-color);
+}
+
+/* 增强区域的可读性 */
+.designer-view .region {
+  border-color: var(--region-border-color);
+  transition: all 0.2s ease;
+}
+
+.designer-view .region:hover {
+  border-color: var(--region-selected-border);
+  background-color: var(--region-bg-hover);
+}
+
+.designer-view .region.selected {
+  border-color: var(--region-selected-border);
+  background-color: var(--region-selected-bg);
+}
+
+/* 改善文本可读性 */
+.designer-view .region-header {
+  color: var(--designer-text-primary) !important;
+}
+
+/* 覆盖表单元素样式 */
+.designer-view .n-input {
+  background-color: var(--designer-bg-secondary);
+  color: var(--designer-text-primary);
+} 

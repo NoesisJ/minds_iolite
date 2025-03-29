@@ -2,8 +2,6 @@ import "./index.css";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
-import PrimeVue from "primevue/config";
-import Aura from "@primeuix/themes/aura";
 import router from "./router";
 import { useApp } from "@/hooks/useApp";
 import "primeicons/primeicons.css";
@@ -11,6 +9,40 @@ import StyleClass from "primevue/styleclass";
 import KeyFilter from "primevue/keyfilter";
 import ToastService from "primevue/toastservice";
 import ConfirmationService from "primevue/confirmationservice";
+import PrimeVue from "primevue/config";
+import Aura from "@primeuix/themes/aura";
+
+// 导入Naive UI组件
+import {
+  create,
+  NButton,
+  NInput,
+  NTabs,
+  NTabPane,
+  NIcon,
+  NSelect,
+  NFormItem,
+  NTag,
+  NTooltip
+} from 'naive-ui'
+
+// 创建Naive UI提供器
+const naive = create({
+  components: [
+    NButton,
+    NInput,
+    NTabs,
+    NTabPane,
+    NIcon,
+    NSelect,
+    NFormItem,
+    NTag,
+    NTooltip
+  ]
+})
+
+// 安装图标库
+// import { install as iconInstall } from '@icon-park/vue-next/es/all'
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -20,6 +52,9 @@ app
   .use(router)
   .use(ToastService)
   .use(ConfirmationService)
+  .use(naive)
+  .directive("keyfilter", KeyFilter)
+  .directive("styleclass", StyleClass)
   .use(PrimeVue, {
     theme: { preset: Aura },
     options: {
@@ -28,11 +63,13 @@ app
       cssLayer: false,
     },
   })
-  .directive("keyfilter", KeyFilter)
-  .directive("styleclass", StyleClass)
-  .mount("#app");
+
+// 安装图标
+// iconInstall(app)
 
 const appStore = useApp();
 if (appStore.isTauri) {
   await appStore.initialize();
 }
+
+app.mount('#app');

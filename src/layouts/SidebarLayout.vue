@@ -137,5 +137,10 @@ const navMenus = [
       }
     ],
   },
+  {
+    label: "设计器",
+    icon: "pi pi-pencil",
+    route: "/designer",
+  },
 ];
 </script>
