@@ -41,9 +41,6 @@ const naive = create({
   ]
 })
 
-// 安装图标库
-// import { install as iconInstall } from '@icon-park/vue-next/es/all'
-
 const app = createApp(App);
 const pinia = createPinia();
 
@@ -64,8 +61,6 @@ app
     },
   })
 
-// 安装图标
-// iconInstall(app)
 
 const appStore = useApp();
 if (appStore.isTauri) {

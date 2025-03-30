@@ -138,6 +138,17 @@ const navMenus = [
     ],
   },
   {
+    label: "表单",
+    icon: "pi pi-pencil",
+    items: [
+      {
+        label: "输入框",
+        icon: "pi pi-pencil",
+        route: "/forms/inputs",
+      },
+    ],  
+  },
+  {
     label: "设计器",
     icon: "pi pi-pencil",
     route: "/designer",

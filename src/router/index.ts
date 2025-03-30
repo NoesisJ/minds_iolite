@@ -1,5 +1,8 @@
 // router/index.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import DatepickerView from '@/views/FormViews/DatepickerView.vue';
+import ButtonsView from '@/views/FormViews/ButtonsView.vue';
+import FormLayoutsView from '@/views/FormViews/FormLayoutsView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -95,6 +98,33 @@ const routes: Array<RouteRecordRaw> = [
         name: "highcharts",
         component: () => import("../views/chartViews/highchartsView.vue"),
       },
+    ],
+  },
+  {
+    path: "/forms",
+    name: "forms",
+    component: ContentLayout,
+    children:  [
+      {
+        path: "inputs",
+        name: "form-inputs",
+        component: InputViews
+      },
+      {
+        path: 'datepicker',
+        name: 'form-datepicker',
+        component: DatepickerView
+      },
+      {
+        path: 'buttons',
+        name: 'form-buttons',
+        component: ButtonsView
+      },
+      {
+        path: 'layouts',
+        name: 'form-layouts',
+        component: FormLayoutsView
+      }
     ],
   },
   {
