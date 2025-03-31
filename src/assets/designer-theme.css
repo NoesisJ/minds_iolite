@@ -1,31 +1,118 @@
-/* 设计器主题样式覆盖 */
+/* 设计器主题样式覆盖 - 迁移后版本 */
 .designer-view {
   /* 基础色彩变量 */
   --designer-bg-primary: #f8f9fa;
   --designer-bg-secondary: #ffffff;
   --designer-border-color: #e5e7eb;
-  --designer-text-primary: #333;
-  --designer-text-secondary: #666;
+  --designer-text-primary: #333333;
+  --designer-text-secondary: #666666;
   --designer-accent-color: #2563eb;
   
-  /* 区域样式 */
-  --region-border-color: #ccc;
-  --region-bg-hover: rgba(37, 99, 235, 0.1);
-  --region-selected-border: #2563eb;
-  --region-selected-bg: rgba(37, 99, 235, 0.05);
+  /* 布局变量 */
+  --designer-header-height: 56px;
+  --designer-panel-width: 260px;
+  --designer-footer-height: 40px;
+  
+  /* 组件变量 */
+  --designer-region-bg: #f9fafb;
+  --designer-region-border: #e5e7eb;
+  --designer-component-bg: #ffffff;
+  --designer-component-border: #d1d5db;
+  --designer-component-selected: rgba(59, 130, 246, 0.5);
+  --designer-component-hover: rgba(59, 130, 246, 0.2);
+  
+  /* 暗色模式变量 */
+  --designer-dark-bg-primary: #1f2937;
+  --designer-dark-bg-secondary: #111827;
+  --designer-dark-border-color: #374151;
+  --designer-dark-text-primary: #f3f4f6;
+  --designer-dark-text-secondary: #d1d5db;
+  
+  /* 暗色模式组件变量 */
+  --designer-dark-region-bg: #111827;
+  --designer-dark-region-border: #374151;
+  --designer-dark-component-bg: #1f2937;
+  --designer-dark-component-border: #4b5563;
+  --designer-dark-component-selected: rgba(59, 130, 246, 0.5);
+  --designer-dark-component-hover: rgba(59, 130, 246, 0.2);
 }
 
-/* 深色模式 */
+/* 暗色模式样式覆盖 */
 .dark .designer-view {
-  --designer-bg-primary: #1a1a1a;
-  --designer-bg-secondary: #2a2a2a;
-  --designer-border-color: #3a3a3a;
-  --designer-text-primary: #e0e0e0;
-  --designer-text-secondary: #aaa;
-  --region-border-color: #444;
-  --region-bg-hover: rgba(59, 130, 246, 0.2);
-  --region-selected-border: #3b82f6;
-  --region-selected-bg: rgba(59, 130, 246, 0.1);
+  color-scheme: dark;
+  
+  --designer-bg-primary: var(--designer-dark-bg-primary);
+  --designer-bg-secondary: var(--designer-dark-bg-secondary);
+  --designer-border-color: var(--designer-dark-border-color);
+  --designer-text-primary: var(--designer-dark-text-primary);
+  --designer-text-secondary: var(--designer-dark-text-secondary);
+  
+  --designer-region-bg: var(--designer-dark-region-bg);
+  --designer-region-border: var(--designer-dark-region-border);
+  --designer-component-bg: var(--designer-dark-component-bg);
+  --designer-component-border: var(--designer-dark-component-border);
+}
+
+/* 改善文本可读性 */
+.designer-view .region-header {
+  color: var(--designer-text-primary) !important;
+}
+
+/* 确保下拉菜单文字可见性 */
+.designer-view .dropdown-menu {
+  color: var(--designer-text-primary) !important;
+}
+
+/* 确保按钮文本在任何背景下都可见 */
+.designer-view .base-button {
+  color: inherit;
+}
+
+/* 确保暗色模式下的文字对比度 */
+.dark .designer-view .text-gray-800 {
+  color: #f3f4f6 !important; /* 覆盖原来的深色文字变成亮色 */
+}
+
+.dark .designer-view .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+.dark .designer-view .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+/* 覆盖表单元素样式 */
+.designer-view .form-control {
+  background-color: var(--designer-bg-secondary);
+  color: var(--designer-text-primary);
+  border-color: var(--designer-border-color);
+}
+
+/* 增强区域的可读性 */
+.designer-view .region {
+  border-color: var(--designer-border-color);
+  transition: all 0.2s ease;
+}
+
+.designer-view .region:hover {
+  border-color: var(--designer-accent-color);
+}
+
+.designer-view .region.selected {
+  border-color: var(--designer-accent-color);
+}
+
+/* 确保文本输入框文字可见 */
+.designer-view input,
+.designer-view select,
+.designer-view textarea {
+  color: var(--designer-text-primary);
+}
+
+/* 纠正按钮和下拉菜单的文字颜色 */
+.designer-view button:not(.base-button),
+.designer-view .dropdown-toggle {
+  color: var(--designer-text-primary);
 }
 
 /* 覆盖Naive UI在设计器中的样式 */
@@ -41,29 +128,46 @@
   color: var(--designer-accent-color);
 }
 
-/* 增强区域的可读性 */
-.designer-view .region {
-  border-color: var(--region-border-color);
-  transition: all 0.2s ease;
+/* 增强页面列表和下拉菜单中的文字对比度 */
+.designer-view .page-item .text-gray-800,
+.dropdown-menu .text-gray-800 {
+  color: #1f2937 !important;
 }
 
-.designer-view .region:hover {
-  border-color: var(--region-selected-border);
-  background-color: var(--region-bg-hover);
+.dark .designer-view .page-item .text-gray-800,
+.dark .dropdown-menu .text-gray-800 {
+  color: #f9fafb !important;
 }
 
-.designer-view .region.selected {
-  border-color: var(--region-selected-border);
-  background-color: var(--region-selected-bg);
+/* 确保输入框中的文字清晰可见 */
+.designer-view input,
+.designer-view select,
+.designer-view textarea {
+  color: #000000 !important;
 }
 
-/* 改善文本可读性 */
-.designer-view .region-header {
-  color: var(--designer-text-primary) !important;
+.dark .designer-view input,
+.dark .designer-view select,
+.dark .designer-view textarea {
+  color: #ffffff !important;
 }
 
-/* 覆盖表单元素样式 */
-.designer-view .n-input {
-  background-color: var(--designer-bg-secondary);
-  color: var(--designer-text-primary);
+/* 确保列表项在所有状态下文字都可见 */
+.designer-view .page-item:hover .text-gray-800 {
+  color: #000000 !important;
+}
+
+.dark .designer-view .page-item:hover .text-gray-800 {
+  color: #ffffff !important;
+}
+
+/* 修复下拉菜单中的文字颜色 */
+.designer-view .dropdown-toggle,
+.designer-view .dropdown-menu {
+  color: #000000 !important;
+}
+
+.dark .designer-view .dropdown-toggle,
+.dark .designer-view .dropdown-menu {
+  color: #ffffff !important;
 } 

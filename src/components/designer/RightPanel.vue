@@ -1,30 +1,64 @@
 <template>
   <div class="right-panel h-full overflow-auto p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-    <!-- 页面属性 -->
-    <div v-if="currentPage && !selectedRegionId && !selectedComponentId">
+    <!-- 调试信息 - 临时启用以查看问题 -->
+    <!-- <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded border">
+      <div>当前页面ID: {{ currentPageId || '无' }}</div>
+      <div>有页面: {{ !!currentPage }}</div>
+      <div>选中区域: {{ selectedRegionId || '无' }}</div>
+      <div>选中组件: {{ selectedComponentId || '无' }}</div>
+      <div>应显示页面属性: {{ showPageProperties }}</div>
+    </div> -->
+
+    <!-- 页面属性面板 -->
+    <div v-if="showPageProperties">
       <h3 class="text-lg font-medium mb-3">页面属性</h3>
       
       <div class="form-group mb-3">
-        <n-form-item label="页面标题">
-          <n-input v-model:value="pageTitle" @update:value="updatePageTitle" />
-        </n-form-item>
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">页面标题</label>
+        <base-input 
+          v-model="pageTitle" 
+          @update:modelValue="updatePageTitle" 
+          class="w-full"
+          placeholder="请输入页面标题"
+        />
       </div>
       
       <div class="form-group mb-3">
-        <n-form-item label="页面名称">
-          <n-input v-model:value="pageName" @update:value="updatePageName" />
-        </n-form-item>
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">页面名称</label>
+        <base-input 
+          v-model="pageName" 
+          @update:modelValue="updatePageName"
+          class="w-full" 
+          placeholder="请输入页面名称"
+        />
       </div>
       
       <div class="form-group mb-3">
-        <n-form-item label="布局类型">
-          <n-select 
-            v-model:value="layoutType" 
-            :options="layoutOptions"
-            @update:value="updateLayoutType"
-            placeholder="选择布局类型"
-          />
-        </n-form-item>
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">布局类型</label>
+        <base-select 
+          v-model="layoutType" 
+          :options="layoutOptions"
+          @update:modelValue="updateLayoutType"
+          placeholder="选择布局类型"
+          class="w-full"
+        />
+      </div>
+      
+      <!-- 布局预览 -->
+      <div v-if="currentLayout" class="mt-4">
+        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">布局预览</div>
+        <div class="border rounded p-3 bg-gray-50 dark:bg-gray-800">
+          <div class="text-sm mb-2 text-center text-blue-500">{{ currentLayout.name }}</div>
+          <div class="grid grid-cols-1 gap-2">
+            <div 
+              v-for="region in currentLayout.regions" 
+              :key="region.id"
+              class="bg-white dark:bg-gray-700 border border-dashed border-gray-300 dark:border-gray-600 p-2 text-center text-xs text-gray-600 dark:text-gray-400"
+            >
+              {{ region.name }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -258,10 +292,10 @@
     </div>
     
     <!-- 未选择任何内容 -->
-    <div v-else class="flex flex-col items-center justify-center h-full text-gray-400">
-      <div class="text-center">
-        <i class="pi pi-arrow-left text-3xl mb-2"></i>
-        <p>请从左侧选择页面<br>或从画布选择区域/组件</p>
+    <div v-else class="h-full flex items-center justify-center">
+      <div class="text-center text-gray-500 dark:text-gray-400">
+        <i class="pi pi-arrow-left text-2xl mb-2"></i>
+        <p>请从左侧选择页面<br>或从画布选择组件</p>
       </div>
     </div>
   </div>
@@ -272,20 +306,26 @@ import { computed, ref, watch } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
 import { getComponentDefinition } from '@/data/componentLibrary';
 import { availableImages, getImageUrl } from '@/assets/imageImports';
+import BaseInput from '@/components/Form/Inputs/BaseInput.vue';
+import BaseSelect from '@/components/Form/Inputs/BaseSelect.vue';
+
+// 调试模式开关
+const debug = false;
 
 const designerStore = useDesignerStore();
 
+// 页面属性相关
+const pageTitle = ref('');
+const pageName = ref('');
+const layoutType = ref('');
+
 // 计算属性
+const currentPageId = computed(() => designerStore.currentPageId);
 const currentPage = computed(() => designerStore.currentPage);
 const selectedRegionId = computed(() => designerStore.selectedRegionId);
 const selectedRegion = computed(() => designerStore.selectedRegion);
 const selectedComponentId = computed(() => designerStore.selectedComponentId);
 const selectedComponent = computed(() => designerStore.selectedComponent);
-
-// 页面属性
-const pageTitle = ref('');
-const pageName = ref('');
-const layoutType = ref('');
 
 // 组件属性
 const componentId = ref('');
@@ -313,12 +353,45 @@ const layoutOptions = computed(() => {
 const imageSourceType = ref('local');
 const localImageName = ref('');
 
+// 强制渲染页面属性面板
+const forceShowPageProperties = true;
+
+// 是否显示页面属性面板 - 修改逻辑
+const showPageProperties = computed(() => {
+  const shouldShow = currentPageId.value && 
+                     currentPage.value && 
+                     !selectedRegionId.value && 
+                     !selectedComponentId.value;
+  
+  console.log('页面属性面板显示状态:', {
+    当前页面ID: currentPageId.value,
+    有当前页面: !!currentPage.value,
+    选中区域ID: selectedRegionId.value,
+    选中组件ID: selectedComponentId.value,
+    应显示: shouldShow
+  });
+  
+  return shouldShow || forceShowPageProperties; // 临时使用强制显示选项
+});
+
+// 获取当前选中的布局
+const currentLayout = computed(() => {
+  if (!layoutType.value) return null;
+  return designerStore.layoutTemplates.find(t => t.id === layoutType.value);
+});
+
 // 监听页面变化
 watch(currentPage, (page) => {
   if (page) {
-    pageTitle.value = page.title;
-    pageName.value = page.name;
-    layoutType.value = page.layoutType;
+    pageTitle.value = page.title || '';
+    pageName.value = page.name || '';
+    layoutType.value = page.layoutType || '';
+    console.log('页面已加载:', page);
+  } else {
+    pageTitle.value = '';
+    pageName.value = '';
+    layoutType.value = '';
+    console.log('无当前页面');
   }
 }, { immediate: true });
 
@@ -348,26 +421,29 @@ watch(selectedComponent, (component) => {
 
 // 更新页面属性
 const updatePageTitle = (value: string) => {
-  if (!currentPage.value) return;
-  
-  const pageIndex = designerStore.pages.findIndex(p => p.id === currentPage.value!.id);
-  if (pageIndex !== -1) {
-    designerStore.pages[pageIndex].title = value;
+  console.log('更新页面标题:', value);
+  if (currentPageId.value) {
+    designerStore.updatePageTitle(currentPageId.value, value);
+  } else {
+    console.warn('无法更新标题: 未选中页面');
   }
 };
 
 const updatePageName = (value: string) => {
-  if (!currentPage.value) return;
-  
-  const pageIndex = designerStore.pages.findIndex(p => p.id === currentPage.value!.id);
-  if (pageIndex !== -1) {
-    designerStore.pages[pageIndex].name = value;
+  console.log('更新页面名称:', value);
+  if (currentPageId.value) {
+    designerStore.updatePageProperty(currentPageId.value, 'name', value);
+  } else {
+    console.warn('无法更新名称: 未选中页面');
   }
 };
 
 const updateLayoutType = (value: string) => {
-  if (value && currentPage.value && value !== currentPage.value.layoutType) {
+  console.log('更新布局类型:', value);
+  if (currentPageId.value) {
     designerStore.applyLayout(value);
+  } else {
+    console.warn('无法更新布局: 未选中页面');
   }
 };
 

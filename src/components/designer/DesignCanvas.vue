@@ -1,75 +1,98 @@
 <template>
-  <div class="design-canvas h-full overflow-auto flex flex-col">
-    <!-- 无页面或布局时显示提示 -->
+  <div class="design-canvas h-full w-full bg-gray-100 dark:bg-gray-900 overflow-auto">
+    <!-- 选择布局提示 -->
     <div 
-      v-if="!currentPage || !currentPage.layoutType" 
-      class="flex-1 flex flex-col items-center justify-center text-gray-500"
+      v-if="!currentPage || !currentPage.layoutType || !currentLayout"
+      class="h-full flex items-center justify-center text-center"
     >
-      <n-icon :component="AppsOutline" size="40" class="mb-4" />
-      <h3 class="text-xl font-medium mb-2">请选择页面布局</h3>
-      <p>从左侧面板选择一个布局模板开始设计</p>
+      <div class="text-gray-500 dark:text-gray-400 max-w-md p-6">
+        <div class="text-5xl mb-4"><i class="pi pi-columns"></i></div>
+        <h3 class="text-xl font-medium mb-2">请选择页面布局</h3>
+        <p class="mb-4">在右侧面板中选择一个布局模板开始设计</p>
+        <base-button 
+          status="primary" 
+          @click="openLayoutSelector"
+          size="medium"
+        >
+          选择布局
+        </base-button>
+      </div>
     </div>
     
-    <!-- 显示页面内容 -->
+    <!-- 页面布局渲染 -->
     <div 
-      v-else 
-      class="page-container flex-1 p-4"
-      :class="'layout-' + currentPage.layoutType"
+      v-else
+      class="page-container min-h-full p-4"
     >
-      <!-- 渲染各个区域 -->
-      <div class="regions-container" :class="getLayoutClass(currentPage.layoutType)">
-        <div 
-          v-for="region in currentPage.regions" 
-          :key="region.id"
-          class="region border border-dashed border-gray-300 dark:border-gray-600 p-3 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
-          :class="[
-            'region-' + region.name.toLowerCase(),
-            selectedRegionId === region.id ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-500' : '',
-            isDraggingOver && currentDropTarget === region.id ? 'border-blue-500 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/30' : ''
-          ]"
-          @click.stop="selectRegion(region.id)"
-          @dragover.prevent="onDragOver($event, region.id)"
-          @dragleave="onDragLeave"
-          @drop="onDrop($event, region.id)"
-        >
-          <div class="region-header mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex justify-between items-center">
-            <span>{{ region.name }}</span>
-            <n-tag :type="region.components.length ? 'info' : 'warning'" size="small">
-              {{ region.components.length }}
-            </n-tag>
-          </div>
-          
-          <div class="region-content min-h-[50px]">
-            <!-- 空区域提示 -->
-            <template v-if="region.components.length === 0">
-              <div class="empty-hint text-center text-sm text-gray-500 dark:text-gray-400 py-8">
-                <n-icon :component="AddCircleOutline" size="20" class="mb-1" />
-                <div>将组件拖放到此处</div>
-              </div>
-            </template>
+      <div 
+        class="layout-container bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+      >
+        <h2 class="text-lg font-medium mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+          {{ currentPage.title }}
+        </h2>
+        
+        <!-- 动态渲染区域 -->
+        <div class="regions-container">
+          <div 
+            v-for="region in currentPage.regions" 
+            :key="region.id"
+            class="region mb-4 p-3 border border-dashed rounded"
+            :class="[
+              getRegionClass(region.id),
+              selectedRegionId === region.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'
+            ]"
+            @click="selectRegion(region.id)"
+            @dragover.prevent="onDragOver($event, region.id)"
+            @drop="onDrop($event, region.id)"
+          >
+            <div class="region-header mb-2 flex justify-between items-center">
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ region.name }}</span>
+              <span class="text-xs text-gray-400 dark:text-gray-500">{{ region.components.length }}个组件</span>
+            </div>
             
-            <!-- 渲染区域内组件 -->
-            <template v-else>
-              <div 
-                v-for="component in region.components" 
+            <!-- 组件渲染 -->
+            <div class="components-container">
+              <div
+                v-for="component in region.components"
                 :key="component.id"
-                class="component-instance mb-2 p-2 border border-gray-200 dark:border-gray-700 rounded"
-                :class="{'bg-blue-50 dark:bg-blue-900/20 border-blue-400': selectedComponentId === component.id}"
+                class="component-wrapper mb-2 relative group"
+                :class="{'border-2 border-blue-500 rounded': selectedComponentId === component.id}"
                 @click.stop="selectComponent(component.id)"
               >
-                <!-- 组件预览 -->
-                <component-preview :component="component" />
-                
-                <!-- 组件操作按钮 -->
-                <div class="component-actions flex justify-end mt-1">
-                  <n-button quaternary circle size="small" @click.stop="deleteComponent(component.id)">
-                    <template #icon>
-                      <n-icon><CloseOutline /></n-icon>
-                    </template>
-                  </n-button>
+                <!-- 组件控制按钮 -->
+                <div class="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <button 
+                    class="p-1 bg-white dark:bg-gray-800 rounded-full shadow text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
+                    @click.stop="openComponentSettings(component.id)"
+                  >
+                    <i class="pi pi-cog text-xs"></i>
+                  </button>
+                  <button 
+                    class="p-1 bg-white dark:bg-gray-800 rounded-full shadow text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+                    @click.stop="removeComponent(component.id)"
+                  >
+                    <i class="pi pi-times text-xs"></i>
+                  </button>
                 </div>
+                
+                <!-- 动态组件 -->
+                <component 
+                  :is="getComponentType(component.type)"
+                  v-bind="component.props"
+                  :style="component.styles"
+                  class="border border-transparent hover:border-gray-300 dark:hover:border-gray-600 rounded p-1"
+                />
               </div>
-            </template>
+              
+              <!-- 空区域提示 -->
+              <div 
+                v-if="region.components.length === 0" 
+                class="empty-region py-6 text-center text-gray-400 dark:text-gray-500 text-sm bg-gray-50 dark:bg-gray-900/30 rounded border border-dashed border-gray-300 dark:border-gray-700"
+              >
+                <div class="mb-2"><i class="pi pi-arrow-down text-lg"></i></div>
+                <div>将组件拖放到此区域</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -78,115 +101,110 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { AppsOutline, AddCircleOutline, CloseOutline } from '@vicons/ionicons5';
-import ComponentPreview from './ComponentPreview.vue';
+import { getComponentType } from '@/utils/componentUtils';
+import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
 
 const designerStore = useDesignerStore();
 
 // 计算属性
 const currentPage = computed(() => designerStore.currentPage);
+const currentLayout = computed(() => {
+  if (!currentPage.value || !currentPage.value.layoutType) return null;
+  return designerStore.layoutTemplates.find(t => t.id === currentPage.value?.layoutType);
+});
 const selectedRegionId = computed(() => designerStore.selectedRegionId);
 const selectedComponentId = computed(() => designerStore.selectedComponentId);
-const isDragging = computed(() => designerStore.isDragging);
 
-// 拖放状态
-const isDraggingOver = ref(false);
-const currentDropTarget = ref('');
-
-// 选择区域
-const selectRegion = (regionId: string) => {
-  designerStore.selectRegion(regionId);
-};
-
-// 选择组件
-const selectComponent = (componentId: string) => {
-  designerStore.selectComponent(componentId);
-};
-
-// 删除组件
-const deleteComponent = (componentId: string) => {
-  designerStore.deleteComponent(componentId);
-};
-
-// 获取布局类名
-const getLayoutClass = (layoutType: string) => {
-  switch (layoutType) {
-    case 'table-layout':
-      return 'grid-rows-[auto_1fr_auto]';
-    case 'dashboard-layout':
-      return 'grid-rows-[auto_1fr] grid-cols-2 gap-4';
-    case 'form-layout':
-      return 'grid-rows-[auto_1fr_auto]';
+// 根据区域ID获取样式类名
+const getRegionClass = (regionId: string) => {
+  if (!currentLayout.value) return '';
+  
+  const regionDef = currentLayout.value.regions.find(r => r.id === regionId);
+  if (!regionDef) return '';
+  
+  // 根据区域类型返回不同的类名
+  switch (regionDef.id) {
+    case 'header':
+      return 'bg-gray-50 dark:bg-gray-900/30';
+    case 'footer':
+      return 'bg-gray-50 dark:bg-gray-900/30';
+    case 'sidebar':
+      return 'bg-gray-50 dark:bg-gray-900/20';
+    case 'left':
+      return 'bg-gray-50 dark:bg-gray-900/20';
+    case 'right':
+      return 'bg-gray-50 dark:bg-gray-900/20';
     default:
-      return '';
+      return 'bg-white dark:bg-gray-800';
   }
 };
 
-// 拖拽处理
+// 方法
+const selectRegion = (regionId: string) => {
+  designerStore.selectedRegionId = regionId;
+  designerStore.selectedComponentId = '';
+};
+
+const selectComponent = (componentId: string) => {
+  designerStore.selectedComponentId = componentId;
+  designerStore.selectedRegionId = '';
+};
+
+const openComponentSettings = (componentId: string) => {
+  designerStore.selectedComponentId = componentId;
+  // 可以在此处添加打开右侧面板的逻辑
+};
+
+const removeComponent = (componentId: string) => {
+  if (confirm('确定要删除此组件吗？')) {
+    designerStore.deleteComponent(componentId);
+  }
+};
+
+// 打开布局选择器
+const openLayoutSelector = () => {
+  // 可以弹出布局选择对话框，或者自动切换到右侧面板
+};
+
+// 处理拖拽事件
 const onDragOver = (event: DragEvent, regionId: string) => {
-  isDraggingOver.value = true;
-  currentDropTarget.value = regionId;
+  event.preventDefault();
+  // 可以添加视觉反馈
+  const target = event.currentTarget as HTMLElement;
+  target.classList.add('bg-blue-50', 'dark:bg-blue-900/10');
 };
 
-const onDragLeave = () => {
-  isDraggingOver.value = false;
-  currentDropTarget.value = '';
-};
-
+// 处理放置事件
 const onDrop = (event: DragEvent, regionId: string) => {
-  isDraggingOver.value = false;
-  currentDropTarget.value = '';
+  event.preventDefault();
   
-  if (event.dataTransfer) {
-    const componentId = event.dataTransfer.getData('componentId');
+  // 移除视觉反馈
+  const target = event.currentTarget as HTMLElement;
+  target.classList.remove('bg-blue-50', 'dark:bg-blue-900/10');
+  
+  try {
+    const componentId = event.dataTransfer?.getData('componentId');
+    
     if (componentId) {
+      console.log('放置组件:', componentId, '到区域:', regionId);
       designerStore.addComponentToRegion(componentId, regionId);
     }
+  } catch (error) {
+    console.error('放置组件失败:', error);
   }
 };
+
+// 初始化
+onMounted(() => {
+  // 可以在此处添加初始化逻辑
+  console.log('设计画布已挂载');
+});
 </script>
 
 <style scoped>
-.layout-table-layout .regions-container {
-  display: grid;
-  height: 100%;
-  grid-template-rows: auto 1fr auto;
-}
-
-.layout-dashboard-layout .regions-container {
-  display: grid;
-  height: 100%;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.layout-dashboard-layout .region-header {
-  grid-column: span 2;
-}
-
-.layout-form-layout .regions-container {
-  display: grid;
-  height: 100%;
-  grid-template-rows: auto 1fr auto;
-}
-
-/* 修复深色模式下的标签颜色 */
-:deep(.n-tag--info) {
-  background-color: rgba(96, 165, 250, 0.2);
-}
-
-:deep(.n-tag--warning) {
-  background-color: rgba(251, 146, 60, 0.2);
-}
-
-.dark :deep(.n-tag--info) {
-  color: #93c5fd;
-}
-
-.dark :deep(.n-tag--warning) {
-  color: #fdba74;
+.design-canvas {
+  height: calc(100vh - var(--designer-header-height, 56px));
 }
 </style>

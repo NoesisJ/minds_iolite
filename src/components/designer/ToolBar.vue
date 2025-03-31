@@ -3,89 +3,166 @@
     <div class="left-section flex items-center space-x-4">
       <h1 class="text-xl font-semibold text-gray-800 dark:text-white">页面设计器</h1>
       
-      <n-button type="primary" size="small" @click="createNewPage">
-        <template #icon>
-          <n-icon><AddOutline /></n-icon>
-        </template>
+      <base-button status="primary" size="small" @click="createNewPage" class="flex items-center">
+        <i class="pi pi-plus mr-1.5"></i>
         新页面
-      </n-button>
+      </base-button>
       
+      <div class="relative">
+        <base-button status="default" size="small" @click="togglePageMenu" class="flex items-center min-w-[120px]">
+          <span class="text-gray-700 dark:text-gray-200">{{ currentPageName || '选择页面' }}</span>
+          <i class="pi pi-chevron-down ml-1.5 text-gray-500 dark:text-gray-400"></i>
+        </base-button>
+        
+        <div v-show="showPageMenu" class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-10 w-48">
+          <div class="py-1 max-h-[250px] overflow-y-auto">
+            <div 
+              v-for="page in designerStore.pages" 
+              :key="page.id"
+              @click="handlePageSelection(page.id)"
+              class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between text-gray-700 dark:text-gray-200"
+            >
+              <span>{{ page.title }}</span>
+              <i v-if="page.id === currentPageId" class="pi pi-check text-green-500"></i>
+            </div>
+            <div v-if="designerStore.pages.length === 0" class="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm italic">
+              无可用页面
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <base-button 
+        status="default" 
+        size="small" 
+        @click="openPageSettings"
+        :disabled="!currentPageId"
+        class="flex items-center"
+      >
+        <i class="pi pi-cog mr-1.5"></i>
+        <span class="text-gray-700 dark:text-gray-200">页面设置</span>
+      </base-button>
     </div>
     
-    <div class="right-section flex items-center space-x-2">
-      <n-button type="default" size="small" class="designer-btn">
-        <template #icon>
-          <n-icon><SaveOutline /></n-icon>
-        </template>
-        保存
-      </n-button>
-      <n-button type="info" size="small" class="designer-btn">
-        <template #icon>
-          <n-icon><EyeOutline /></n-icon>
-        </template>
-        预览
-      </n-button>
-      <n-button type="success" size="small" class="designer-btn">
-        <template #icon>
-          <n-icon><CheckmarkOutline /></n-icon>
-        </template>
-        发布
-      </n-button>
+    <div class="right-section flex items-center space-x-4">
+      <base-button 
+        status="info" 
+        size="small" 
+        @click="previewPage"
+        :disabled="!currentPageId"
+        class="flex items-center"
+      >
+        <i class="pi pi-eye mr-1.5"></i>
+        <span class="text-white">预览</span>
+      </base-button>
+      
+      <base-button 
+        status="success" 
+        size="small" 
+        @click="savePage"
+        :disabled="!currentPageId"
+        class="flex items-center"
+      >
+        <i class="pi pi-save mr-1.5"></i>
+        <span class="text-white">保存</span>
+      </base-button>
+      
+      <div class="theme-toggle cursor-pointer p-2" @click="toggleTheme">
+        <i class="pi" :class="[isDarkMode ? 'pi-sun text-yellow-400' : 'pi-moon text-indigo-600']"></i>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { SaveOutline, EyeOutline, CheckmarkOutline, AddOutline } from '@vicons/ionicons5';
+import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
 
 const designerStore = useDesignerStore();
-const currentPage = computed(() => designerStore.currentPage);
-const pageTitle = ref('');
 
-// 监听当前页面变化，更新标题
-watch(() => currentPage.value, (page) => {
-  if (page) {
-    pageTitle.value = page.title;
-  }
-}, { immediate: true });
+// 状态管理
+const showPageMenu = ref(false);
+const isDarkMode = ref(false);
 
-// 监听标题变化，更新页面
-watch(pageTitle, (title) => {
-  if (currentPage.value) {
-    const pageIndex = designerStore.pages.findIndex(p => p.id === currentPage.value!.id);
-    if (pageIndex !== -1) {
-      designerStore.pages[pageIndex].title = title;
-    }
-  }
+// 计算属性
+const currentPageId = computed(() => designerStore.currentPageId);
+const currentPageName = computed(() => {
+  const currentPage = designerStore.pages.find(page => page.id === currentPageId.value);
+  return currentPage ? currentPage.title : '';
 });
 
-// 创建新页面
+// 方法
 const createNewPage = () => {
-  const pageName = `page-${designerStore.pages.length + 1}`;
-  const pageTitle = `新页面 ${designerStore.pages.length + 1}`;
-  designerStore.createPage(pageName, pageTitle);
+  console.log('创建新页面');
+  const newPageId = designerStore.createPage();
+  console.log('新页面已创建，ID:', newPageId);
 };
+
+const togglePageMenu = () => {
+  showPageMenu.value = !showPageMenu.value;
+};
+
+const handlePageSelection = (pageId: string) => {
+  console.log('工具栏选择页面:', pageId);
+  
+  // 调用 Store 的方法，而不是直接设置属性
+  designerStore.selectPage(pageId);
+  
+  // 关闭菜单
+  setTimeout(() => {
+    showPageMenu.value = false;
+  }, 50);
+};
+
+const openPageSettings = () => {
+  // 实现页面设置功能
+  console.log('打开页面设置');
+};
+
+const previewPage = () => {
+  // 实现预览功能
+  console.log('预览页面');
+};
+
+const savePage = () => {
+  // 实现保存功能
+  console.log('保存页面');
+};
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  localStorage.setItem('darkMode', isDarkMode.value ? 'true' : 'false');
+};
+
+// 初始化主题
+onMounted(() => {
+  const savedTheme = localStorage.getItem('darkMode');
+  if (savedTheme === 'true') {
+    isDarkMode.value = true;
+    document.documentElement.classList.add('dark');
+  }
+  
+  // 点击外部关闭下拉菜单
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.relative') && showPageMenu.value) {
+      showPageMenu.value = false;
+    }
+  });
+});
 </script>
 
 <style scoped>
-.designer-btn {
-  padding: 0.25rem 0.75rem;
+.toolbar {
+  height: 56px;
 }
 
 :deep(.n-button) {
-  font-size: 0.875rem;
+  font-weight: 500;
 }
 
-:deep(.n-input) {
-  background-color: #f5f5f5;
-  border-color: #e5e7eb;
-}
-
-.dark :deep(.n-input) {
-  background-color: #374151;
+.dark :deep(.n-button) {
   border-color: #4b5563;
-  color: #e5e7eb;
 }
 </style>

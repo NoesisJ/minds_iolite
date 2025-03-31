@@ -1,174 +1,230 @@
 <template>
-  <div class="left-panel h-full flex flex-col overflow-hidden">
-    <n-tabs type="line" class="flex-1 flex flex-col" animated>
-      <!-- 页面管理选项卡 -->
-      <n-tab-pane name="pages" tab="页面">
-        <div class="p-3 flex-1 overflow-auto">
-          <div class="mb-3 flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">页面列表</h3>
-            <n-button size="small" type="primary" @click="createNewPage">
-              <template #icon>
-                <n-icon><AddOutline /></n-icon>
-              </template>
-              添加
-            </n-button>
-          </div>
-          
-          <div class="pages-list">
-            <div 
-              v-for="page in pages" 
-              :key="page.id"
-              :class="['page-item p-2 rounded cursor-pointer mb-1 text-gray-700 dark:text-gray-300', 
-                       currentPageId === page.id ? 'bg-blue-100 dark:bg-blue-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-800']"
-              @click="selectPage(page.id)"
-            >
-              <div class="font-medium">{{ page.title }}</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">{{ page.name }}</div>
+  <div class="left-panel h-full overflow-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+    <!-- 标签页替换 -->
+    <div class="tabs border-b border-gray-200 dark:border-gray-700">
+      <div class="flex">
+        <button 
+          @click="activeTab = 'components'" 
+          class="flex-1 py-3 font-medium text-sm text-center transition-colors"
+          :class="activeTab === 'components' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600 dark:text-gray-300'"
+        >
+          组件
+        </button>
+        <button 
+          @click="activeTab = 'pages'" 
+          class="flex-1 py-3 font-medium text-sm text-center transition-colors"
+          :class="activeTab === 'pages' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600 dark:text-gray-300'"
+        >
+          页面
+        </button>
+      </div>
+    </div>
+    
+    <!-- 组件标签内容 -->
+    <div v-show="activeTab === 'components'" class="p-4">
+      <!-- 组件分类选择 -->
+      <div class="mb-4">
+        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">组件分类</div>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            v-for="category in componentCategories" 
+            :key="category.id"
+            @click="activeCategory = category.id"
+            class="px-3 py-1 text-xs rounded-full transition-colors"
+            :class="activeCategory === category.id ? 
+              'bg-blue-500 text-white' : 
+              'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'"
+          >
+            {{ category.name }}
+          </button>
+        </div>
+      </div>
+      
+      <!-- 组件列表 -->
+      <div>
+        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">可用组件</div>
+        <div class="grid grid-cols-2 gap-2">
+          <div 
+            v-for="component in filteredComponents" 
+            :key="component.id"
+            class="component-item p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:border-blue-400 dark:hover:border-blue-400 transition-colors"
+            draggable="true"
+            @dragstart="onDragStart($event, component.id)"
+          >
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500 mr-2">
+                <i class="pi" :class="component.icon"></i>
+              </div>
+              <div class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                {{ component.name }}
+              </div>
             </div>
           </div>
         </div>
-      </n-tab-pane>
+      </div>
+    </div>
+    
+    <!-- 页面标签内容 -->
+    <div v-show="activeTab === 'pages'" class="p-4">
+      <div class="flex justify-between items-center mb-3">
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">页面管理</div>
+        <button 
+          @click="createNewPage"
+          class="p-1 rounded text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+        >
+          <i class="pi pi-plus text-sm"></i>
+        </button>
+      </div>
       
-      <!-- 布局选项卡 -->
-      <n-tab-pane name="layouts" tab="布局">
-        <div class="p-3">
-          <h3 class="text-lg font-medium mb-3 text-gray-800 dark:text-gray-200">可用布局</h3>
-          
-          <div class="layout-grid grid grid-cols-2 gap-2">
-            <div 
-              v-for="layout in layoutTemplates" 
-              :key="layout.id"
-              class="layout-card border border-gray-200 dark:border-gray-700 rounded overflow-hidden cursor-pointer hover:shadow-sm"
-              @click="applyLayout(layout.id)"
-            >
-              <div class="layout-preview h-20 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                <i class="pi pi-th-large text-gray-400 dark:text-gray-600 text-xl"></i>
-              </div>
-              <div class="layout-name p-2 text-center text-sm text-gray-700 dark:text-gray-300">
-                {{ layout.name }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </n-tab-pane>
-      
-      <!-- 组件库选项卡 -->
-      <n-tab-pane name="components" tab="组件">
-        <div class="p-3 flex-1 overflow-auto">
-          <h3 class="text-lg font-medium mb-3 text-gray-800 dark:text-gray-200">组件库</h3>
-          
-          <!-- 组件分类循环 -->
-          <div class="mb-4" v-for="category in componentCategories" :key="category.id">
-            <h4 class="text-md font-medium mb-2 text-gray-700 dark:text-gray-300">{{ category.name }}</h4>
+      <div class="pages-list space-y-2">
+        <div 
+          v-for="page in designerStore.pages" 
+          :key="page.id"
+          @click="selectPage(page.id)"
+          class="page-item p-2 rounded border cursor-pointer flex items-center justify-between"
+          :class="currentPageId === page.id ? 
+            'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-500' : 
+            'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-400'"
+        >
+          <div class="flex items-center flex-grow overflow-hidden">
+            <i class="pi pi-file-o mr-2 text-gray-500 flex-shrink-0"></i>
             
-            <div class="component-grid grid grid-cols-2 gap-2">
-              <div 
-                v-for="component in getComponentsByCategory(category.id)" 
-                :key="component.id"
-                class="component-card p-2 border border-gray-200 dark:border-gray-700 rounded text-center cursor-move hover:bg-gray-50 dark:hover:bg-gray-800"
-                draggable="true"
-                @dragstart="onDragStart($event, component.id)"
-                @dragend="onDragEnd"
-              >
-                <div class="component-icon mb-1">
-                  <i :class="[component.icon, 'text-blue-500 text-lg']"></i>
-                </div>
-                <div class="component-name text-sm text-gray-700 dark:text-gray-300">
-                  {{ component.name }}
-                </div>
-              </div>
-            </div>
+            <!-- 内联编辑模式 -->
+            <input 
+              v-if="editingPageId === page.id"
+              v-model="editingTitle"
+              @keydown.enter="savePageTitle(page.id)"
+              @blur="savePageTitle(page.id)"
+              @click.stop
+              :ref="el => { if (el) inputElement = el }"
+              class="w-full bg-white dark:bg-gray-700 border border-blue-400 dark:border-blue-500 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+            
+            <!-- 普通显示模式 -->
+            <span 
+              v-else
+              class="text-gray-800 dark:text-gray-200 truncate"
+              @dblclick.stop="startEditingPage(page)"
+            >
+              {{ page.title || "未命名页面" }}
+            </span>
+          </div>
+          
+          <div class="flex space-x-1 flex-shrink-0 ml-2">
+            <button 
+              class="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
+              @click.stop="startEditingPage(page)"
+            >
+              <i class="pi pi-pencil text-xs"></i>
+            </button>
+            <button 
+              class="p-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+              @click.stop="deletePage(page.id)"
+            >
+              <i class="pi pi-trash text-xs"></i>
+            </button>
           </div>
         </div>
-      </n-tab-pane>
-    </n-tabs>
+        
+        <div v-if="designerStore.pages.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm italic">
+          暂无页面，请点击上方"+"创建
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { 
-  allComponents, 
-  componentCategories,
-  getComponentDefinition 
-} from '@/data/componentLibrary';
-import { AddOutline } from '@vicons/ionicons5';
+import { componentCategories, baseComponents } from '@/data/componentLibrary';
+import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
 
 const designerStore = useDesignerStore();
 
+// 状态
+const activeTab = ref('components');
+const activeCategory = ref('basic'); // 默认显示基础组件
+
+// 页面编辑相关状态
+const editingPageId = ref('');
+const editingTitle = ref('');
+let inputElement: HTMLInputElement | null = null;
+
 // 计算属性
-const pages = computed(() => designerStore.pages);
 const currentPageId = computed(() => designerStore.currentPageId);
-const layoutTemplates = computed(() => designerStore.layoutTemplates);
 
-// 创建新页面
-const createNewPage = () => {
-  const pageName = `page-${pages.value.length + 1}`;
-  const pageTitle = `新页面 ${pages.value.length + 1}`;
-  designerStore.createPage(pageName, pageTitle);
+const filteredComponents = computed(() => {
+  return baseComponents.filter(component => component.category === activeCategory.value);
+});
+
+// 方法
+const onDragStart = (event, componentId) => {
+  console.log('开始拖拽组件:', componentId);
+  // 设置拖动数据
+  event.dataTransfer.setData('componentId', componentId);
+  event.dataTransfer.effectAllowed = 'copy';
 };
 
-// 选择页面
 const selectPage = (pageId: string) => {
-  designerStore.selectPage(pageId);
-};
-
-// 应用布局
-const applyLayout = (layoutId: string) => {
-  designerStore.applyLayout(layoutId);
-};
-
-// 根据分类获取组件
-const getComponentsByCategory = (categoryId: string) => {
-  return allComponents.filter(comp => comp.category === categoryId);
-};
-
-// 拖拽处理
-const onDragStart = (event: DragEvent, componentId: string) => {
-  if (event.dataTransfer) {
-    event.dataTransfer.setData('componentId', componentId);
-    event.dataTransfer.effectAllowed = 'copy';
+  // 如果正在编辑，先保存
+  if (editingPageId.value) {
+    savePageTitle(editingPageId.value);
   }
-  designerStore.startDrag(componentId);
+  
+  designerStore.currentPageId = pageId;
+  designerStore.selectedComponentId = '';
+  designerStore.selectedRegionId = '';
 };
 
-const onDragEnd = () => {
-  designerStore.endDrag();
+const createNewPage = () => {
+  designerStore.createPage();
+};
+
+// 开始编辑页面标题
+const startEditingPage = (page: any) => {
+  // 如果已经在编辑，先保存当前编辑
+  if (editingPageId.value) {
+    savePageTitle(editingPageId.value);
+  }
+  
+  editingPageId.value = page.id;
+  editingTitle.value = page.title || '';
+  
+  // 在下一个更新周期聚焦到输入框
+  nextTick(() => {
+    if (inputElement) {
+      inputElement.focus();
+      inputElement.select();
+    }
+  });
+};
+
+// 保存页面标题
+const savePageTitle = (pageId: string) => {
+  if (editingTitle.value.trim() !== '') {
+    designerStore.updatePageTitle(pageId, editingTitle.value.trim());
+  }
+  editingPageId.value = '';
+};
+
+const deletePage = (pageId) => {
+  if (confirm('确定要删除此页面吗?')) {
+    designerStore.deletePage(pageId);
+  }
 };
 </script>
 
 <style scoped>
-:deep(.n-tabs-tab) {
-  color: #555;
+.left-panel {
+  width: var(--designer-panel-width, 260px);
 }
 
-.dark :deep(.n-tabs-tab) {
-  color: #aaa;
+.component-item {
+  transition: transform 0.2s;
 }
 
-:deep(.n-tabs-tab.n-tabs-tab--active) {
-  color: #2563eb;
-}
-
-:deep(.n-tabs-tab-wrapper) {
-  justify-content: center;
-}
-
-:deep(.n-tabs-pane-wrapper) {
-  flex: 1;
-  overflow-y: auto;
-}
-
-:deep(.n-tabs) {
-  height: 100%;
-}
-
-:deep(.n-tabs-tab) {
-  padding: 12px 8px;
-}
-
-:deep(.n-tabs-tab__label) {
-  font-size: 14px;
+.component-item:active {
+  transform: scale(0.98);
 }
 </style>

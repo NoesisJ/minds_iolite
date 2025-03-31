@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ComponentInstance, Page, Region, LayoutTemplate } from '../types/designer';
 import { createComponentInstance } from '@/data/componentLibrary';
 import { nextTick } from 'vue';
+import { baseComponents } from '@/data/componentLibrary';
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
@@ -85,22 +86,27 @@ export const useDesignerStore = defineStore('designer', {
   
   actions: {
     // 创建新页面
-    createPage(name: string, title: string) {
-      const id = uuidv4();
+    createPage() {
+      // 生成页面序号，如 1, 2, 3...
+      const pageNumber = this.pages.length + 1;
+      
+      const pageId = uuidv4();
       const newPage: Page = {
-        id,
-        name,
-        title,
+        id: pageId,
+        name: `page_${pageNumber}`,
+        title: `新页面 ${pageNumber}`,
         layoutType: '',
         regions: [],
         settings: {}
       };
       
       this.pages.push(newPage);
-      this.currentPageId = id;
+      this.currentPageId = pageId;
       this.selectedComponentId = '';
       this.selectedRegionId = '';
-      return id;
+      
+      console.log('新页面已创建:', pageId);
+      return pageId;
     },
     
     // 删除页面
@@ -113,31 +119,24 @@ export const useDesignerStore = defineStore('designer', {
     
     // 选择页面
     selectPage(pageId: string) {
+      console.log('选择页面:', pageId);
       this.currentPageId = pageId;
+      // 确保清除选中的组件和区域
       this.selectedComponentId = '';
       this.selectedRegionId = '';
+    },
+    
+    // 处理页面选择 - 从工具栏调用
+    handlePageSelection(pageId: string) {
+      console.log('工具栏选择页面:', pageId);
+      this.selectPage(pageId);
     },
     
     // 应用布局模板
     applyLayout(layoutId: string) {
       if (!this.currentPageId) return;
       
-      const template = this.layoutTemplates.find(t => t.id === layoutId);
-      if (!template) return;
-      
-      const pageIndex = this.pages.findIndex(p => p.id === this.currentPageId);
-      if (pageIndex === -1) return;
-      
-      // 创建区域
-      const regions: Region[] = template.regions.map(r => ({
-        id: uuidv4(),
-        name: r.name,
-        components: []
-      }));
-      
-      // 更新页面
-      this.pages[pageIndex].layoutType = layoutId;
-      this.pages[pageIndex].regions = regions;
+      this.setPageLayout(this.currentPageId, layoutId);
     },
     
     // 选择组件
@@ -165,22 +164,37 @@ export const useDesignerStore = defineStore('designer', {
     },
     
     // 添加组件到区域
-    addComponentToRegion(componentTypeId: string, regionId: string) {
+    addComponentToRegion(componentId: string, regionId: string) {
       const pageIndex = this.pages.findIndex(p => p.id === this.currentPageId);
-      if (pageIndex === -1) return;
+      if (pageIndex === -1) {
+        console.warn('无法添加组件：当前页面不存在');
+        return;
+      }
       
       const regionIndex = this.pages[pageIndex].regions.findIndex(r => r.id === regionId);
-      if (regionIndex === -1) return;
+      if (regionIndex === -1) {
+        console.warn('无法添加组件：目标区域不存在', regionId);
+        return;
+      }
       
-      const componentInstance = createComponentInstance(componentTypeId);
-      if (!componentInstance) return;
+      // 获取组件定义
+      const componentDef = baseComponents.find(c => c.id === componentId);
+      if (!componentDef) {
+        console.warn('无法添加组件：组件不存在', componentId);
+        return;
+      }
       
-      // 添加组件实例到区域
+      // 创建组件实例
+      const componentInstance = createComponentInstance(componentDef);
+      
+      // 添加到区域
       this.pages[pageIndex].regions[regionIndex].components.push(componentInstance);
       
-      // 自动选择新添加的组件
+      // 选中新添加的组件
       this.selectedComponentId = componentInstance.id;
       this.selectedRegionId = '';
+      
+      console.log('组件已添加到区域', componentInstance);
     },
     
     // 移动组件
@@ -263,6 +277,59 @@ export const useDesignerStore = defineStore('designer', {
           break;
         }
       }
+    },
+    
+    // 更新页面属性
+    updatePageProperty(pageId: string, property: string, value: any) {
+      const pageIndex = this.pages.findIndex(p => p.id === pageId);
+      if (pageIndex === -1) {
+        console.warn('无法更新页面属性: 页面不存在', pageId, property);
+        return;
+      }
+      
+      console.log('更新页面属性:', pageId, property, value);
+      // 使用解构和对象传播创建新对象以保持响应式
+      this.pages[pageIndex] = {
+        ...this.pages[pageIndex],
+        [property]: value
+      };
+    },
+    
+    // 设置页面布局
+    setPageLayout(pageId: string, layoutId: string) {
+      const pageIndex = this.pages.findIndex(p => p.id === pageId);
+      if (pageIndex === -1) return;
+      
+      const layout = this.layoutTemplates.find(l => l.id === layoutId);
+      if (!layout) return;
+      
+      // 更新布局类型
+      this.pages[pageIndex].layoutType = layoutId;
+      
+      // 创建区域
+      const regions: Region[] = layout.regions.map(regionDef => ({
+        id: uuidv4(),
+        name: regionDef.name,
+        components: []
+      }));
+      
+      // 更新区域
+      this.pages[pageIndex].regions = regions;
+    },
+    
+    // 如果 updatePageTitle 方法不存在，添加它
+    updatePageTitle(pageId: string, title: string) {
+      this.updatePageProperty(pageId, 'title', title);
+    },
+    
+    // 创建组件实例
+    createComponent(type: string, props = {}) {
+      return {
+        id: uuidv4(),
+        type,
+        props,
+        styles: {}
+      };
     }
   }
 }); 

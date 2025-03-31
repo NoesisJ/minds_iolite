@@ -1,5 +1,6 @@
 import { ComponentDefinition } from '@/types/designer';
 import { v4 as uuidv4 } from 'uuid';
+import { ComponentInstance } from '@/types/designer';
 
 // 基础组件库
 export const baseComponents: ComponentDefinition[] = [
@@ -146,16 +147,12 @@ export function getComponentDefinition(id: string): ComponentDefinition | undefi
 }
 
 // 创建组件实例
-export function createComponentInstance(componentId: string) {
-  const definition = getComponentDefinition(componentId);
-  if (!definition) return null;
-  
+export function createComponentInstance(componentDef: any): ComponentInstance {
   return {
     id: uuidv4(),
-    componentId,
-    props: { ...definition.defaultProps },
-    styles: { ...definition.defaultStyles },
-    events: []
+    type: componentDef.type,
+    props: { ...componentDef.defaultProps || {} },
+    styles: { ...componentDef.defaultStyles || {} }
   };
 }
 

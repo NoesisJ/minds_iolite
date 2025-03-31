@@ -2,28 +2,31 @@
   <div class="relative">
     <select
       :value="modelValue"
-      :disabled="disabled"
       @change="$emit('update:modelValue', $event.target.value)"
+      :disabled="disabled"
+      :required="required"
       :class="[
-        'block w-full appearance-none',
-        'bg-white dark:bg-gray-700 border dark:border-gray-600',
-        'text-gray-900 dark:text-gray-100',
-        'pr-8', // 为下拉箭头留出空间
+        'appearance-none w-full transition-colors outline-none',
         getShapeClasses(),
         getSizeClasses(),
         getStatusClasses(),
-        disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+        disabled ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : 'bg-white dark:bg-gray-700'
       ]"
     >
       <option v-if="placeholder" value="" disabled selected>{{ placeholder }}</option>
-      <option v-for="option in options" :key="option.value" :value="option.value">
+      <option 
+        v-for="option in options" 
+        :key="option.value" 
+        :value="option.value"
+        :disabled="option.disabled"
+      >
         {{ option.label }}
       </option>
     </select>
-    <!-- 自定义下拉箭头 -->
-    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-      <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-        <path d="M7 10l5 5 5-5H7z"></path>
+    
+    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
       </svg>
     </div>
   </div>
@@ -43,16 +46,15 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: ''
+    default: '请选择'
   },
   disabled: {
     type: Boolean,
     default: false
   },
-  shape: {
-    type: String,
-    default: 'rectangle',
-    validator: (val) => ['rectangle', 'semi-round', 'round'].includes(val)
+  required: {
+    type: Boolean,
+    default: false
   },
   size: {
     type: String,
@@ -63,6 +65,11 @@ const props = defineProps({
     type: String,
     default: '',
     validator: (val) => ['', 'info', 'success', 'warning', 'danger', 'primary'].includes(val)
+  },
+  shape: {
+    type: String,
+    default: 'rectangle',
+    validator: (val) => ['rectangle', 'semi-round', 'round'].includes(val)
   }
 });
 
@@ -86,12 +93,18 @@ function getSizeClasses() {
 
 function getStatusClasses() {
   switch (props.status) {
-    case 'info': return 'border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500';
-    case 'success': return 'border-green-500 focus:border-green-500 focus:ring-1 focus:ring-green-500';
-    case 'warning': return 'border-yellow-500 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500';
-    case 'danger': return 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500';
-    case 'primary': return 'border-purple-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500';
-    default: return 'border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400';
+    case 'info':
+      return 'border-2 border-blue-500 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-gray-100';
+    case 'success':
+      return 'border-2 border-green-500 focus:ring-2 focus:ring-green-500 text-gray-900 dark:text-gray-100';
+    case 'warning':
+      return 'border-2 border-yellow-500 focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-gray-100';
+    case 'danger':
+      return 'border-2 border-red-500 focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-gray-100';
+    case 'primary':
+      return 'border-2 border-purple-500 focus:ring-2 focus:ring-purple-500 text-gray-900 dark:text-gray-100';
+    default:
+      return 'border border-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 text-gray-900 dark:text-gray-100';
   }
 }
 </script> 
