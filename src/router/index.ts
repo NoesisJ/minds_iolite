@@ -103,27 +103,26 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/forms",
     name: "forms",
-    component: ContentLayout,
-    children:  [
+    children: [
       {
         path: "inputs",
         name: "form-inputs",
-        component: InputViews
+        component: () => import("../views/FormViews/InputViews.vue"),
       },
       {
         path: 'datepicker',
         name: 'form-datepicker',
-        component: DatepickerView
+        component: () => import("../views/FormViews/DatepickerView.vue"),
       },
       {
         path: 'buttons',
         name: 'form-buttons',
-        component: ButtonsView
+        component: () => import("../views/FormViews/ButtonsView.vue"),
       },
       {
         path: 'layouts',
         name: 'form-layouts',
-        component: FormLayoutsView
+        component: () => import("../views/FormViews/FormLayoutsView.vue"),
       }
     ],
   },

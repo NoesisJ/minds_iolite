@@ -146,6 +146,21 @@ const navMenus = [
         icon: "pi pi-pencil",
         route: "/forms/inputs",
       },
+      {
+        label: "日期选择器",
+        icon: "pi pi-pencil",
+        route: "/forms/datepicker",
+      },
+      {
+        label: "按钮",
+        icon: "pi pi-pencil",
+        route: "/forms/buttons",
+      },
+      {
+        label: "表单布局",
+        icon: "pi pi-pencil",
+        route: "/forms/layouts",
+      },
     ],  
   },
   {
