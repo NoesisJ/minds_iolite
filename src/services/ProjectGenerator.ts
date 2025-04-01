@@ -119,7 +119,7 @@ export class ProjectGenerator {
       console.log('ZIP文件总数:', Object.keys(this.zip.files).length);
       
       try {
-        // 生成ZIP文件内容
+        // 生成ZIP文件内容 - 尝试较小的压缩选项
         const content = await this.zip.generateAsync({ 
           type: 'blob'
         });
@@ -129,14 +129,26 @@ export class ProjectGenerator {
         
         console.log('生成ZIP成功，大小:', size, 'bytes');
         
-        // 使用 file-saver 库保存文件
-        saveAs(content, filename);
+        // 尝试使用更直接的方式保存文件
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(content);
+        
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        
+        // 清理
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
         
         this.callbacks.onComplete(size);
         this.callbacks.onLog('项目下载完成', 'success');
       } catch (zipError) {
         console.error('生成ZIP出错:', zipError);
-        throw new Error('生成ZIP文件失败: ' + (zipError instanceof Error ? zipError.message : String(zipError)));
+        throw new Error('生成ZIP文件失败: ' + zipError.message);
       }
     } catch (error) {
       console.error('下载错误:', error);

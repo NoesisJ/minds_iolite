@@ -149,7 +149,7 @@ const activeCategory = ref('basic'); // 默认显示基础组件
 // 页面编辑相关状态
 const editingPageId = ref('');
 const editingTitle = ref('');
-const inputElement = ref<HTMLInputElement | null>(null);
+let inputElement: HTMLInputElement | null = null;
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -159,7 +159,7 @@ const filteredComponents = computed(() => {
 });
 
 // 方法
-const onDragStart = (event: DragEvent, componentId: string) => {
+const onDragStart = (event, componentId) => {
   console.log('开始拖拽组件:', componentId);
   // 设置拖动数据
   event.dataTransfer.setData('componentId', componentId);
@@ -193,9 +193,9 @@ const startEditingPage = (page: any) => {
   
   // 在下一个更新周期聚焦到输入框
   nextTick(() => {
-    if (inputElement.value) {
-      inputElement.value.focus();
-      inputElement.value.select();
+    if (inputElement) {
+      inputElement.focus();
+      inputElement.select();
     }
   });
 };
@@ -208,7 +208,7 @@ const savePageTitle = (pageId: string) => {
   editingPageId.value = '';
 };
 
-const deletePage = (pageId: string) => {
+const deletePage = (pageId) => {
   if (confirm('确定要删除此页面吗?')) {
     designerStore.deletePage(pageId);
   }
