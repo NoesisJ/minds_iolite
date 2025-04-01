@@ -76,8 +76,11 @@
                 </div>
                 
                 <!-- 动态组件 -->
+                <div>
+                  Debug: ComponentID: {{ component.componentId }}
+                </div>
                 <component 
-                  :is="getComponentType(component.type)"
+                  :is="getComponentType(component.componentId)"
                   v-bind="component.props"
                   :style="component.styles"
                   class="border border-transparent hover:border-gray-300 dark:hover:border-gray-600 rounded p-1"

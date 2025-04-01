@@ -225,7 +225,8 @@ onMounted(() => {
   
   // 点击外部关闭下拉菜单
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.relative') && showPageMenu.value) {
+    const target = e.target as HTMLElement;
+    if (target && !target.closest('.relative') && showPageMenu.value) {
       showPageMenu.value = false;
     }
   });
