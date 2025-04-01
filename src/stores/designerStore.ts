@@ -4,6 +4,10 @@ import { ComponentInstance, Page, Region, LayoutTemplate } from '../types/design
 import { createComponentInstance } from '@/data/componentLibrary';
 import { nextTick } from 'vue';
 import { baseComponents } from '@/data/componentLibrary';
+import { watch } from 'vue';
+
+// 本地存储键名
+const STORAGE_KEY = 'minds_iolite_designer_data';
 
 export const useDesignerStore = defineStore('designer', {
   state: () => ({
@@ -330,6 +334,75 @@ export const useDesignerStore = defineStore('designer', {
         props,
         styles: {}
       };
+    },
+    
+    // 保存到本地存储
+    saveToLocalStorage() {
+      try {
+        const storeData = {
+          pages: this.pages,
+          currentPageId: this.currentPageId
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(storeData));
+        console.log('设计器数据已保存到本地存储');
+        return true;
+      } catch (error) {
+        console.error('保存到本地存储失败:', error);
+        return false;
+      }
+    },
+    
+    // 从本地存储加载
+    loadFromLocalStorage() {
+      try {
+        const storedData = localStorage.getItem(STORAGE_KEY);
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          
+          // 恢复页面数据
+          if (Array.isArray(parsedData.pages)) {
+            this.pages = parsedData.pages;
+          }
+          
+          // 恢复当前页面ID
+          if (parsedData.currentPageId && this.pages.some(p => p.id === parsedData.currentPageId)) {
+            this.currentPageId = parsedData.currentPageId;
+          } else if (this.pages.length > 0) {
+            // 如果当前页面ID无效，选择第一个页面
+            this.currentPageId = this.pages[0].id;
+          }
+          
+          console.log('设计器数据已从本地存储加载');
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error('从本地存储加载失败:', error);
+        return false;
+      }
+    },
+    
+    // 清除本地存储
+    clearLocalStorage() {
+      localStorage.removeItem(STORAGE_KEY);
+      console.log('设计器本地存储已清除');
     }
   }
-}); 
+});
+
+// 设置自动保存
+// 这段代码可以放在DesignerView.vue的setup函数中
+watch(
+  () => [useDesignerStore().pages, useDesignerStore().currentPageId],
+  () => {
+    // 延迟保存以避免频繁写入
+    if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+      useDesignerStore().saveToLocalStorage();
+    }, 2000); // 延迟2秒保存
+  },
+  { deep: true }
+);
+
+// 使用 ReturnType 获取 setTimeout 返回的精确类型
+let autoSaveTimeout: ReturnType<typeof setTimeout> | null = null; 

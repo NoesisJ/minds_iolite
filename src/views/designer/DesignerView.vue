@@ -19,18 +19,21 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useDesignerStore } from '@/stores/designerStore';
 import ToolBar from '@/components/designer/ToolBar.vue';
 import LeftPanel from '@/components/designer/LeftPanel.vue';
 import DesignCanvas from '@/components/designer/DesignCanvas.vue';
 import RightPanel from '@/components/designer/RightPanel.vue';
-import { useDesignerStore } from '@/stores/designerStore';
 
 const designerStore = useDesignerStore();
 
-// 组件挂载时创建一个默认页面
+// 组件挂载时自动加载保存的数据
 onMounted(() => {
-  if (designerStore.pages.length === 0) {
-    designerStore.createPage('new-page', '新页面');
+  const loaded = designerStore.loadFromLocalStorage();
+  
+  // 如果没有保存的数据，创建一个默认页面
+  if (!loaded && designerStore.pages.length === 0) {
+    designerStore.createPage();
   }
 });
 </script>

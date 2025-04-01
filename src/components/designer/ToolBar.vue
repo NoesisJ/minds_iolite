@@ -46,6 +46,28 @@
     
     <div class="right-section flex items-center space-x-4">
       <base-button 
+        status="warning" 
+        size="small" 
+        @click="openPublishDialog"
+        :disabled="!hasPages"
+        class="flex items-center"
+      >
+        <i class="pi pi-upload mr-1.5"></i>
+        <span class="text-white">发布</span>
+      </base-button>
+      
+      <base-button 
+        status="default" 
+        size="small" 
+        @click="openViewer"
+        :disabled="!currentPageId"
+        class="flex items-center"
+      >
+        <i class="pi pi-desktop mr-1.5"></i>
+        <span class="text-gray-700 dark:text-gray-200">阅览</span>
+      </base-button>
+      
+      <base-button 
         status="info" 
         size="small" 
         @click="previewPage"
@@ -72,18 +94,37 @@
       </div>
     </div>
   </div>
+  
+  <!-- 预览模态框 -->
+  <PreviewModal 
+    :show="showPreview" 
+    :page="designerStore.currentPage" 
+    @close="showPreview = false" 
+  />
+  
+  <!-- 发布对话框 -->
+  <PublishDialog 
+    :show="showPublishDialog" 
+    @close="closePublishDialog" 
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
 import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
+import PreviewModal from './PreviewModal.vue';
+import PublishDialog from './PublishDialog.vue';
+import { useRouter } from 'vue-router';
 
 const designerStore = useDesignerStore();
+const router = useRouter();
 
 // 状态管理
 const showPageMenu = ref(false);
 const isDarkMode = ref(false);
+const showPreview = ref(false);
+const showPublishDialog = ref(false);
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -91,6 +132,7 @@ const currentPageName = computed(() => {
   const currentPage = designerStore.pages.find(page => page.id === currentPageId.value);
   return currentPage ? currentPage.title : '';
 });
+const hasPages = computed(() => designerStore.pages.length > 0);
 
 // 方法
 const createNewPage = () => {
@@ -121,19 +163,56 @@ const openPageSettings = () => {
 };
 
 const previewPage = () => {
-  // 实现预览功能
-  console.log('预览页面');
+  if (!designerStore.currentPage) {
+    alert('请先选择或创建页面');
+    return;
+  }
+  
+  showPreview.value = true;
 };
 
 const savePage = () => {
-  // 实现保存功能
-  console.log('保存页面');
+  const success = designerStore.saveToLocalStorage();
+  
+  if (success) {
+    // 可以在这里添加保存成功的提示，比如使用一个简单的alert或自定义UI组件
+    alert('页面已保存到本地存储');
+  } else {
+    alert('保存失败，请检查浏览器存储权限');
+  }
 };
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle('dark', isDarkMode.value);
   localStorage.setItem('darkMode', isDarkMode.value ? 'true' : 'false');
+};
+
+// 打开阅览器视图
+const openViewer = () => {
+  const currentPage = designerStore.currentPage;
+  if (!currentPage) {
+    alert('请先选择或创建页面');
+    return;
+  }
+  
+  // 保存当前状态
+  designerStore.saveToLocalStorage();
+  
+  // 导航到阅览页面
+  router.push({
+    name: 'Viewer',
+    params: { id: currentPage.id }
+  });
+};
+
+// 发布相关方法
+const openPublishDialog = () => {
+  showPublishDialog.value = true;
+};
+
+const closePublishDialog = () => {
+  showPublishDialog.value = false;
 };
 
 // 初始化主题

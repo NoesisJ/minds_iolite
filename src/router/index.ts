@@ -128,8 +128,13 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/designer',
-    name: 'designer',
+    name: 'Designer',
     component: () => import("@/views/designer/DesignerView.vue")
+  },
+  {
+    path: "/viewer/:id?",
+    name: "Viewer",
+    component: () => import("@/views/designer/ViewerView.vue")
   },
 ];
 
