@@ -490,49 +490,29 @@
               </div>
             </div>
             
-            <!-- 成功生成后的下载按钮 -->
-            <div v-if="generationComplete" class="download-actions text-center mb-6">
-              <div class="mb-4 text-green-600 dark:text-green-400 flex items-center justify-center">
-                <i class="pi pi-check-circle mr-2 text-xl"></i>
-                <span>项目生成成功!</span>
-              </div>
-              
-              <button 
-                @click="downloadProject" 
-                class="btn-primary flex items-center justify-center mx-auto mb-3"
-              >
-                <i class="pi pi-download mr-2"></i>
-                下载项目 ({{ formattedProjectSize }})
-              </button>
-              
-              <button 
-                @click="testDownload" 
-                class="btn-secondary flex items-center justify-center mx-auto mb-3"
-              >
-                <i class="pi pi-download mr-2"></i>
-                测试下载功能
-              </button>
-              
-              <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                项目名称: {{ projectSettings.name }}_{{ formatDate(new Date()) }}
-              </div>
+            <!-- 在生成日志区域下方添加调试信息 -->
+            <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+              <div>生成状态: {{ generationComplete ? '已完成' : '未完成' }}</div>
+              <div>项目大小: {{ formattedProjectSize }}</div>
             </div>
             
-            <!-- 生成失败信息 -->
-            <div v-if="generationFailed" class="error-message text-center mb-6">
-              <div class="mb-4 text-red-600 dark:text-red-400 flex items-center justify-center">
-                <i class="pi pi-times-circle mr-2 text-xl"></i>
-                <span>项目生成失败</span>
+            <!-- 项目可下载区域 -->
+            <div class="download-buttons flex flex-col items-center gap-4 p-4">
+              <div class="text-green-600 dark:text-green-400 text-center">
+                <i class="pi pi-check-circle text-3xl mb-2"></i>
+                <div class="text-xl font-medium">项目生成成功!</div>
               </div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                生成过程中遇到错误，请检查配置或重试
-              </p>
+              
+              <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                项目大小: {{ formattedProjectSize }}
+              </div>
+              
               <button 
-                @click="retryGeneration" 
-                class="btn-primary flex items-center justify-center mx-auto"
+                @click="forceDownload" 
+                class="download-btn w-full max-w-md py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md flex items-center justify-center"
               >
-                <i class="pi pi-refresh mr-2"></i>
-                重试
+                <i class="pi pi-download mr-2"></i>
+                <span>下载项目 ZIP</span>
               </button>
             </div>
           </div>
@@ -790,13 +770,13 @@ const currentGenerator = ref<ProjectGenerator | null>(null);
 
 // 实现下载项目方法
 const downloadProject = async () => {
+  console.log('点击下载按钮');
+  
   if (!currentGenerator.value) {
     addLog('项目生成器不可用', 'error');
+    console.error('生成器不可用');
     return;
   }
-  
-  addLog('开始下载项目', 'info');
-  console.log('开始下载项目流程');
   
   try {
     // 创建带时间戳的文件名避免缓存问题
@@ -804,16 +784,8 @@ const downloadProject = async () => {
     const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
     console.log('准备下载文件:', filename);
     
-    // 确保页面没有被阻止下载
-    addLog('准备文件下载请求...', 'info');
-    
     await currentGenerator.value.downloadProject(filename);
-    
-    // 添加额外提示
-    addLog('下载请求已发送!', 'success');
-    addLog('如果文件没有自动下载，请检查浏览器设置或点击"测试下载功能"按钮尝试。', 'info');
-    
-    console.log('下载完成');
+    console.log('下载请求已发送');
   } catch (error) {
     console.error('下载过程中遇到错误:', error);
     addLog(`下载失败: ${error}`, 'error');
@@ -881,13 +853,67 @@ const testDownload = () => {
   }
 };
 
-// 在生成过程完成时添加调试日志
+// 监听生成完成状态自动触发下载
 watch(() => generationComplete.value, (newValue) => {
   if (newValue) {
-    console.log('生成完成，准备下载');
-    // 可选：自动触发下载
-    // setTimeout(downloadProject, 1000);
+    console.log('项目生成完成，准备自动下载');
+    // 延迟一点时间，确保界面已更新
+    setTimeout(() => {
+      downloadProject();
+    }, 800);
   }
+});
+
+// 添加手动下载方法
+const manualDownload = () => {
+  if (!currentGenerator.value) {
+    addLog('项目生成器不可用', 'error');
+    return;
+  }
+  
+  try {
+    // 创建时间戳防止缓存
+    const timestamp = new Date().getTime();
+    const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
+    
+    addLog('尝试手动下载方法...', 'info');
+    currentGenerator.value.downloadProject(filename);
+  } catch (error) {
+    console.error('手动下载失败:', error);
+    addLog(`手动下载失败: ${error}`, 'error');
+  }
+};
+
+// 强制下载函数
+const forceDownload = () => {
+  console.log('强制下载开始');
+  
+  try {
+    if (currentGenerator.value) {
+      const timestamp = new Date().getTime();
+      const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
+      console.log('正在强制下载文件:', filename);
+      
+      // 如果生成器存在就使用它
+      currentGenerator.value.downloadProject(filename);
+    } else {
+      console.error('生成器不可用，尝试测试下载');
+      testDownload(); // 使用测试下载作为备用
+    }
+  } catch (error) {
+    console.error('强制下载出错:', error);
+    alert('下载失败: ' + error);
+  }
+};
+
+// 添加生命周期钩子确保下载按钮在组件挂载后可用
+onMounted(() => {
+  console.log('发布对话框已挂载');
+  // 添加额外的点击处理器到文档
+  setTimeout(() => {
+    const downloadBtns = document.querySelectorAll('.download-actions button');
+    console.log('找到下载按钮数量:', downloadBtns.length);
+  }, 2000);
 });
 </script>
 

@@ -109,46 +109,51 @@ export class ProjectGenerator {
     try {
       this.callbacks.onLog('正在准备下载...', 'info');
       
-      // 确保至少有一些内容
-      if (Object.keys(this.zip.files).length === 0) {
-        this.zip.file('README.md', this.generateReadme());
-        this.zip.file('test.txt', '下载测试文件');
-      }
-      
-      // 确保生成有效内容
-      console.log('ZIP文件总数:', Object.keys(this.zip.files).length);
-      
       try {
-        // 生成ZIP文件内容 - 尝试较小的压缩选项
+        // 生成ZIP文件内容
         const content = await this.zip.generateAsync({ 
-          type: 'blob'
+          type: 'blob',
+          compression: 'DEFLATE',
+          compressionOptions: {
+            level: 5 // 中等压缩级别，平衡速度和大小
+          }
         });
         
         // 获取文件大小
         const size = content.size;
+        console.log(`ZIP生成完成，大小: ${this.formatSize(size)}`);
         
-        console.log('生成ZIP成功，大小:', size, 'bytes');
-        
-        // 尝试使用更直接的方式保存文件
-        const a = document.createElement('a');
-        const url = URL.createObjectURL(content);
-        
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        
-        // 清理
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 100);
+        // 方法1: 尝试使用file-saver
+        try {
+          console.log('使用file-saver尝试下载...');
+          saveAs(content, filename);
+          console.log('file-saver下载请求已发送');
+        } catch (fsError) {
+          console.error('file-saver下载失败，使用备用方法:', fsError);
+          
+          // 方法2: 使用URL.createObjectURL和a标签
+          const url = URL.createObjectURL(content);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          
+          // 清理
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+        }
         
         this.callbacks.onComplete(size);
         this.callbacks.onLog('项目下载完成', 'success');
       } catch (zipError) {
         console.error('生成ZIP出错:', zipError);
-        throw new Error('生成ZIP文件失败: ' + zipError.message);
+        const errorMessage = zipError instanceof Error 
+          ? zipError.message 
+          : String(zipError);
+        throw new Error('生成ZIP文件失败: ' + errorMessage);
       }
     } catch (error) {
       console.error('下载错误:', error);
@@ -479,5 +484,94 @@ module.exports = defineConfig({
     "node_modules"
   ]
 }`;
+  }
+  
+  // 格式化文件大小
+  private formatSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  private addBaseProjectFiles(): void {
+    try {
+      // 添加根目录文件
+      this.zip.file('package.json', this.generatePackageJson());
+      this.zip.file('tsconfig.json', this.generateTsConfig());
+      this.zip.file('vite.config.js', this.generateViteConfig());
+      this.zip.file('README.md', this.generateReadme());
+      this.zip.file('.env', `# 项目环境配置\nVITE_APP_TITLE=${this.settings.name}\nVITE_APP_BASE_URL=${this.config.basePath}\n`);
+      
+      // 创建基本目录结构
+      this.zip.folder('public');
+      this.zip.folder('src');
+      this.zip.folder('src/assets');
+      this.zip.folder('src/components');
+      this.zip.folder('src/views');
+      this.zip.folder('src/router');
+      this.zip.folder('src/store');
+      
+      // 添加空的favicon
+      this.zip.file('public/favicon.ico', '', {binary: true});
+      
+      // 添加index.html
+      this.zip.file('public/index.html', this.generateIndexHtml());
+      
+      // 添加主要入口文件
+      this.zip.file('src/main.ts', this.generateMainTs());
+      this.zip.file('src/App.vue', this.generateAppVue());
+      
+      // 添加router
+      this.zip.file('src/router/index.ts', this.generateRouterIndex());
+      
+      console.log('成功添加基础项目文件');
+    } catch (error) {
+      console.error('添加基础文件失败:', error);
+      throw new Error('添加基础项目文件失败: ' + error);
+    }
+  }
+
+  private generateMainTs(): string {
+    return `import { createApp } from 'vue'
+    import App from './App.vue'
+    import router from './router'
+
+    createApp(App).use(router).mount('#app')
+  `;
+  }
+
+  private generateAppVue(): string {
+    return `<template>
+    <router-view/>
+  </template>
+
+  <style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  </style>
+  `;
+  }
+
+  private generateRouterIndex(): string {
+    return `import { createRouter } from 'vue-router'
+    import Home from '../views/Home.vue'
+
+    const routes = [
+      { path: '/', component: Home },
+      { path: '/about', component: () => import('../views/About.vue') },
+    ]
+
+    const router = createRouter({
+      history: createWebHistory(),
+      routes,
+    })
+
+    return router
+  `;
   }
 } 
