@@ -26,7 +26,7 @@
       <!-- 步骤内容 -->
       <div class="step-content">
         <!-- 步骤1: 选择页面 -->
-        <div v-if="currentStep === 0" class="step-page-select">
+        <div v-if="currentStep === STEPS.SELECT_PAGES" class="step-page-select">
           <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">选择要发布的页面</div>
           
           <div v-if="pages.length === 0" class="empty-state">
@@ -74,7 +74,7 @@
         </div>
         
         <!-- 步骤2: 项目设置 -->
-        <div v-if="currentStep === 1" class="step-project-settings">
+        <div v-if="currentStep === STEPS.PROJECT_SETTINGS" class="step-project-settings">
           <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">配置项目信息</div>
           
           <div class="form-grid">
@@ -225,7 +225,7 @@
         </div>
         
         <!-- 步骤3: 生成配置 -->
-        <div v-if="currentStep === 2" class="step-build-config">
+        <div v-if="currentStep === STEPS.BUILD_CONFIG" class="step-build-config">
           <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">构建配置</div>
           
           <div class="form-grid">
@@ -437,7 +437,7 @@
         </div>
         
         <!-- 步骤4: 下载项目 -->
-        <div v-if="currentStep === 3" class="step-download-project">
+        <div v-if="currentStep === STEPS.DOWNLOAD" class="step-download-project">
           <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">下载项目</div>
           
           <div v-if="!generationStarted" class="generate-start-section mb-8">
@@ -497,22 +497,69 @@
             </div>
             
             <!-- 项目可下载区域 -->
-            <div class="download-buttons flex flex-col items-center gap-4 p-4">
-              <div class="text-green-600 dark:text-green-400 text-center">
-                <i class="pi pi-check-circle text-3xl mb-2"></i>
-                <div class="text-xl font-medium">项目生成成功!</div>
+            <div class="download-area p-4 bg-gray-50 dark:bg-gray-800 rounded-md mt-4">
+              <div class="text-center">
+                <!-- 项目生成成功 -->
+                <div v-if="projectSize > 0" class="mb-3">
+                  <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                  <div class="text-lg font-medium mt-1">项目生成成功!</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400">
+                    项目大小: {{ formattedProjectSize }}
+                  </div>
+                </div>
+                
+                <!-- 准备生成 -->
+                <div v-else-if="currentStep === STEPS.BUILD_CONFIG && !isGenerating && !error" class="mb-3">
+                  <i class="pi pi-cog text-blue-500 text-2xl animate-spin"></i>
+                  <div class="mt-1">准备生成项目...</div>
+                </div>
+                
+                <!-- 下载按钮 -->
+                <button 
+                  v-if="projectSize > 0"
+                  @click="downloadProject"
+                  class="download-button w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
+                  id="download-project-button"
+                >
+                  <i class="pi pi-download mr-2"></i>
+                  <span>下载项目</span>
+                </button>
+
+                <!-- 强制下载按钮 - 添加调试模式显示 -->
+                <button 
+                  v-if="true || (projectSize === 0 && currentStep === STEPS.BUILD_CONFIG && !isGenerating)"
+                  @click="forceDownload"
+                  class="force-download-button w-full mt-2 py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors"
+                >
+                  <i class="pi pi-download mr-2"></i>
+                  <span>强制下载</span>
+                </button>
               </div>
+            </div>
+
+            <!-- 在下载区域添加调试信息 -->
+            <div class="debug-info mt-4 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs font-mono">
+              <div>projectSize: {{ projectSize }}</div>
+              <div>currentStep: {{ currentStep }}</div>
+              <div>isGenerating: {{ isGenerating }}</div>
+              <div>error: {{ error || '无错误' }}</div>
               
-              <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                项目大小: {{ formattedProjectSize }}
-              </div>
-              
+              <!-- 测试生成按钮 -->
               <button 
-                @click="forceDownload" 
-                class="download-btn w-full max-w-md py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md flex items-center justify-center"
+                @click="testGenerator"
+                class="w-full mt-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors"
+              >
+                <i class="pi pi-refresh mr-2"></i>
+                <span>测试生成项目</span>
+              </button>
+              
+              <!-- 通用下载按钮 -->
+              <button 
+                @click="forceDownload"
+                class="w-full mt-2 py-2 px-4 bg-purple-500 hover:bg-purple-600 text-white rounded-md transition-colors"
               >
                 <i class="pi pi-download mr-2"></i>
-                <span>下载项目 ZIP</span>
+                <span>通用下载按钮</span>
               </button>
             </div>
           </div>
@@ -522,7 +569,7 @@
       <!-- 步骤控制按钮 -->
       <div class="dialog-actions">
         <button 
-          v-if="currentStep > 0" 
+          v-if="currentStep > STEPS.SELECT_PAGES" 
           @click="prevStep" 
           class="btn-secondary"
         >
@@ -551,11 +598,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
 import { ProjectGenerator, ProjectSettings, BuildConfig, GenerationCallbacks } from '@/services/ProjectGenerator';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { Page } from '@/types/designer';
 
 const props = defineProps({
   show: Boolean
@@ -566,7 +614,13 @@ const designerStore = useDesignerStore();
 
 // 步骤定义
 const steps = ['选择页面', '项目设置', '生成配置', '下载项目'];
-const currentStep = ref(0);
+const STEPS = {
+  SELECT_PAGES: 0,
+  PROJECT_SETTINGS: 1,
+  BUILD_CONFIG: 2,
+  DOWNLOAD: 3
+};
+const currentStep = ref<number>(STEPS.SELECT_PAGES);
 
 // 页面选择状态 (第一步)
 const pages = computed(() => designerStore.pages);
@@ -588,7 +642,9 @@ const projectSettings = ref({
 
 // 计算属性：已选择的页面对象
 const selectedPageObjects = computed(() => {
-  return pages.value.filter(page => selectedPages.value.includes(page.id));
+  return selectedPages.value.map(id => 
+    designerStore.pages.find(p => p.id === id)
+  ).filter(Boolean) as Page[];
 });
 
 // 计算属性：是否全选
@@ -625,7 +681,7 @@ const toggleSelectAll = () => {
 const onCloseRequest = () => {
   emit('close');
   // 重置状态
-  currentStep.value = 0;
+  currentStep.value = STEPS.SELECT_PAGES;
   selectedPages.value = [];
 };
 
@@ -637,7 +693,7 @@ const nextStep = () => {
 };
 
 const prevStep = () => {
-  if (currentStep.value > 0) {
+  if (currentStep.value > STEPS.SELECT_PAGES) {
     currentStep.value--;
   }
 };
@@ -691,12 +747,13 @@ const isLogExpanded = ref(false);
 
 // 格式化项目大小
 const formattedProjectSize = computed(() => {
-  if (projectSize.value < 1024) {
-    return `${projectSize.value}B`;
-  } else if (projectSize.value < 1024 * 1024) {
-    return `${(projectSize.value / 1024).toFixed(1)}KB`;
+  const size = projectSize.value;
+  if (size < 1024) {
+    return `${size} 字节`;
+  } else if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(2)} KB`;
   } else {
-    return `${(projectSize.value / (1024 * 1024)).toFixed(1)}MB`;
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   }
 });
 
@@ -750,6 +807,13 @@ const startGeneration = async () => {
         onError: (error) => {
           generationFailed.value = true;
           addLog(`生成失败: ${error}`, 'error');
+        },
+        onStart: () => {
+          // 初始化生成过程
+          generationProgress.value = 0;
+          generationStatus.value = '初始化...';
+          generationComplete.value = false;
+          generationFailed.value = false;
         }
       }
     );
@@ -768,28 +832,103 @@ const startGeneration = async () => {
 // 添加一个引用来存储生成器实例
 const currentGenerator = ref<ProjectGenerator | null>(null);
 
-// 实现下载项目方法
-const downloadProject = async () => {
-  console.log('点击下载按钮');
+// 生成项目方法
+const generateProject = async () => {
+  if (isGenerating.value) return;
   
-  if (!currentGenerator.value) {
-    addLog('项目生成器不可用', 'error');
-    console.error('生成器不可用');
+  isGenerating.value = true;
+  error.value = '';
+  projectSize.value = 0;
+  
+  try {
+    // 创建项目生成器
+    const generator = new ProjectGenerator(
+      selectedPages.value.map(id => 
+        designerStore.pages.find(p => p.id === id)
+      ).filter(Boolean) as Page[],
+      projectSettings.value as unknown as ProjectSettings,
+      buildConfig.value as unknown as BuildConfig,
+      {
+        onStart: () => {
+          generationLogs.value.push({
+            time: new Date().toLocaleString(),
+            message: '开始生成项目',
+            type: 'info'
+          });
+        },
+        onProgress: (progress, status) => {
+          generationProgress.value = progress;
+          generationStatus.value = status;
+        },
+        onLog: (message, type) => {
+          addLog(message, type);
+        },
+        onComplete: (size) => {
+          projectSize.value = size;
+          generationComplete.value = true;
+        },
+        onError: (error) => {
+          generationFailed.value = true;
+          addLog(`生成失败: ${error}`, 'error');
+        }
+      }
+    );
+    
+    // 生成项目
+    await generator.generateProject();
+    
+  } catch (e) {
+    console.error('项目生成失败:', e);
+    error.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    isGenerating.value = false;
+  }
+};
+
+// 下载项目方法
+const downloadProject = () => {
+  console.log('点击下载按钮');
+  if (projectSize.value === 0) {
+    console.warn('项目未生成完成，无法下载');
     return;
   }
   
-  try {
-    // 创建带时间戳的文件名避免缓存问题
-    const timestamp = new Date().getTime();
-    const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
-    console.log('准备下载文件:', filename);
+  const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, '_')}.zip`;
+  console.log(`准备下载文件: ${filename}`);
+  
+  // 使用之前已生成的项目进行下载
+  generateAndDownload(filename);
+};
+
+// 查找并点击下载按钮
+const findAndClickDownloadButton = () => {
+  // 等待DOM更新
+  nextTick(() => {
+    console.log('查找下载按钮...');
     
-    await currentGenerator.value.downloadProject(filename);
-    console.log('下载请求已发送');
-  } catch (error) {
-    console.error('下载过程中遇到错误:', error);
-    addLog(`下载失败: ${error}`, 'error');
-  }
+    // 使用更通用的查询方式
+    const downloadButton = 
+      document.querySelector('.download-button') ||
+      document.querySelector('.force-download-button') ||
+      document.getElementById('download-project-button');
+    
+    console.log('找到下载按钮数量:', downloadButton ? 1 : 0);
+    console.log('可见的按钮元素:', document.querySelectorAll('button').length);
+    
+    // 检查所有可能的原因
+    console.log('projectSize =', projectSize.value);
+    console.log('currentStep =', currentStep.value);
+    console.log('STEPS.BUILD_CONFIG =', STEPS.BUILD_CONFIG);
+    console.log('isGenerating =', isGenerating.value);
+    
+    if (downloadButton) {
+      console.log('自动点击下载按钮');
+      (downloadButton as HTMLElement).click();
+    } else {
+      console.warn('未找到下载按钮，使用强制下载');
+      forceDownload();
+    }
+  });
 };
 
 // 重试生成
@@ -804,7 +943,7 @@ const toggleLogExpand = () => {
 
 // 修改isNextDisabled计算属性
 const isNextDisabled = computed(() => {
-  if (currentStep.value === 0) {
+  if (currentStep.value === STEPS.SELECT_PAGES) {
     return selectedPages.value.length === 0;
   }
   // 其他步骤保持不变
@@ -884,37 +1023,154 @@ const manualDownload = () => {
   }
 };
 
-// 强制下载函数
-const forceDownload = () => {
-  console.log('强制下载开始');
+// 添加一个直接测试生成项目大小的函数
+const testGenerator = async () => {
+  console.log('测试生成器启动...');
+  isGenerating.value = true;
+  projectSize.value = 0; // 重置项目大小
   
   try {
-    if (currentGenerator.value) {
-      const timestamp = new Date().getTime();
-      const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
-      console.log('正在强制下载文件:', filename);
-      
-      // 如果生成器存在就使用它
-      currentGenerator.value.downloadProject(filename);
-    } else {
-      console.error('生成器不可用，尝试测试下载');
-      testDownload(); // 使用测试下载作为备用
+    // 创建新的生成器实例
+    const generator = new ProjectGenerator(
+      selectedPages.value.map(id => 
+        designerStore.pages.find(p => p.id === id)
+      ).filter(Boolean) as Page[],
+      projectSettings.value as unknown as ProjectSettings,
+      buildConfig.value as unknown as BuildConfig,
+      {
+        onStart: () => console.log('测试生成器开始...'),
+        onProgress: () => {},
+        onLog: (msg) => console.log('测试生成器日志:', msg),
+        onComplete: (size) => {
+          console.log(`测试生成器完成，大小: ${size} 字节`);
+          // 直接在UI中更新项目大小
+          projectSize.value = size;
+        },
+        onError: (e) => console.error('测试生成器错误:', e)
+      }
+    );
+    
+    // 生成项目
+    const blob = await generator.generateProject();
+    console.log(`测试生成成功，获取到blob大小: ${blob.size} 字节`);
+    
+    // 确保UI状态更新
+    if (projectSize.value === 0 && blob.size > 0) {
+      console.log('强制更新项目大小');
+      projectSize.value = blob.size;
     }
   } catch (error) {
-    console.error('强制下载出错:', error);
-    alert('下载失败: ' + error);
+    console.error('测试生成失败:', error);
+  } finally {
+    isGenerating.value = false;
   }
 };
 
-// 添加生命周期钩子确保下载按钮在组件挂载后可用
-onMounted(() => {
-  console.log('发布对话框已挂载');
-  // 添加额外的点击处理器到文档
-  setTimeout(() => {
-    const downloadBtns = document.querySelectorAll('.download-actions button');
-    console.log('找到下载按钮数量:', downloadBtns.length);
-  }, 2000);
-});
+// 修改强制下载函数
+const forceDownload = async () => {
+  console.log('开始强制下载...');
+  isGenerating.value = true;
+  
+  try {
+    const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, '_')}.zip`;
+    console.log(`准备强制下载文件: ${filename}`);
+    
+    // 使用新的测试生成器方法获取blob
+    const generator = new ProjectGenerator(
+      selectedPages.value.map(id => 
+        designerStore.pages.find(p => p.id === id)
+      ).filter(Boolean) as Page[],
+      projectSettings.value as unknown as ProjectSettings,
+      buildConfig.value as unknown as BuildConfig,
+      {
+        onStart: () => console.log('开始生成...'),
+        onProgress: () => {},
+        onLog: (msg) => console.log(msg),
+        onComplete: (size) => {
+          console.log(`设置项目大小为: ${size} 字节`);
+          projectSize.value = size; // 这里是关键 - 确保更新状态
+        },
+        onError: (e) => console.error(e)
+      }
+    );
+    
+    // 生成项目并直接下载
+    const blob = await generator.generateProject();
+    console.log(`项目生成完成，大小: ${blob.size} 字节`);
+    
+    // 更新UI状态
+    projectSize.value = blob.size;
+    
+    // 直接下载
+    saveAs(blob, filename);
+    console.log('文件下载请求已发送');
+  } catch (error) {
+    console.error('强制下载失败:', error);
+  } finally {
+    isGenerating.value = false;
+  }
+};
+
+// 生成并下载项目
+const generateAndDownload = async (filename: string) => {
+  try {
+    const zip = new JSZip();
+    
+    // 创建项目生成器
+    const generator = new ProjectGenerator(
+      selectedPages.value.map(id => 
+        designerStore.pages.find(p => p.id === id)
+      ).filter(Boolean) as Page[],
+      projectSettings.value as unknown as ProjectSettings,
+      buildConfig.value as unknown as BuildConfig,
+      {
+        onProgress: (progress) => {
+          // 不更新UI避免状态混乱
+        },
+        onLog: (message, type) => {
+          console.log(`下载日志: ${message} [${type}]`);
+        },
+        onStart: () => {
+          console.log('开始生成下载文件...');
+        },
+        onComplete: () => {
+          console.log('ZIP生成完成');
+        },
+        onError: (msg) => {
+          console.error(`下载错误: ${msg}`);
+        }
+      }
+    );
+    
+    // 获取ZIP内容
+    const content = await generator.generateProject();
+    
+    console.log('ZIP生成完成，大小:', Math.round((content.size / 1024) * 100) / 100, 'KB');
+    console.log('使用file-saver尝试下载...');
+    
+    // 使用file-saver下载
+    saveAs(content, filename);
+    
+    console.log('file-saver下载请求已发送');
+    generationLogs.value.push({
+      time: new Date().toLocaleString(),
+      message: '下载请求已发送',
+      type: 'success'
+    });
+  } catch (error) {
+    console.error('下载生成失败:', error);
+    generationLogs.value.push({
+      time: new Date().toLocaleString(),
+      message: `下载生成失败: ${error}`,
+      type: 'error'
+    });
+  }
+};
+
+// 在script setup区域，添加以下状态变量
+const isGenerating = ref(false);
+const error = ref('');
+const currentStatus = ref('');
 </script>
 
 <style scoped>
@@ -1512,5 +1768,86 @@ onMounted(() => {
 
 .log-error {
   color: #ef4444;
+}
+
+.download-area {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.dark .download-area {
+  background-color: #1f2937;
+}
+
+.download-button {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dark .download-button {
+  background-color: #2563eb;
+}
+
+.download-button:hover {
+  background-color: #2563eb;
+}
+
+.force-download-button {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dark .force-download-button {
+  background-color: #b91c1c;
+}
+
+.force-download-button:hover {
+  background-color: #b91c1c;
+}
+
+/* 添加调试信息相关样式 */
+.debug-info {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+}
+
+.dark .debug-info {
+  background-color: #1f2937;
+}
+
+.debug-info div {
+  margin-bottom: 0.25rem;
+}
+
+.debug-info button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dark .debug-info button {
+  background-color: #2563eb;
+}
+
+.debug-info button:hover {
+  background-color: #2563eb;
 }
 </style> 

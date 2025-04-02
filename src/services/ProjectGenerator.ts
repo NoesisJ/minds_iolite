@@ -41,6 +41,7 @@ export interface GenerationCallbacks {
   onLog: (message: string, type: 'info' | 'success' | 'error' | 'warning') => void;
   onComplete: (size: number) => void;
   onError: (error: string) => void;
+  onStart: () => void;
 }
 
 export class ProjectGenerator {
@@ -573,5 +574,38 @@ module.exports = defineConfig({
 
     return router
   `;
+  }
+
+  // 主要导出方法
+  public async generateProject(): Promise<Blob> {
+    try {
+      this.callbacks.onStart();
+      this.callbacks.onLog('开始生成项目', 'info');
+      
+      // 初始化一个新的zip对象
+      this.zip = new JSZip();
+      
+      // 添加基础项目文件
+      this.callbacks.onLog('创建项目基本结构...', 'info');
+      this.addBaseProjectFiles();
+      
+      // 生成ZIP文件并获取大小
+      const content = await this.zip.generateAsync({ type: 'blob' });
+      const sizeInKB = Math.round((content.size / 1024) * 100) / 100;
+      
+      // 输出调试信息
+      console.log(`ZIP实际大小: ${content.size} 字节 (${sizeInKB} KB)`);
+      this.callbacks.onLog(`ZIP生成完成，大小: ${sizeInKB} KB`, 'success');
+      this.callbacks.onLog('项目生成完成!', 'success');
+      
+      // 确保调用onComplete回调，并传递实际大小
+      this.callbacks.onComplete(content.size);
+      
+      return content;
+    } catch (error) {
+      this.callbacks.onError(error instanceof Error ? error.message : String(error));
+      this.callbacks.onLog(`生成失败: ${error}`, 'error');
+      throw error;
+    }
   }
 } 
