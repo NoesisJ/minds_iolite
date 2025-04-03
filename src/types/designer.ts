@@ -12,11 +12,12 @@ export interface ComponentDefinition {
 
 // 页面上的实际组件实例接口
 export interface ComponentInstance {
-  id: string;          // 实例唯一ID
-  componentId: string; // 对应的组件定义ID
-  props: any;          // 组件实例属性
-  styles: any;         // 组件实例样式
-  events: any[];       // 组件事件处理
+  id: string;
+  componentId: string; // 组件定义ID
+  type: string;        // 组件实际类型
+  props: any;
+  styles: any;
+  events: any[];       // 事件数组
 }
 
 // 布局区域类型

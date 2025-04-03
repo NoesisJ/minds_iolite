@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Page } from '@/types/designer';
+import { ComponentInstance } from '@/types/designer';
 
 // 项目设置类型
 export interface ProjectSettings {
@@ -333,9 +334,54 @@ npm run build
   
   // 生成页面组件
   private async generatePageComponents(): Promise<void> {
-    // 实现代码...
     this.callbacks.onProgress(30, '生成页面组件...');
-    // 此处应该有实际的页面组件生成逻辑
+    
+    // 用于记录生成的所有组件，避免重复生成
+    const generatedComponents = new Set<string>();
+    
+    // 遍历所有页面
+    for (const page of this.pages) {
+      // 检查页面是否有区域
+      if (!page.regions || page.regions.length === 0) {
+        this.callbacks.onLog(`警告: 页面 "${page.title}" 没有定义区域`, 'warning');
+        continue;
+      }
+      
+      // 遍历页面中的所有区域
+      for (const region of page.regions) {
+        // 检查区域是否有组件
+        if (!region.components || region.components.length === 0) {
+          continue; // 跳过空区域
+        }
+        
+        // 遍历区域中的所有组件
+        for (const component of region.components) {
+          // 如果已经生成过该组件，跳过
+          if (generatedComponents.has(component.id)) {
+            continue;
+          }
+          
+          let componentCode = '';
+          // 根据组件类型生成相应的代码
+          if (component.componentId === 'text') {
+            componentCode = this.generateTextComponentCode(component);
+            
+            // 将组件代码写入ZIP文件
+            const componentPath = `src/components/generated/TextComponent${component.id}.vue`;
+            this.zip.file(componentPath, componentCode);
+            
+            // 标记该组件已生成
+            generatedComponents.add(component.id);
+            
+            this.callbacks.onLog(`已生成文本组件: TextComponent${component.id}`, 'info');
+          }
+          // 其他组件类型将在后续实现...
+        }
+      }
+    }
+    
+    // 更新进度
+    this.callbacks.onProgress(40, '组件生成完成');
   }
   
   // 生成路由配置
@@ -421,7 +467,6 @@ export default defineConfig({
 `;
   }
   
-  // 添加缺少的 generateEnvFile 方法
   private generateEnvFile(): string {
     return `# 项目环境配置
 VITE_APP_TITLE=${this.settings.name}
@@ -431,7 +476,7 @@ VITE_APP_API_DELAY=${this.config.apiDelay}
 `;
   }
   
-  // 添加缺少的 generateVueConfig 方法
+
   private generateVueConfig(): string {
     return `const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
@@ -443,7 +488,6 @@ module.exports = defineConfig({
 `;
   }
   
-  // 添加缺少的 generateTsConfig 方法
   private generateTsConfig(): string {
     return `{
   "compilerOptions": {
@@ -589,6 +633,9 @@ module.exports = defineConfig({
       this.callbacks.onLog('创建项目基本结构...', 'info');
       this.addBaseProjectFiles();
       
+      // 添加这一行 - 调用组件生成方法
+      await this.generatePageComponents();
+      
       // 生成ZIP文件并获取大小
       const content = await this.zip.generateAsync({ type: 'blob' });
       const sizeInKB = Math.round((content.size / 1024) * 100) / 100;
@@ -607,5 +654,66 @@ module.exports = defineConfig({
       this.callbacks.onLog(`生成失败: ${error}`, 'error');
       throw error;
     }
+  }
+
+  /**
+   * 生成文本组件的代码
+   * @param component 组件实例
+   * @returns 生成的Vue组件代码
+   */
+  private generateTextComponentCode(component: ComponentInstance): string {
+    // 从组件属性中提取文本内容
+    const content = component.props.content || '文本内容';
+    
+    // 从组件样式中提取样式信息
+    const fontSize = component.styles.fontSize || '16px';
+    const color = component.styles.color || '#333333';
+    const textAlign = component.styles.textAlign || 'left';
+    const fontWeight = component.styles.fontWeight || 'normal';
+    const margin = component.styles.margin || '0';
+    const padding = component.styles.padding || '0';
+    
+    // 生成Vue组件代码
+    return `<template>
+    <div class="text-component" :style="computedStyles">
+      {{ content }}
+    </div>
+  </template>
+
+  <script>
+  export default {
+    name: 'TextComponent${component.id}',
+    props: {
+      content: {
+        type: String,
+        default: '${content.replace(/'/g, "\\'")}'
+      },
+      styles: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    computed: {
+      computedStyles() {
+        return {
+          fontSize: '${fontSize}',
+          color: '${color}',
+          textAlign: '${textAlign}',
+          fontWeight: '${fontWeight}',
+          margin: '${margin}',
+          padding: '${padding}',
+          ...this.styles // 允许通过props覆盖默认样式
+        };
+      }
+    }
+  }
+  </script>
+
+  <style scoped>
+  .text-component {
+    display: block;
+    max-width: 100%;
+  }
+  </style>`;
   }
 } 

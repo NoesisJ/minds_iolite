@@ -491,7 +491,7 @@
             </div>
             
             <!-- 在生成日志区域下方添加调试信息 -->
-            <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+            <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs text-white">
               <div>生成状态: {{ generationComplete ? '已完成' : '未完成' }}</div>
               <div>项目大小: {{ formattedProjectSize }}</div>
             </div>
@@ -538,7 +538,7 @@
             </div>
 
             <!-- 在下载区域添加调试信息 -->
-            <div class="debug-info mt-4 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs font-mono">
+            <div class="debug-info mt-4 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs font-mono text-white">
               <div>projectSize: {{ projectSize }}</div>
               <div>currentStep: {{ currentStep }}</div>
               <div>isGenerating: {{ isGenerating }}</div>

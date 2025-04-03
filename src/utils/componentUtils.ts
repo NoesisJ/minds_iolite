@@ -8,6 +8,8 @@ export function getComponentType(type: string) {
       return defineAsyncComponent(() => import('@/components/widgets/TextWidget.vue'));
     case 'button':
       return defineAsyncComponent(() => import('@/components/widgets/ButtonWidget.vue'));
+    case 'image':
+      return defineAsyncComponent(() => import('@/components/widgets/ImageWidget.vue'));
     // 其他组件暂时使用占位符
     default:
       console.warn('未知或未实现的组件类型:', type);

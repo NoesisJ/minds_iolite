@@ -16,9 +16,9 @@ export const useDesignerStore = defineStore('designer', {
     // 当前页面ID
     currentPageId: '',
     // 选中的组件ID
-    selectedComponentId: '',
+    selectedComponentId: null as string | null,
     // 选中的区域ID
-    selectedRegionId: '',
+    selectedRegionId: null as string | null,
     // 布局模板
     layoutTemplates: [
       {
@@ -106,8 +106,8 @@ export const useDesignerStore = defineStore('designer', {
       
       this.pages.push(newPage);
       this.currentPageId = pageId;
-      this.selectedComponentId = '';
-      this.selectedRegionId = '';
+      this.selectedComponentId = null;
+      this.selectedRegionId = null;
       
       console.log('新页面已创建:', pageId);
       return pageId;
@@ -126,8 +126,8 @@ export const useDesignerStore = defineStore('designer', {
       console.log('选择页面:', pageId);
       this.currentPageId = pageId;
       // 确保清除选中的组件和区域
-      this.selectedComponentId = '';
-      this.selectedRegionId = '';
+      this.selectedComponentId = null;
+      this.selectedRegionId = null;
     },
     
     // 处理页面选择 - 从工具栏调用
@@ -146,13 +146,15 @@ export const useDesignerStore = defineStore('designer', {
     // 选择组件
     selectComponent(componentId: string) {
       this.selectedComponentId = componentId;
-      this.selectedRegionId = '';
+      this.selectedRegionId = null;
+      console.log('组件已选中:', componentId);
     },
     
     // 选择区域
     selectRegion(regionId: string) {
       this.selectedRegionId = regionId;
-      this.selectedComponentId = '';
+      this.selectedComponentId = null;
+      console.log('区域已选中:', regionId);
     },
     
     // 开始拖拽组件
@@ -196,7 +198,7 @@ export const useDesignerStore = defineStore('designer', {
       
       // 选中新添加的组件
       this.selectedComponentId = componentInstance.id;
-      this.selectedRegionId = '';
+      this.selectedRegionId = null;
       
       console.log('组件已添加到区域', componentInstance);
     },
@@ -238,7 +240,7 @@ export const useDesignerStore = defineStore('designer', {
       
       // 清除选择
       if (this.selectedComponentId === componentId) {
-        this.selectedComponentId = '';
+        this.selectedComponentId = null;
       }
     },
     
@@ -386,6 +388,13 @@ export const useDesignerStore = defineStore('designer', {
     clearLocalStorage() {
       localStorage.removeItem(STORAGE_KEY);
       console.log('设计器本地存储已清除');
+    },
+    
+    // 清除选择
+    clearSelection() {
+      this.selectedComponentId = null;
+      this.selectedRegionId = null;
+      console.log('选择已清除');
     }
   }
 });

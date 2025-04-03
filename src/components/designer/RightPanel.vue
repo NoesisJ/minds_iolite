@@ -9,6 +9,13 @@
       <div>应显示页面属性: {{ showPageProperties }}</div>
     </div> -->
 
+    <!-- 添加调试信息 -->
+    <div class="mb-3 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+      <div>选中组件ID: {{ selectedComponentId || '无' }}</div>
+      <div>选中区域ID: {{ selectedRegionId || '无' }}</div>
+      <div>当前页面ID: {{ currentPageId || '无' }}</div>
+    </div>
+
     <!-- 页面属性面板 -->
     <div v-if="showPageProperties">
       <h3 class="text-lg font-medium mb-3">页面属性</h3>
@@ -80,214 +87,70 @@
     </div>
     
     <!-- 组件属性 -->
-    <div v-else-if="selectedComponent">
-      <h3 class="text-lg font-medium mb-3">
-        <span>{{ componentDefinition?.name || '组件' }}属性</span>
-      </h3>
+    <div v-else-if="selectedComponentId && currentComponent">
+      <h3 class="font-medium text-lg mb-3">组件属性</h3>
       
-      <!-- 通用属性 -->
-      <div class="common-props mb-4">
-        <n-form-item label="组件ID">
-          <n-input v-model:value="componentId" disabled />
-        </n-form-item>
+      <!-- 添加组件类型调试信息 -->
+      <div class="mb-3 p-2 bg-yellow-100 text-xs rounded">
+        <div>组件类型: {{ currentComponent.componentId }}</div>
+        <div>组件ID: {{ currentComponent.id }}</div>
       </div>
       
-      <!-- 组件特定属性 -->
-      <div class="specific-props mb-4">
-        <h4 class="font-medium mb-2 text-sm">内容属性</h4>
+      <!-- 文本组件的属性编辑器 -->
+      <div v-if="currentComponent && currentComponent.componentId === 'text'">
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">文本内容</label>
+          <textarea
+            v-model="currentComponent.props.content"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            rows="3"
+          ></textarea>
+        </div>
         
-        <!-- 文本组件属性 -->
-        <template v-if="componentType === 'text'">
-          <n-form-item label="文本内容">
-            <n-input 
-              v-model:value="props.content" 
-              type="textarea" 
-              @update:value="updateProp('content', $event)" 
-            />
-          </n-form-item>
-          
-          <n-form-item label="字体大小">
-            <n-input v-model:value="props.fontSize" @update:value="updateProp('fontSize', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="对齐方式">
-            <n-select 
-              v-model:value="props.textAlign" 
-              :options="[
-                { label: '左对齐', value: 'left' },
-                { label: '居中', value: 'center' },
-                { label: '右对齐', value: 'right' }
-              ]"
-              @update:value="updateProp('textAlign', $event)"
-            />
-          </n-form-item>
-          
-          <n-form-item label="文本颜色">
-            <div class="color-picker-container">
-              <n-input 
-                v-model:value="props.color" 
-                @update:value="updateProp('color', $event)" 
-                class="color-input"
-              />
-              <span 
-                class="color-preview-wrapper"
-                :style="{backgroundColor: props.color || '#ffffff'}"
-              ></span>
-            </div>
-          </n-form-item>
-        </template>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">字体大小</label>
+          <input
+            v-model="currentComponent.styles.fontSize"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
         
-        <!-- 按钮组件属性 -->
-        <template v-else-if="componentType === 'button'">
-          <n-form-item label="按钮文本">
-            <n-input v-model:value="props.label" @update:value="updateProp('label', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="按钮类型">
-            <n-select 
-              v-model:value="props.type" 
-              :options="[
-                { label: '主要', value: 'primary' },
-                { label: '默认', value: 'default' },
-                { label: '信息', value: 'info' },
-                { label: '成功', value: 'success' },
-                { label: '警告', value: 'warning' },
-                { label: '危险', value: 'error' }
-              ]"
-              @update:value="updateProp('type', $event)"
-            />
-          </n-form-item>
-          
-          <n-form-item label="按钮大小">
-            <n-select 
-              v-model:value="props.size" 
-              :options="[
-                { label: '小型', value: 'small' },
-                { label: '中等', value: 'medium' },
-                { label: '大型', value: 'large' }
-              ]"
-              @update:value="updateProp('size', $event)"
-            />
-          </n-form-item>
-        </template>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">文本颜色</label>
+          <input
+            v-model="currentComponent.styles.color"
+            type="color"
+            class="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
         
-        <!-- 图片组件属性 -->
-        <template v-else-if="componentType === 'image'">
-          <n-form-item label="图片来源">
-            <n-radio-group v-model:value="imageSourceType" @update:value="updateImageSourceType">
-              <n-space class="w-full">
-                <n-radio value="local">本地图片</n-radio>
-                <n-radio value="remote">远程URL</n-radio>
-              </n-space>
-            </n-radio-group>
-          </n-form-item>
-          
-          <template v-if="imageSourceType === 'local'">
-            <n-form-item label="图片名称">
-              <n-input 
-                v-model:value="localImageName" 
-                placeholder="例如: jlu.jpg" 
-                @update:value="updateLocalImageName"
-              />
-              <div class="text-xs text-gray-500 mt-1">
-                (存放在 src/assets/imgs/ 目录下)
-              </div>
-              <div class="available-images mt-2">
-                <div class="text-xs text-gray-600">可用图片:</div>
-                <div class="image-chips">
-                  <span 
-                    v-for="imageName in availableImages" 
-                    :key="imageName"
-                    class="image-chip" 
-                    @click="selectImage(imageName)"
-                  >
-                    {{ imageName }}
-                  </span>
-                </div>
-              </div>
-            </n-form-item>
-            
-            <n-form-item>
-              <n-button 
-                type="primary" 
-                block 
-                @click="applyLocalImage"
-              >
-                应用图片
-              </n-button>
-            </n-form-item>
-            
-            <n-form-item label="预览">
-              <div class="local-image-preview p-2 border border-gray-200 dark:border-gray-700 rounded">
-                <img 
-                  v-if="localImageName" 
-                  :src="getLocalImageSrc(localImageName)" 
-                  alt="图片预览"
-                  class="max-w-full h-auto max-h-40 mx-auto"
-                  @error="handleImageError"
-                />
-                <div v-else class="text-center p-4 text-gray-400">
-                  请输入图片名称并应用
-                </div>
-              </div>
-            </n-form-item>
-          </template>
-          
-          <template v-else>
-            <n-form-item label="图片URL">
-              <n-input v-model:value="props.src" @update:value="updateProp('src', $event)" />
-            </n-form-item>
-          </template>
-          
-          <n-form-item label="替代文本">
-            <n-input v-model:value="props.alt" @update:value="updateProp('alt', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="宽度">
-            <n-input v-model:value="props.width" @update:value="updateProp('width', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="高度">
-            <n-input v-model:value="props.height" @update:value="updateProp('height', $event)" />
-          </n-form-item>
-        </template>
-        
-        <!-- 输入框组件属性 -->
-        <template v-else-if="componentType === 'input'">
-          <n-form-item label="标签文本">
-            <n-input v-model:value="props.label" @update:value="updateProp('label', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="占位文本">
-            <n-input v-model:value="props.placeholder" @update:value="updateProp('placeholder', $event)" />
-          </n-form-item>
-          
-          <n-form-item label="是否必填">
-            <n-switch 
-              v-model:value="props.required" 
-              @update:value="updateProp('required', $event)" 
-            />
-          </n-form-item>
-        </template>
-        
-        <!-- 添加其他组件类型的属性编辑器... -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">对齐方式</label>
+          <select
+            v-model="currentComponent.styles.textAlign"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="left">左对齐</option>
+            <option value="center">居中</option>
+            <option value="right">右对齐</option>
+          </select>
+        </div>
       </div>
       
-      <!-- 样式属性 -->
-      <div class="style-props">
-        <h4 class="font-medium mb-2 text-sm">样式属性</h4>
-        
-        <n-form-item label="外边距">
-          <n-input v-model:value="styles.margin" @update:value="updateStyle('margin', $event)" />
-        </n-form-item>
-        
-        <n-form-item label="内边距">
-          <n-input v-model:value="styles.padding" @update:value="updateStyle('padding', $event)" />
-        </n-form-item>
-        
-        <n-form-item label="文本颜色">
-          <n-input v-model:value="styles.color" @update:value="updateStyle('color', $event)" />
-        </n-form-item>
+      <!-- 图片组件的属性编辑器 -->
+      <div v-else-if="currentComponent && currentComponent.componentId === 'image'">
+        <!-- 图片组件属性编辑器内容 -->
+      </div>
+      
+      <!-- 按钮组件的属性编辑器 -->
+      <div v-else-if="currentComponent && currentComponent.componentId === 'button'">
+        <!-- 按钮组件属性编辑器内容 -->
+      </div>
+      
+      <!-- 不支持的组件类型 -->
+      <div v-else>
+        <p class="text-yellow-500">暂不支持编辑此类型组件的属性: {{ currentComponent?.componentId || '未知' }}</p>
       </div>
     </div>
     
@@ -354,7 +217,7 @@ const imageSourceType = ref('local');
 const localImageName = ref('');
 
 // 强制渲染页面属性面板
-const forceShowPageProperties = true;
+const forceShowPageProperties = false;
 
 // 是否显示页面属性面板 - 修改逻辑
 const showPageProperties = computed(() => {
@@ -371,13 +234,30 @@ const showPageProperties = computed(() => {
     应显示: shouldShow
   });
   
-  return shouldShow || forceShowPageProperties; // 临时使用强制显示选项
+  return shouldShow;
 });
 
 // 获取当前选中的布局
 const currentLayout = computed(() => {
   if (!layoutType.value) return null;
   return designerStore.layoutTemplates.find(t => t.id === layoutType.value);
+});
+
+// 当前选中的组件
+const currentComponent = computed(() => {
+  if (!selectedComponentId.value) return null;
+  
+  // 确保当前页面存在
+  const currentPage = designerStore.currentPage;
+  if (!currentPage) return null;
+  
+  // 在所有区域中查找组件
+  for (const region of currentPage.regions || []) {
+    const component = (region.components || []).find(c => c.id === selectedComponentId.value);
+    if (component) return component;
+  }
+  
+  return null;
 });
 
 // 监听页面变化
@@ -516,6 +396,11 @@ const handleImageError = (e: Event) => {
 const selectImage = (imageName: string) => {
   localImageName.value = imageName;
 };
+
+// 添加调试信息
+console.log('RightPanel 重新渲染');
+console.log('当前选中组件ID:', selectedComponentId.value);
+console.log('当前组件数据:', currentComponent.value);
 </script>
 
 <style scoped>

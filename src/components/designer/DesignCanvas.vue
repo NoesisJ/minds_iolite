@@ -57,7 +57,7 @@
                 :key="component.id"
                 class="component-wrapper mb-2 relative group"
                 :class="{'border-2 border-blue-500 rounded': selectedComponentId === component.id}"
-                @click.stop="selectComponent(component.id)"
+                @click.stop="handleComponentClick($event, component.id)"
               >
                 <!-- 组件控制按钮 -->
                 <div class="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -194,6 +194,13 @@ const onDrop = (event: DragEvent, regionId: string) => {
   } catch (error) {
     console.error('放置组件失败:', error);
   }
+};
+
+// 在组件点击事件中
+const handleComponentClick = (event, componentId) => {
+  event.stopPropagation(); // 阻止事件冒泡
+  designerStore.selectComponent(componentId);
+  console.log('组件点击:', componentId);
 };
 
 // 初始化

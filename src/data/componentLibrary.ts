@@ -8,7 +8,7 @@ export const baseComponents: ComponentDefinition[] = [
     id: 'text',
     type: 'text',
     name: '文本',
-    icon: 'pi pi-pencil',
+    icon: 'pi pi-align-left',
     category: 'basic',
     defaultProps: {
       content: '文本内容',
@@ -150,9 +150,11 @@ export function getComponentDefinition(id: string): ComponentDefinition | undefi
 export function createComponentInstance(componentDef: any): ComponentInstance {
   return {
     id: uuidv4(),
+    componentId: componentDef.id,
     type: componentDef.type,
     props: { ...componentDef.defaultProps || {} },
-    styles: { ...componentDef.defaultStyles || {} }
+    styles: { ...componentDef.defaultStyles || {} },
+    events: []
   };
 }
 
