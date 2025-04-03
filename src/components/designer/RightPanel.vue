@@ -91,7 +91,7 @@
       <h3 class="font-medium text-lg mb-3">组件属性</h3>
       
       <!-- 添加组件类型调试信息 -->
-      <div class="mb-3 p-2 bg-yellow-100 text-xs rounded">
+      <div class="mb-3 p-2 bg-yellow-100 text-xs rounded text-black">
         <div>组件类型: {{ currentComponent.componentId }}</div>
         <div>组件ID: {{ currentComponent.id }}</div>
       </div>
@@ -145,7 +145,134 @@
       
       <!-- 按钮组件的属性编辑器 -->
       <div v-else-if="currentComponent && currentComponent.componentId === 'button'">
-        <!-- 按钮组件属性编辑器内容 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">按钮文本</label>
+          <input
+            v-model="currentComponent.props.label"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">按钮类型</label>
+          <select
+            v-model="currentComponent.props.status"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="primary">主要按钮 (Primary)</option>
+            <option value="info">信息按钮 (Info)</option>
+            <option value="success">成功按钮 (Success)</option>
+            <option value="warning">警告按钮 (Warning)</option>
+            <option value="danger">危险按钮 (Danger)</option>
+            <option value="basic">基础按钮 (Basic)</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">按钮大小</label>
+          <select
+            v-model="currentComponent.props.size"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="small">小 (Small)</option>
+            <option value="medium">中 (Medium)</option>
+            <option value="large">大 (Large)</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">按钮形状</label>
+          <select
+            v-model="currentComponent.props.shape"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="rectangle">矩形 (Rectangle)</option>
+            <option value="semi-round">半圆角 (Semi-round)</option>
+            <option value="round">圆角 (Round)</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">图标</label>
+          <input
+            v-model="currentComponent.props.icon"
+            type="text"
+            placeholder="例如: pi pi-check"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+          <p class="text-xs text-gray-500 mt-1">使用PrimeIcons图标, 例如: pi pi-check</p>
+        </div>
+        
+        <div class="mb-4 space-y-2">
+          <label class="block text-sm font-medium mb-1">样式选项</label>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="hero-option"
+              v-model="currentComponent.props.hero"
+              class="mr-2"
+            />
+            <label for="hero-option">突出按钮 (Hero)</label>
+          </div>
+          
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="outline-option"
+              v-model="currentComponent.props.outline"
+              class="mr-2"
+            />
+            <label for="outline-option">轮廓按钮 (Outline)</label>
+          </div>
+          
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="ghost-option"
+              v-model="currentComponent.props.ghost"
+              class="mr-2"
+            />
+            <label for="ghost-option">幽灵按钮 (Ghost)</label>
+          </div>
+          
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="disabled-option"
+              v-model="currentComponent.props.disabled"
+              class="mr-2"
+            />
+            <label for="disabled-option">禁用状态 (Disabled)</label>
+          </div>
+        </div>
+        
+        <!-- 自定义样式 -->
+        <div class="mb-4">
+          <details class="border rounded p-2">
+            <summary class="font-medium cursor-pointer">高级样式设置</summary>
+            <div class="pt-2 space-y-2">
+              <div>
+                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
+                <input
+                  v-model="currentComponent.styles.margin"
+                  type="text"
+                  placeholder="例如: 8px 12px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
+                <input
+                  v-model="currentComponent.styles.width"
+                  type="text"
+                  placeholder="例如: 100% 或 120px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
       
       <!-- 不支持的组件类型 -->
