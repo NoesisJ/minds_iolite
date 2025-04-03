@@ -96,3 +96,167 @@ npm run build
 ## 许可证
 
 [MIT License]
+
+# Minds Iolite 低代码平台
+
+Minds Iolite是一个现代化的低代码平台，允许用户通过可视化界面设计Web应用程序，无需编写大量代码。
+
+## 项目开发路线图
+
+### 阶段1: 组件代码生成器 (当前重点)
+- [ ] 实现文本组件代码生成器
+- [ ] 实现按钮组件代码生成器
+- [ ] 实现图片组件代码生成器
+- [ ] 实现表单组件代码生成器 (输入框、选择框等)
+- [ ] 实现数据展示组件代码生成器 (表格、列表等)
+- [ ] 完成页面视图组装逻辑
+- [ ] 实现页面路由生成
+- [ ] 生成功能性项目结构 (可运行的Vue应用)
+
+### 阶段2: 数据集成和表单功能
+- [ ] 创建数据源管理界面
+- [ ] 实现API数据源连接
+- [ ] 添加数据绑定功能 (组件与数据源)
+- [ ] 开发表单验证系统
+- [ ] 实现表单提交和数据处理
+- [ ] 添加条件渲染功能
+- [ ] 开发列表/表格数据分页和筛选
+
+### 阶段3: 事件系统和交互增强
+- [ ] 实现组件事件管理器
+- [ ] 添加页面导航事件
+- [ ] 添加数据操作事件 (增删改查)
+- [ ] 开发模态框和弹窗交互
+- [ ] 添加拖拽精确定位功能
+- [ ] 实现组件调整手柄 (大小、位置)
+- [ ] 添加组件组和布局容器
+
+### 阶段4: 预览和调试功能
+- [ ] 增强实时预览功能
+- [ ] 添加组件树查看器
+- [ ] 实现状态检查器
+- [ ] 添加网络请求监控
+- [ ] 开发移动设备响应式预览
+- [ ] 添加性能分析工具
+- [ ] 实现代码查看功能
+
+### 阶段5: 业务逻辑和工作流
+- [ ] 开发可视化逻辑编辑器
+- [ ] 实现条件分支逻辑
+- [ ] 添加循环迭代逻辑
+- [ ] 开发简单工作流引擎
+- [ ] 添加定时任务支持
+- [ ] 实现自定义函数编辑器
+- [ ] 添加变量和常量管理
+
+### 阶段6: 用户和权限系统
+- [ ] 实现用户认证和授权
+- [ ] 添加角色管理
+- [ ] 开发权限控制系统
+- [ ] 实现团队协作功能
+- [ ] 添加版本控制和历史记录
+- [ ] 开发资源共享系统
+- [ ] 实现评论和反馈功能
+
+### 阶段7: 发布和部署
+- [ ] 增强发布对话框功能
+- [ ] 添加静态网站发布选项
+- [ ] 实现服务器部署流程
+- [ ] 添加容器化部署支持
+- [ ] 开发CI/CD集成
+- [ ] 实现发布版本管理
+- [ ] 添加发布前预检和优化
+
+## 阶段1详细实施计划
+
+### 组件代码生成器实现步骤
+
+1. **修改 ProjectGenerator.ts 文件**:
+   - 完善 `generatePageComponents()` 方法
+   - 添加各类型组件的代码生成方法
+   - 实现页面组装逻辑
+
+2. **文本组件代码生成**:
+   ```typescript
+   private generateTextComponentCode(component: ComponentInstance): string {
+     // 根据组件属性生成Vue组件代码
+     return `<template>
+       <div class="text-component" :style="styles">
+         {{ content }}
+       </div>
+     </template>
+     
+     <script>
+     export default {
+       props: {
+         content: {
+           type: String,
+           default: '${component.props.content || "文本内容"}'
+         },
+         styles: {
+           type: Object,
+           default: () => ({
+             fontSize: '${component.styles.fontSize || "16px"}',
+             color: '${component.styles.color || "#333"}',
+             // 其他样式...
+           })
+         }
+       }
+     }
+     </script>`;
+   }
+   ```
+
+3. **页面组装逻辑**:
+   ```typescript
+   private generatePageViewContent(page: Page): string {
+     // 生成页面组件，包含所有区域和子组件
+     let imports = '';
+     let components = '{';
+     let template = '<div class="page-container">\n';
+     
+     // 处理每个区域...
+     
+     template += '</div>';
+     
+     return `<template>
+       ${template}
+     </template>
+     
+     <script>
+     ${imports}
+     
+     export default {
+       components: ${components}
+     }
+     </script>`;
+   }
+   ```
+
+4. **路由生成**:
+   ```typescript
+   private generateRoutes(): string {
+     // 生成Vue Router配置
+     let routes = '';
+     this.pages.forEach(page => {
+       routes += `  {
+         path: '/${page.name.toLowerCase()}',
+         name: '${page.name}',
+         component: () => import('../views/${page.name}.vue')
+       },\n`;
+     });
+     
+     return `import { createRouter, createWebHistory } from 'vue-router'
+
+     const routes = [
+       ${routes}
+     ]
+     
+     const router = createRouter({
+       history: createWebHistory('${this.settings.routeMode === 'history' ? '/' : '#/'}'),
+       routes
+     })
+     
+     export default router`;
+   }
+   ```
