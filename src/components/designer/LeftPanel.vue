@@ -49,7 +49,7 @@
             :key="component.id"
             class="component-item p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:border-blue-400 dark:hover:border-blue-400 transition-colors"
             draggable="true"
-            @dragstart="onDragStart($event, component.id)"
+            @dragstart="onDragStart($event, component)"
           >
             <div class="flex items-center">
               <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500 mr-2">
@@ -159,10 +159,10 @@ const filteredComponents = computed(() => {
 });
 
 // 方法
-const onDragStart = (event, componentId) => {
-  console.log('开始拖拽组件:', componentId);
+const onDragStart = (event, component) => {
+  console.log('开始拖拽组件:', component.id);
   // 设置拖动数据
-  event.dataTransfer.setData('componentId', componentId);
+  event.dataTransfer.setData('componentId', component.id);
   event.dataTransfer.effectAllowed = 'copy';
 };
 

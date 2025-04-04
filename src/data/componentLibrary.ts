@@ -134,11 +134,48 @@ export const dataComponents: ComponentDefinition[] = [
   }
 ];
 
+// 添加这个图表组件分类
+export const chartComponents: ComponentDefinition[] = [
+  {
+    id: 'echarts-area',
+    type: 'chart',
+    name: '面积图',
+    icon: 'pi pi-chart-line',
+    category: 'chart',
+    defaultProps: {
+      chartType: 'area-line',
+      title: '大数据面积图',
+      height: '400px',
+      customClass: 'rounded-lg shadow-md'
+    },
+    defaultStyles: {
+      marginBottom: '20px'
+    }
+  },
+  {
+    id: 'echarts-pie',
+    type: 'chart',
+    name: '饼图',
+    icon: 'pi pi-chart-pie',
+    category: 'chart',
+    defaultProps: {
+      chartType: 'basic-pie',
+      title: '数据分布',
+      height: '350px',
+      customClass: 'rounded-lg shadow-md'
+    },
+    defaultStyles: {
+      marginBottom: '20px'
+    }
+  }
+];
+
 // 合并所有组件
 export const allComponents = [
   ...baseComponents,
   ...formComponents,
-  ...dataComponents
+  ...dataComponents,
+  ...chartComponents
 ];
 
 // 根据类型获取组件定义
@@ -163,4 +200,5 @@ export const componentCategories = [
   { id: 'basic', name: '基础组件' },
   { id: 'form', name: '表单组件' },
   { id: 'data', name: '数据组件' },
+  { id: 'chart', name: '图表组件' }
 ]; 

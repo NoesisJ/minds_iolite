@@ -1,6 +1,7 @@
 import { ComponentGeneratorInterface } from './ComponentGeneratorInterface';
 import { TextComponentGenerator } from './components/TextComponentGenerator';
 import { ButtonComponentGenerator } from './components/ButtonComponentGenerator';
+import { ChartComponentGenerator } from './components/ChartComponentGenerator';
 
 // 图片组件生成器将在后续创建...
 // import { ImageComponentGenerator } from './components/ImageComponentGenerator';
@@ -13,6 +14,7 @@ class ComponentGeneratorRegistry {
     // 注册所有组件生成器
     this.register(new TextComponentGenerator());
     this.register(new ButtonComponentGenerator());
+    this.register(new ChartComponentGenerator());
     // this.register(new ImageComponentGenerator());
   }
   

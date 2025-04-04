@@ -85,13 +85,13 @@
     
     <!-- 图表组件 -->
     <template v-else-if="componentType === 'chart'">
-      <div class="chart-preview border border-gray-200 dark:border-gray-700 rounded overflow-hidden p-2">
-        <div class="chart-title text-center font-medium mb-2">{{ componentProps.title }}</div>
-        <div class="chart-placeholder bg-gray-100 dark:bg-gray-800 flex items-center justify-center" style="height: 150px;">
-          <div class="text-gray-500 dark:text-gray-400">
-            <i class="pi pi-chart-bar text-2xl"></i>
-            <div class="text-sm mt-1">{{ componentProps.type }}图表</div>
+      <div class="chart-preview" :style="componentStyles">
+        <div class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600" :style="{height: componentProps.height || '300px'}">
+          <div class="text-3xl mb-2">
+            <i :class="getChartIcon(componentProps.chartType)"></i>
           </div>
+          <div class="text-lg font-medium">{{ componentProps.title || '图表组件' }}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ getChartDescription(componentProps.chartType) }}</div>
         </div>
       </div>
     </template>
@@ -169,6 +169,32 @@ const handleImageError = (e: Event) => {
     target.parentElement?.appendChild(errorText);
   }
 };
+
+function getChartIcon(chartType) {
+  switch(chartType) {
+    case 'area-line': return 'pi pi-chart-line';
+    case 'basic-pie': return 'pi pi-chart-pie';
+    case 'interactive-pie-line': return 'pi pi-chart-bar';
+    case 'mix-bar-line': return 'pi pi-chart-bar';
+    case 'radar': return 'pi pi-chart-line';
+    case 'smooth-line': return 'pi pi-chart-line';
+    case 'time-series': return 'pi pi-chart-line';
+    default: return 'pi pi-chart-bar';
+  }
+}
+
+function getChartDescription(chartType) {
+  switch(chartType) {
+    case 'area-line': return '大数据面积图';
+    case 'basic-pie': return '基础饼图';
+    case 'interactive-pie-line': return '联动折线饼图';
+    case 'mix-bar-line': return '混合折柱图';
+    case 'radar': return '雷达图';
+    case 'smooth-line': return '平滑折线图';
+    case 'time-series': return '时间轴折线图';
+    default: return '图表组件';
+  }
+}
 </script>
 
 <style scoped>
