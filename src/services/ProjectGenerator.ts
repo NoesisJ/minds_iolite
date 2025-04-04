@@ -908,4 +908,86 @@ module.exports = defineConfig({
 
     return Array.from(usedComponents);
   }
+
+  // Add this method to the ProjectGenerator class
+  generateImageComponentCode(component: ComponentInstance): string {
+    // Get image properties with defaults
+    const src = component.props.src || '';
+    const alt = component.props.alt || 'Image';
+    const width = component.props.width || '100%';
+    const height = component.props.height || 'auto';
+    
+    return `<template>
+    <div class="image-component">
+      <img 
+        v-if="src" 
+        :src="src" 
+        :alt="alt" 
+        :style="computedStyles"
+        @error="handleImageError"
+      />
+      <div v-else class="placeholder-image">
+        <i class="pi pi-image text-gray-400 text-4xl"></i>
+        <p class="text-gray-400 mt-2">图片未设置</p>
+      </div>
+    </div>
+  </template>
+
+  <script>
+  export default {
+    name: 'ImageComponent',
+    props: {
+      src: {
+        type: String,
+        default: '${src}'
+      },
+      alt: {
+        type: String,
+        default: '${alt}'
+      },
+      styles: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    computed: {
+      computedStyles() {
+        return {
+          width: '${width}',
+          height: '${height}',
+          ...this.styles
+        };
+      }
+    },
+    methods: {
+      handleImageError(e) {
+        console.warn('图片加载失败:', this.src);
+        e.target.alt = '图片加载失败';
+      }
+    }
+  }
+  </script>
+
+  <style scoped>
+  .image-component {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50px;
+  }
+
+  .placeholder-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    width: 100%;
+    min-height: 120px;
+  }
+  </style>`;
+  }
 } 

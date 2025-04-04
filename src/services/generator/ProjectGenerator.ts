@@ -155,7 +155,7 @@ const routes = [
     // 为每个页面添加路由
     for (const page of this.pages) {
       routesCode += `  {
-    path: '/${page.path || this.getPagePath(page)}',
+    path: '/${this.getPagePath(page)}',
     name: '${page.name || page.title}',
     component: () => import('@/views/${this.getPageFileName(page)}.vue')
   },
@@ -167,7 +167,7 @@ const routes = [
       const firstPage = this.pages[0];
       routesCode += `  {
     path: '/',
-    redirect: '/${firstPage.path || this.getPagePath(firstPage)}'
+    redirect: '/${this.getPagePath(firstPage)}'
   },
 `;
     }
