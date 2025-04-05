@@ -1,8 +1,5 @@
 // router/index.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import DatepickerView from "@/views/FormViews/DatepickerView.vue";
-import ButtonsView from "@/views/FormViews/ButtonsView.vue";
-import FormLayoutsView from "@/views/FormViews/FormLayoutsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
