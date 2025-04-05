@@ -2,7 +2,7 @@
   <div class="chart-widget" :style="styles">
     <component 
       :is="getChartComponent(chartType)" 
-      v-bind="$props"
+      v-bind="chartProps"
       v-if="chartType"
     />
     <div v-else class="chart-placeholder">
@@ -16,19 +16,19 @@
 import { computed, defineProps } from 'vue';
 import EchartsLineWidget from './charts/EchartsLineWidget.vue';
 import EchartsBarWidget from './charts/EchartsBarWidget.vue';
+import EchartsPieWidget from './charts/EchartsPieWidget.vue';
+import EchartsRadarWidget from './charts/EchartsRadarWidget.vue';
+import EchartsSmoothLineWidget from './charts/EchartsSmoothLineWidget.vue';
+import EchartsMixBarLineWidget from './charts/EchartsMixBarLineWidget.vue';
+import EchartsInteractivePieLineWidget from './charts/EchartsInteractivePieLineWidget.vue';
 import HighchartsPieWidget from './charts/HighchartsPieWidget.vue';
 import HighchartsAreaWidget from './charts/HighchartsAreaWidget.vue';
 
 const props = defineProps({
-  // 组件实例
-  component: {
-    type: Object,
-    required: true
-  },
   // 图表类型: line, bar, pie, area 等
   chartType: {
     type: String,
-    default: ''
+    required: true
   },
   // 图表标题
   title: {
@@ -45,8 +45,26 @@ const props = defineProps({
     type: String,
     default: '350px'
   },
+  // 图表数据
+  data: {
+    type: Array,
+    default: () => []
+  },
+  // X轴数据
+  xAxisData: {
+    type: Array,
+    default: () => []
+  },
   // 其他图表特定属性
-  // ...
+  indicator: {
+    type: Array,
+    default: () => []
+  },
+  // 饼图配置
+  pieConfig: {
+    type: Object,
+    default: () => ({})
+  },
   // 样式
   styles: {
     type: Object,
@@ -67,6 +85,19 @@ const styles = computed(() => {
   return { ...baseStyles, ...props.styles };
 });
 
+// 图表属性组合
+const chartProps = computed(() => {
+  return {
+    title: props.title,
+    subtitle: props.subtitle,
+    height: props.height,
+    data: props.data,
+    xAxisData: props.xAxisData,
+    indicator: props.indicator,
+    pieConfig: props.pieConfig
+  };
+});
+
 // 获取图表组件
 function getChartComponent(chartType: string) {
   if (!chartType) return null;
@@ -78,10 +109,19 @@ function getChartComponent(chartType: string) {
     case 'bar':
       return EchartsBarWidget;
     case 'pie':
+      return EchartsPieWidget;
+    case 'radar':
+      return EchartsRadarWidget;
+    case 'smoothLine':
+      return EchartsSmoothLineWidget;
+    case 'mixBarLine':
+      return EchartsMixBarLineWidget;
+    case 'interactivePieLine':
+      return EchartsInteractivePieLineWidget;
+    case 'highchartsPie':
       return HighchartsPieWidget;
     case 'area':
       return HighchartsAreaWidget;
-    // 更多图表类型可在此扩展
     default:
       return null;
   }

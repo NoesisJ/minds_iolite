@@ -197,7 +197,7 @@ const onDrop = (event: DragEvent, regionId: string) => {
 };
 
 // 在组件点击事件中
-const handleComponentClick = (event, componentId) => {
+const handleComponentClick = (event: MouseEvent, componentId: string) => {
   event.stopPropagation(); // 阻止事件冒泡
   designerStore.selectComponent(componentId);
   console.log('组件点击:', componentId);
