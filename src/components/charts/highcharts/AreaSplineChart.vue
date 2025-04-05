@@ -50,38 +50,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-import Highcharts from 'highcharts';
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import Highcharts from "highcharts";
 
 const props = defineProps({
   // 基础属性
-  width: { type: String, default: '100%' },
-  height: { type: String, default: '400px' },
-  customClass: { type: String, default: '' },
-  
+  width: { type: String, default: "100%" },
+  height: { type: String, default: "400px" },
+  customClass: { type: String, default: "" },
+
   // 数据属性
   seriesData: { type: Array, required: true },
   pointStart: { type: Number, default: null },
   plotBands: { type: Array, default: () => [] },
-  
+
   // 样式属性
-  colors: { type: Array, default: () => ['#4E9BFF', '#FF7B92', '#FFC233', '#38BFFF'] },
-  title: { type: String, default: '' },
-  subtitle: { type: String, default: '' },
-  yAxisTitle: { type: String, default: '' },
+  colors: {
+    type: Array,
+    default: () => ["#4E9BFF", "#FF7B92", "#FFC233", "#38BFFF"],
+  },
+  title: { type: String, default: "" },
+  subtitle: { type: String, default: "" },
+  yAxisTitle: { type: String, default: "" },
   fillOpacity: { type: Number, default: 0.5 },
   darkMode: { type: Boolean, default: true },
-  legendLayout: { type: String, default: 'vertical' },
-  legendAlign: { type: String, default: 'left' },
-  legendVerticalAlign: { type: String, default: 'top' },
-  
+  legendLayout: { type: String, default: "vertical" },
+  legendAlign: { type: String, default: "left" },
+  legendVerticalAlign: { type: String, default: "top" },
+
   // 图例位置
   legendX: { type: Number, default: 120 },
   legendY: { type: Number, default: 70 },
   legendFloating: { type: Boolean, default: true },
-  
+
   // 高级自定义
-  customOptions: { type: Object, default: () => ({}) }
+  customOptions: { type: Object, default: () => ({}) },
 });
 
 // 生成唯一ID
@@ -90,37 +93,39 @@ let chartInstance = null;
 
 // 计算配置
 const chartOptions = computed(() => {
-  const darkTheme = props.darkMode ? {
-    backgroundColor: 'transparent',
-    colors: props.colors,
-    title: { style: { color: '#ffffff' } },
-    subtitle: { style: { color: '#cccccc' } },
-    legend: { 
-      itemStyle: { color: '#cccccc' },
-      itemHoverStyle: { color: '#ffffff' }
-    },
-    xAxis: { 
-      labels: { style: { color: '#cccccc' } },
-      lineColor: '#555555'
-    },
-    yAxis: { 
-      labels: { style: { color: '#cccccc' } },
-      gridLineColor: '#555555',
-      title: { style: { color: '#cccccc' } }
-    }
-  } : {};
-  
+  const darkTheme = props.darkMode
+    ? {
+        backgroundColor: "transparent",
+        colors: props.colors,
+        title: { style: { color: "#ffffff" } },
+        subtitle: { style: { color: "#cccccc" } },
+        legend: {
+          itemStyle: { color: "#cccccc" },
+          itemHoverStyle: { color: "#ffffff" },
+        },
+        xAxis: {
+          labels: { style: { color: "#cccccc" } },
+          lineColor: "#555555",
+        },
+        yAxis: {
+          labels: { style: { color: "#cccccc" } },
+          gridLineColor: "#555555",
+          title: { style: { color: "#cccccc" } },
+        },
+      }
+    : {};
+
   // 基础配置
   const options = {
     chart: {
-      type: 'areaspline',
-      ...darkTheme
+      type: "areaspline",
+      ...darkTheme,
     },
     title: {
-      text: props.title
+      text: props.title,
     },
     subtitle: {
-      text: props.subtitle
+      text: props.subtitle,
     },
     legend: {
       layout: props.legendLayout,
@@ -130,33 +135,35 @@ const chartOptions = computed(() => {
       y: props.legendY,
       floating: props.legendFloating,
       borderWidth: 1,
-      backgroundColor: props.darkMode ? 'rgba(0, 0, 0, 0.5)' : Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF'
+      backgroundColor: props.darkMode
+        ? "rgba(0, 0, 0, 0.5)"
+        : Highcharts.defaultOptions.legend.backgroundColor || "#FFFFFF",
     },
     xAxis: {
-      plotBands: props.plotBands
+      plotBands: props.plotBands,
     },
     yAxis: {
       title: {
-        text: props.yAxisTitle
-      }
+        text: props.yAxisTitle,
+      },
     },
     tooltip: {
       shared: true,
-      headerFormat: '<b>{point.x}</b><br>'
+      headerFormat: "<b>{point.x}</b><br>",
     },
     credits: {
-      enabled: false
+      enabled: false,
     },
     plotOptions: {
       series: {
-        ...(props.pointStart ? { pointStart: props.pointStart } : {})
+        ...(props.pointStart ? { pointStart: props.pointStart } : {}),
       },
       areaspline: {
-        fillOpacity: props.fillOpacity
-      }
+        fillOpacity: props.fillOpacity,
+      },
     },
     series: props.seriesData,
-    ...props.customOptions
+    ...props.customOptions,
   };
 
   return options;
@@ -186,7 +193,7 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
@@ -194,7 +201,7 @@ onUnmounted(() => {
   if (chartInstance) {
     chartInstance.destroy();
   }
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -215,7 +222,7 @@ watch(
     props.legendX,
     props.legendY,
     props.legendFloating,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -228,6 +235,6 @@ defineExpose({
     if (chartInstance) {
       chartInstance.update(options);
     }
-  }
+  },
 });
-</script> 
+</script>

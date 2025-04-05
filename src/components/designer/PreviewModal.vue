@@ -2,23 +2,27 @@
   <div v-if="show" class="preview-modal-overlay" @click="close">
     <div class="preview-modal-container" @click.stop>
       <div class="preview-modal-header">
-        <h2 class="text-lg font-medium">{{ page?.title || '页面预览' }}</h2>
+        <h2 class="text-lg font-medium">{{ page?.title || "页面预览" }}</h2>
         <button @click="close" class="text-gray-500 hover:text-gray-700">
           <i class="pi pi-times"></i>
         </button>
       </div>
-      
+
       <div class="preview-modal-content">
         <div v-if="page">
-          <div v-for="(region, index) in page.regions" :key="index" class="mb-4">
+          <div
+            v-for="(region, index) in page.regions"
+            :key="index"
+            class="mb-4"
+          >
             <div v-if="region.components.length > 0" class="region-content">
-              <div 
-                v-for="component in region.components" 
+              <div
+                v-for="component in region.components"
                 :key="component.id"
                 class="component-wrapper mb-3"
               >
-                <component 
-                  :is="getComponentType(component.type)" 
+                <component
+                  :is="getComponentType(component.type)"
                   v-bind="component.props"
                   :style="component.styles"
                 />
@@ -39,18 +43,18 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import { getComponentType } from '@/utils/componentUtils';
+import { defineProps, defineEmits } from "vue";
+import { getComponentType } from "@/utils/componentUtils";
 
 const props = defineProps({
   show: Boolean,
-  page: Object
+  page: Object,
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const close = () => {
-  emit('close');
+  emit("close");
 };
 </script>
 
@@ -110,4 +114,4 @@ const close = () => {
 .dark .empty-region {
   border-color: #4b5563;
 }
-</style> 
+</style>

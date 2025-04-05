@@ -1,10 +1,10 @@
 <template>
   <div class="image-widget">
-    <img 
-      v-if="src" 
-      :src="src" 
-      :alt="alt" 
-      :width="width" 
+    <img
+      v-if="src"
+      :src="src"
+      :alt="alt"
+      :width="width"
       :height="height"
       @error="handleImageError"
       class="image-content"
@@ -18,32 +18,32 @@
 
 <script>
 export default {
-  name: 'ImageWidget',
+  name: "ImageWidget",
   props: {
     src: {
       type: String,
-      default: ''
+      default: "",
     },
     alt: {
       type: String,
-      default: '图片'
+      default: "图片",
     },
     width: {
       type: String,
-      default: '100%'
+      default: "100%",
     },
     height: {
       type: String,
-      default: 'auto'
-    }
+      default: "auto",
+    },
   },
   methods: {
     handleImageError(e) {
-      console.warn('图片加载失败:', this.src);
-      e.target.alt = '图片加载失败';
-    }
-  }
-}
+      console.warn("图片加载失败:", this.src);
+      e.target.alt = "图片加载失败";
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -71,4 +71,4 @@ export default {
   width: 100%;
   min-height: 120px;
 }
-</style> 
+</style>

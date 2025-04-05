@@ -3,18 +3,26 @@
     <div class="publish-dialog-container" @click.stop>
       <!-- 对话框标题 -->
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-gray-800 dark:text-white">发布项目</h2>
-        <button @click="onCloseRequest" class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <h2 class="text-xl font-medium text-gray-800 dark:text-white">
+          发布项目
+        </h2>
+        <button
+          @click="onCloseRequest"
+          class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
           <i class="pi pi-times"></i>
         </button>
       </div>
-      
+
       <!-- 步骤指示器 -->
       <div class="steps-indicator">
-        <div 
-          v-for="(step, index) in steps" 
+        <div
+          v-for="(step, index) in steps"
           :key="index"
-          :class="['step', { 'active': currentStep >= index, 'current': currentStep === index }]"
+          :class="[
+            'step',
+            { active: currentStep >= index, current: currentStep === index },
+          ]"
         >
           <div class="step-content">
             <div class="step-number">{{ index + 1 }}</div>
@@ -22,121 +30,143 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 步骤内容 -->
       <div class="step-content">
         <!-- 步骤1: 选择页面 -->
         <div v-if="currentStep === STEPS.SELECT_PAGES" class="step-page-select">
-          <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">选择要发布的页面</div>
-          
+          <div
+            class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white"
+          >
+            选择要发布的页面
+          </div>
+
           <div v-if="pages.length === 0" class="empty-state">
             <i class="pi pi-exclamation-circle text-3xl mb-3 text-gray-400"></i>
             <div class="text-gray-500 dark:text-gray-400">没有可用的页面</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">请先在设计器中创建页面</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              请先在设计器中创建页面
+            </div>
           </div>
-          
+
           <div v-else class="pages-list">
             <div class="select-all-row mb-2">
-              <label class="flex items-center cursor-pointer py-2 px-3 rounded hover:bg-gray-50 dark:hover:bg-gray-800">
-                <input 
-                  type="checkbox" 
-                  :checked="isAllSelected" 
-                  @change="toggleSelectAll" 
+              <label
+                class="flex items-center cursor-pointer py-2 px-3 rounded hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <input
+                  type="checkbox"
+                  :checked="isAllSelected"
+                  @change="toggleSelectAll"
                   class="mr-2 h-4 w-4"
-                >
+                />
                 <span class="text-gray-700 dark:text-gray-300">全选</span>
               </label>
             </div>
-            
-            <div 
-              v-for="page in pages" 
-              :key="page.id" 
+
+            <div
+              v-for="page in pages"
+              :key="page.id"
               class="page-item"
-              :class="{ 'selected': selectedPages.includes(page.id) }"
+              :class="{ selected: selectedPages.includes(page.id) }"
               @click="togglePageSelection(page.id)"
             >
               <div class="checkbox">
-                <i v-if="selectedPages.includes(page.id)" class="pi pi-check"></i>
+                <i
+                  v-if="selectedPages.includes(page.id)"
+                  class="pi pi-check"
+                ></i>
               </div>
               <div class="page-info">
                 <div class="page-title">{{ page.title }}</div>
-                <div class="page-type">{{ getLayoutName(page.layoutType) }}</div>
+                <div class="page-type">
+                  {{ getLayoutName(page.layoutType) }}
+                </div>
               </div>
               <div class="page-preview">
                 <i class="pi pi-file"></i>
               </div>
             </div>
           </div>
-          
-          <div class="selection-summary mt-4 text-sm text-gray-500 dark:text-gray-400">
+
+          <div
+            class="selection-summary mt-4 text-sm text-gray-500 dark:text-gray-400"
+          >
             已选择 {{ selectedPages.length }} / {{ pages.length }} 个页面
           </div>
         </div>
-        
+
         <!-- 步骤2: 项目设置 -->
-        <div v-if="currentStep === STEPS.PROJECT_SETTINGS" class="step-project-settings">
-          <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">配置项目信息</div>
-          
+        <div
+          v-if="currentStep === STEPS.PROJECT_SETTINGS"
+          class="step-project-settings"
+        >
+          <div
+            class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white"
+          >
+            配置项目信息
+          </div>
+
           <div class="form-grid">
             <!-- 项目基本信息 -->
             <div class="form-section">
               <h3 class="form-section-title">基本信息</h3>
-              
+
               <div class="form-group">
                 <label for="project-name">项目名称</label>
-                <input 
+                <input
                   id="project-name"
-                  v-model="projectSettings.name" 
-                  type="text" 
+                  v-model="projectSettings.name"
+                  type="text"
                   placeholder="my-iolite-project"
                   class="form-input"
-                >
+                />
                 <div class="form-hint">项目名称将用作生成的文件夹名称</div>
               </div>
-              
+
               <div class="form-group">
                 <label for="project-version">版本号</label>
-                <input 
+                <input
                   id="project-version"
-                  v-model="projectSettings.version" 
-                  type="text" 
+                  v-model="projectSettings.version"
+                  type="text"
                   placeholder="1.0.0"
                   class="form-input"
-                >
+                />
               </div>
-              
+
               <div class="form-group">
                 <label for="project-author">作者</label>
-                <input 
+                <input
                   id="project-author"
-                  v-model="projectSettings.author" 
-                  type="text" 
+                  v-model="projectSettings.author"
+                  type="text"
                   placeholder="Your Name"
                   class="form-input"
-                >
+                />
               </div>
-              
+
               <div class="form-group">
                 <label for="project-description">项目描述</label>
-                <textarea 
+                <textarea
                   id="project-description"
-                  v-model="projectSettings.description" 
+                  v-model="projectSettings.description"
                   placeholder="描述您的项目..."
                   class="form-textarea"
                   rows="3"
                 ></textarea>
               </div>
             </div>
-            
+
             <!-- 导航与路由设置 -->
             <div class="form-section">
               <h3 class="form-section-title">导航与路由</h3>
-              
+
               <div class="form-group">
                 <label for="route-mode">路由模式</label>
-                <select 
+                <select
                   id="route-mode"
-                  v-model="projectSettings.routeMode" 
+                  v-model="projectSettings.routeMode"
                   class="form-select"
                 >
                   <option value="hash">Hash 模式 (#/)</option>
@@ -144,48 +174,48 @@
                 </select>
                 <div class="form-hint">History 模式需要服务器配置支持</div>
               </div>
-              
+
               <div class="form-group">
                 <label for="home-page">首页</label>
-                <select 
+                <select
                   id="home-page"
-                  v-model="projectSettings.homePage" 
+                  v-model="projectSettings.homePage"
                   class="form-select"
                 >
-                  <option 
-                    v-for="page in selectedPageObjects" 
-                    :key="page.id" 
+                  <option
+                    v-for="page in selectedPageObjects"
+                    :key="page.id"
                     :value="page.id"
                   >
                     {{ page.title }}
                   </option>
                 </select>
               </div>
-              
+
               <div class="form-group">
                 <label>导航菜单</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="projectSettings.generateNav"
                       class="checkbox-input"
-                    >
+                    />
                     <span>自动生成导航菜单</span>
                   </label>
                 </div>
               </div>
             </div>
-            
+
             <!-- 主题与样式设置 -->
             <div class="form-section">
               <h3 class="form-section-title">主题与样式</h3>
-              
+
               <div class="form-group">
                 <label for="color-theme">颜色主题</label>
-                <select 
+                <select
                   id="color-theme"
-                  v-model="projectSettings.theme" 
+                  v-model="projectSettings.theme"
                   class="form-select"
                 >
                   <option value="light">亮色主题</option>
@@ -193,51 +223,60 @@
                   <option value="auto">跟随系统</option>
                 </select>
               </div>
-              
+
               <div class="form-group">
                 <label>暗色模式支持</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="projectSettings.darkModeSupport"
                       class="checkbox-input"
-                    >
+                    />
                     <span>支持暗色模式切换</span>
                   </label>
                 </div>
               </div>
-              
+
               <div class="form-group">
                 <label for="primary-color">主色调</label>
                 <div class="color-picker-wrapper">
-                  <input 
+                  <input
                     id="primary-color"
-                    v-model="projectSettings.primaryColor" 
+                    v-model="projectSettings.primaryColor"
                     type="color"
                     class="color-picker"
-                  >
-                  <span class="color-value">{{ projectSettings.primaryColor }}</span>
+                  />
+                  <span class="color-value">{{
+                    projectSettings.primaryColor
+                  }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <!-- 步骤3: 生成配置 -->
-        <div v-if="currentStep === STEPS.BUILD_CONFIG" class="step-build-config">
-          <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">构建配置</div>
-          
+        <div
+          v-if="currentStep === STEPS.BUILD_CONFIG"
+          class="step-build-config"
+        >
+          <div
+            class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white"
+          >
+            构建配置
+          </div>
+
           <div class="form-grid">
             <!-- 构建选项 -->
             <div class="form-section">
               <h3 class="form-section-title">构建选项</h3>
-              
+
               <div class="form-group">
                 <label for="build-tool">构建工具</label>
-                <select 
+                <select
                   id="build-tool"
-                  v-model="buildConfig.buildTool" 
+                  v-model="buildConfig.buildTool"
                   class="form-select"
                 >
                   <option value="vite">Vite</option>
@@ -245,63 +284,60 @@
                 </select>
                 <div class="form-hint">Vite 提供更快的开发体验</div>
               </div>
-              
+
               <div class="form-group">
                 <label>优化选项</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.minify"
                       class="checkbox-input"
-                    >
+                    />
                     <span>压缩代码</span>
                   </label>
                 </div>
                 <div class="checkbox-group mt-2">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.treeshaking"
                       class="checkbox-input"
-                    >
+                    />
                     <span>启用 Tree-shaking</span>
                   </label>
                 </div>
                 <div class="checkbox-group mt-2">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.sourceMap"
                       class="checkbox-input"
-                    >
+                    />
                     <span>生成 Source Maps</span>
                   </label>
                 </div>
               </div>
-              
+
               <div class="form-group">
                 <label for="output-dir">输出目录</label>
-                <input 
+                <input
                   id="output-dir"
-                  v-model="buildConfig.outputDir" 
-                  type="text" 
+                  v-model="buildConfig.outputDir"
+                  type="text"
                   placeholder="dist"
                   class="form-input"
-                >
+                />
               </div>
             </div>
-            
+
             <!-- 依赖包配置 -->
             <div class="form-section">
               <h3 class="form-section-title">依赖包</h3>
-              
+
               <div class="form-group">
                 <label>UI 框架</label>
-                <select 
-                  v-model="buildConfig.uiFramework" 
-                  class="form-select"
-                >
+                <select v-model="buildConfig.uiFramework" class="form-select">
                   <option value="none">不使用 UI 框架</option>
                   <option value="elementPlus">Element Plus</option>
                   <option value="naive">Naive UI</option>
@@ -309,78 +345,78 @@
                   <option value="primevue">PrimeVue</option>
                 </select>
               </div>
-              
+
               <div class="form-group">
                 <label>工具库</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.includeAxios"
                       class="checkbox-input"
-                    >
+                    />
                     <span>Axios (HTTP 请求)</span>
                   </label>
                 </div>
                 <div class="checkbox-group mt-2">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.includeVueUse"
                       class="checkbox-input"
-                    >
+                    />
                     <span>VueUse (实用工具集)</span>
                   </label>
                 </div>
                 <div class="checkbox-group mt-2">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.includeLodash"
                       class="checkbox-input"
-                    >
+                    />
                     <span>Lodash (工具函数)</span>
                   </label>
                 </div>
               </div>
             </div>
-            
+
             <!-- API和数据配置 -->
             <div class="form-section">
               <h3 class="form-section-title">API 和数据</h3>
-              
+
               <div class="form-group">
                 <label>API 模拟</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.includeAPI"
                       class="checkbox-input"
-                    >
+                    />
                     <span>生成 API 模拟服务</span>
                   </label>
                 </div>
               </div>
-              
+
               <div class="form-group" v-if="buildConfig.includeAPI">
                 <label for="api-delay">API 响应延迟 (毫秒)</label>
-                <input 
+                <input
                   id="api-delay"
-                  v-model.number="buildConfig.apiDelay" 
-                  type="number" 
+                  v-model.number="buildConfig.apiDelay"
+                  type="number"
                   min="0"
                   max="5000"
                   step="100"
                   class="form-input"
-                >
+                />
                 <div class="form-hint">模拟网络延迟，0 表示无延迟</div>
               </div>
-              
+
               <div class="form-group">
                 <label>状态管理</label>
-                <select 
-                  v-model="buildConfig.stateManagement" 
+                <select
+                  v-model="buildConfig.stateManagement"
                   class="form-select"
                 >
                   <option value="none">不使用</option>
@@ -389,44 +425,41 @@
                 </select>
               </div>
             </div>
-            
+
             <!-- 部署配置 -->
             <div class="form-section">
               <h3 class="form-section-title">部署配置</h3>
-              
+
               <div class="form-group">
                 <label>静态部署支持</label>
                 <div class="checkbox-group">
                   <label class="checkbox-label">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       v-model="buildConfig.staticDeployment"
                       class="checkbox-input"
-                    >
+                    />
                     <span>配置静态部署</span>
                   </label>
                 </div>
                 <div class="form-hint">包含 netlify.toml 等配置文件</div>
               </div>
-              
+
               <div class="form-group">
                 <label for="base-path">基础路径</label>
-                <input 
+                <input
                   id="base-path"
-                  v-model="buildConfig.basePath" 
-                  type="text" 
+                  v-model="buildConfig.basePath"
+                  type="text"
                   placeholder="/"
                   class="form-input"
-                >
+                />
                 <div class="form-hint">部署在子目录时的路径前缀</div>
               </div>
-              
+
               <div class="form-group">
                 <label>CI/CD 配置</label>
-                <select 
-                  v-model="buildConfig.cicdConfig" 
-                  class="form-select"
-                >
+                <select v-model="buildConfig.cicdConfig" class="form-select">
                   <option value="none">不生成</option>
                   <option value="github">GitHub Actions</option>
                   <option value="gitlab">GitLab CI</option>
@@ -435,11 +468,18 @@
             </div>
           </div>
         </div>
-        
+
         <!-- 步骤4: 下载项目 -->
-        <div v-if="currentStep === STEPS.DOWNLOAD" class="step-download-project">
-          <div class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white">下载项目</div>
-          
+        <div
+          v-if="currentStep === STEPS.DOWNLOAD"
+          class="step-download-project"
+        >
+          <div
+            class="section-title mb-4 text-lg font-medium text-gray-800 dark:text-white"
+          >
+            下载项目
+          </div>
+
           <div v-if="!generationStarted" class="generate-start-section mb-8">
             <div class="text-center mb-6">
               <div class="text-gray-700 dark:text-gray-300 mb-3">
@@ -450,54 +490,81 @@
                 点击下方按钮开始生成项目文件
               </p>
             </div>
-            
+
             <div class="text-center">
-              <button @click="startGeneration" class="btn-primary flex items-center justify-center mx-auto">
+              <button
+                @click="startGeneration"
+                class="btn-primary flex items-center justify-center mx-auto"
+              >
                 <i class="pi pi-cog mr-2"></i>
                 开始生成
               </button>
             </div>
           </div>
-          
+
           <div v-else class="generation-progress">
             <!-- 生成进度显示 -->
             <div class="progress-container mb-6">
-              <div class="progress-bar" :style="{width: `${generationProgress}%`}"></div>
+              <div
+                class="progress-bar"
+                :style="{ width: `${generationProgress}%` }"
+              ></div>
               <div class="progress-text">{{ generationProgress }}%</div>
             </div>
-            
+
             <!-- 状态消息 -->
             <div class="status-message mb-6">
-              <p class="text-gray-700 dark:text-gray-300">{{ generationStatus }}</p>
+              <p class="text-gray-700 dark:text-gray-300">
+                {{ generationStatus }}
+              </p>
             </div>
-            
+
             <!-- 日志输出 -->
             <div v-if="generationLogs.length > 0" class="log-container mb-6">
               <div class="log-header flex justify-between items-center mb-2">
-                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">生成日志</h4>
-                <button @click="toggleLogExpand" class="text-xs text-blue-500 hover:text-blue-600">
-                  {{ isLogExpanded ? '收起' : '展开' }}
+                <h4
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  生成日志
+                </h4>
+                <button
+                  @click="toggleLogExpand"
+                  class="text-xs text-blue-500 hover:text-blue-600"
+                >
+                  {{ isLogExpanded ? "收起" : "展开" }}
                 </button>
               </div>
-              <div 
+              <div
                 class="log-content"
                 :class="{ 'log-expanded': isLogExpanded }"
               >
-                <div v-for="(log, index) in generationLogs" :key="index" class="log-entry">
+                <div
+                  v-for="(log, index) in generationLogs"
+                  :key="index"
+                  class="log-entry"
+                >
                   <span class="log-time">{{ log.time }}</span>
-                  <span :class="['log-message', `log-${log.type}`]">{{ log.message }}</span>
+                  <span :class="['log-message', `log-${log.type}`]">{{
+                    log.message
+                  }}</span>
                 </div>
               </div>
             </div>
-            
+
             <!-- 在生成日志区域下方添加调试信息 -->
-            <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs text-white">
-              <div>生成状态: {{ generationComplete ? '已完成' : '未完成' }}</div>
+            <div
+              class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs text-white"
+            >
+              <div>
+                生成状态: {{ generationComplete ? "已完成" : "未完成" }}
+              </div>
               <div>项目大小: {{ formattedProjectSize }}</div>
             </div>
-            
+
             <!-- 项目可下载区域 -->
-            <div class="download-area p-4 bg-gray-50 dark:bg-gray-800 rounded-md mt-4">
+            <div
+              class="download-area p-4 bg-gray-50 dark:bg-gray-800 rounded-md mt-4"
+            >
               <div class="text-center">
                 <!-- 项目生成成功 -->
                 <div v-if="projectSize > 0" class="mb-3">
@@ -507,15 +574,22 @@
                     项目大小: {{ formattedProjectSize }}
                   </div>
                 </div>
-                
+
                 <!-- 准备生成 -->
-                <div v-else-if="currentStep === STEPS.BUILD_CONFIG && !isGenerating && !error" class="mb-3">
+                <div
+                  v-else-if="
+                    currentStep === STEPS.BUILD_CONFIG &&
+                    !isGenerating &&
+                    !error
+                  "
+                  class="mb-3"
+                >
                   <i class="pi pi-cog text-blue-500 text-2xl animate-spin"></i>
                   <div class="mt-1">准备生成项目...</div>
                 </div>
-                
+
                 <!-- 下载按钮 -->
-                <button 
+                <button
                   v-if="projectSize > 0"
                   @click="downloadProject"
                   class="download-button w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
@@ -526,8 +600,13 @@
                 </button>
 
                 <!-- 强制下载按钮 - 添加调试模式显示 -->
-                <button 
-                  v-if="true || (projectSize === 0 && currentStep === STEPS.BUILD_CONFIG && !isGenerating)"
+                <button
+                  v-if="
+                    true ||
+                    (projectSize === 0 &&
+                      currentStep === STEPS.BUILD_CONFIG &&
+                      !isGenerating)
+                  "
                   @click="forceDownload"
                   class="force-download-button w-full mt-2 py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors"
                 >
@@ -538,23 +617,25 @@
             </div>
 
             <!-- 在下载区域添加调试信息 -->
-            <div class="debug-info mt-4 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs font-mono text-white">
+            <div
+              class="debug-info mt-4 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs font-mono text-white"
+            >
               <div>projectSize: {{ projectSize }}</div>
               <div>currentStep: {{ currentStep }}</div>
               <div>isGenerating: {{ isGenerating }}</div>
-              <div>error: {{ error || '无错误' }}</div>
-              
+              <div>error: {{ error || "无错误" }}</div>
+
               <!-- 测试生成按钮 -->
-              <button 
+              <button
                 @click="testGenerator"
                 class="w-full mt-2 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors"
               >
                 <i class="pi pi-refresh mr-2"></i>
                 <span>测试生成项目</span>
               </button>
-              
+
               <!-- 通用下载按钮 -->
-              <button 
+              <button
                 @click="forceDownload"
                 class="w-full mt-2 py-2 px-4 bg-purple-500 hover:bg-purple-600 text-white rounded-md transition-colors"
               >
@@ -565,29 +646,29 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 步骤控制按钮 -->
       <div class="dialog-actions">
-        <button 
-          v-if="currentStep > STEPS.SELECT_PAGES" 
-          @click="prevStep" 
+        <button
+          v-if="currentStep > STEPS.SELECT_PAGES"
+          @click="prevStep"
           class="btn-secondary"
         >
           上一步
         </button>
-        
-        <button 
-          v-if="currentStep < steps.length - 1" 
-          @click="nextStep" 
+
+        <button
+          v-if="currentStep < steps.length - 1"
+          @click="nextStep"
           :disabled="isNextDisabled"
           class="btn-primary"
         >
           下一步
         </button>
-        
-        <button 
-          v-if="currentStep === steps.length - 1 && generationComplete" 
-          @click="onCloseRequest" 
+
+        <button
+          v-if="currentStep === steps.length - 1 && generationComplete"
+          @click="onCloseRequest"
           class="btn-secondary ml-auto"
         >
           完成
@@ -598,27 +679,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import { useDesignerStore } from '@/stores/designerStore';
-import { ProjectGenerator, ProjectSettings, BuildConfig, GenerationCallbacks } from '@/services/ProjectGenerator';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { Page } from '@/types/designer';
+import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { useDesignerStore } from "@/stores/designerStore";
+import {
+  ProjectGenerator,
+  ProjectSettings,
+  BuildConfig,
+  GenerationCallbacks,
+} from "@/services/ProjectGenerator";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import { Page } from "@/types/designer";
 
 const props = defineProps({
-  show: Boolean
+  show: Boolean,
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 const designerStore = useDesignerStore();
 
 // 步骤定义
-const steps = ['选择页面', '项目设置', '生成配置', '下载项目'];
+const steps = ["选择页面", "项目设置", "生成配置", "下载项目"];
 const STEPS = {
   SELECT_PAGES: 0,
   PROJECT_SETTINGS: 1,
   BUILD_CONFIG: 2,
-  DOWNLOAD: 3
+  DOWNLOAD: 3,
 };
 const currentStep = ref<number>(STEPS.SELECT_PAGES);
 
@@ -628,34 +714,36 @@ const selectedPages = ref<string[]>([]);
 
 // 项目设置状态 (第二步)
 const projectSettings = ref({
-  name: 'iolite-project',
-  version: '1.0.0',
-  author: '',
-  description: '使用Minds-Iolite低代码平台创建的项目',
-  routeMode: 'hash',
-  homePage: '',
+  name: "iolite-project",
+  version: "1.0.0",
+  author: "",
+  description: "使用Minds-Iolite低代码平台创建的项目",
+  routeMode: "hash",
+  homePage: "",
   generateNav: true,
-  theme: 'light',
+  theme: "light",
   darkModeSupport: true,
-  primaryColor: '#3b82f6'
+  primaryColor: "#3b82f6",
 });
 
 // 计算属性：已选择的页面对象
 const selectedPageObjects = computed(() => {
-  return selectedPages.value.map(id => 
-    designerStore.pages.find(p => p.id === id)
-  ).filter(Boolean) as Page[];
+  return selectedPages.value
+    .map((id) => designerStore.pages.find((p) => p.id === id))
+    .filter(Boolean) as Page[];
 });
 
 // 计算属性：是否全选
 const isAllSelected = computed(() => {
-  return pages.value.length > 0 && selectedPages.value.length === pages.value.length;
+  return (
+    pages.value.length > 0 && selectedPages.value.length === pages.value.length
+  );
 });
 
 // 方法：获取布局名称
 const getLayoutName = (layoutType: string) => {
-  const layout = designerStore.layoutTemplates.find(l => l.id === layoutType);
-  return layout ? layout.name : '自定义布局';
+  const layout = designerStore.layoutTemplates.find((l) => l.id === layoutType);
+  return layout ? layout.name : "自定义布局";
 };
 
 // 方法：切换页面选择
@@ -673,13 +761,13 @@ const toggleSelectAll = () => {
   if (isAllSelected.value) {
     selectedPages.value = [];
   } else {
-    selectedPages.value = pages.value.map(page => page.id);
+    selectedPages.value = pages.value.map((page) => page.id);
   }
 };
 
 // 关闭请求
 const onCloseRequest = () => {
-  emit('close');
+  emit("close");
   // 重置状态
   currentStep.value = STEPS.SELECT_PAGES;
   selectedPages.value = [];
@@ -703,46 +791,48 @@ watch(selectedPages, (newSelected) => {
   if (newSelected.length === 1 && !projectSettings.value.homePage) {
     projectSettings.value.homePage = newSelected[0];
   } else if (newSelected.length === 0) {
-    projectSettings.value.homePage = '';
+    projectSettings.value.homePage = "";
   } else if (!newSelected.includes(projectSettings.value.homePage)) {
-    projectSettings.value.homePage = newSelected[0] || '';
+    projectSettings.value.homePage = newSelected[0] || "";
   }
 });
 
 // 新增构建配置状态
 const buildConfig = ref({
   // 构建工具
-  buildTool: 'vite',
+  buildTool: "vite",
   minify: true,
   treeshaking: true,
   sourceMap: false,
-  outputDir: 'dist',
-  
+  outputDir: "dist",
+
   // 依赖包
-  uiFramework: 'none',
+  uiFramework: "none",
   includeAxios: true,
   includeVueUse: false,
   includeLodash: false,
-  
+
   // API和数据
   includeAPI: false,
   apiDelay: 300,
-  stateManagement: 'pinia',
-  
+  stateManagement: "pinia",
+
   // 部署配置
   staticDeployment: false,
-  basePath: '/',
-  cicdConfig: 'none'
+  basePath: "/",
+  cicdConfig: "none",
 });
 
 // 生成和下载相关的状态
 const generationStarted = ref(false);
 const generationProgress = ref(0);
-const generationStatus = ref('准备生成项目...');
+const generationStatus = ref("准备生成项目...");
 const generationComplete = ref(false);
 const generationFailed = ref(false);
 const projectSize = ref(0); // 以字节为单位
-const generationLogs = ref<Array<{time: string, message: string, type: string}>>([]);
+const generationLogs = ref<
+  Array<{ time: string; message: string; type: string }>
+>([]);
 const isLogExpanded = ref(false);
 
 // 格式化项目大小
@@ -760,12 +850,12 @@ const formattedProjectSize = computed(() => {
 // 格式化日期为字符串 (YYYYMMDD_HHMMSS)
 const formatDate = (date: Date) => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
   return `${year}${month}${day}_${hours}${minutes}${seconds}`;
 };
 
@@ -773,19 +863,19 @@ const formatDate = (date: Date) => {
 const startGeneration = async () => {
   generationStarted.value = true;
   generationProgress.value = 0;
-  generationStatus.value = '初始化项目...';
+  generationStatus.value = "初始化项目...";
   generationComplete.value = false;
   generationFailed.value = false;
   generationLogs.value = [];
-  
+
   // 添加初始日志
-  addLog('开始生成项目', 'info');
-  
+  addLog("开始生成项目", "info");
+
   // 使用真实的项目生成器
-  const selectedPageObjects = designerStore.pages.filter(page => 
+  const selectedPageObjects = designerStore.pages.filter((page) =>
     selectedPages.value.includes(page.id)
   );
-  
+
   try {
     // 使用我们的ProjectGenerator类
     const projectGen = new ProjectGenerator(
@@ -806,26 +896,26 @@ const startGeneration = async () => {
         },
         onError: (error) => {
           generationFailed.value = true;
-          addLog(`生成失败: ${error}`, 'error');
+          addLog(`生成失败: ${error}`, "error");
         },
         onStart: () => {
           // 初始化生成过程
           generationProgress.value = 0;
-          generationStatus.value = '初始化...';
+          generationStatus.value = "初始化...";
           generationComplete.value = false;
           generationFailed.value = false;
-        }
+        },
       }
     );
-    
+
     // 开始生成过程
     await projectGen.generate();
-    
+
     // 存储生成器实例以供下载使用
     currentGenerator.value = projectGen;
   } catch (error) {
     generationFailed.value = true;
-    addLog(`生成失败: ${error}`, 'error');
+    addLog(`生成失败: ${error}`, "error");
   }
 };
 
@@ -835,25 +925,25 @@ const currentGenerator = ref<ProjectGenerator | null>(null);
 // 生成项目方法
 const generateProject = async () => {
   if (isGenerating.value) return;
-  
+
   isGenerating.value = true;
-  error.value = '';
+  error.value = "";
   projectSize.value = 0;
-  
+
   try {
     // 创建项目生成器
     const generator = new ProjectGenerator(
-      selectedPages.value.map(id => 
-        designerStore.pages.find(p => p.id === id)
-      ).filter(Boolean) as Page[],
+      selectedPages.value
+        .map((id) => designerStore.pages.find((p) => p.id === id))
+        .filter(Boolean) as Page[],
       projectSettings.value as unknown as ProjectSettings,
       buildConfig.value as unknown as BuildConfig,
       {
         onStart: () => {
           generationLogs.value.push({
             time: new Date().toLocaleString(),
-            message: '开始生成项目',
-            type: 'info'
+            message: "开始生成项目",
+            type: "info",
           });
         },
         onProgress: (progress, status) => {
@@ -869,16 +959,15 @@ const generateProject = async () => {
         },
         onError: (error) => {
           generationFailed.value = true;
-          addLog(`生成失败: ${error}`, 'error');
-        }
+          addLog(`生成失败: ${error}`, "error");
+        },
       }
     );
-    
+
     // 生成项目
     await generator.generateProject();
-    
   } catch (e) {
-    console.error('项目生成失败:', e);
+    console.error("项目生成失败:", e);
     error.value = e instanceof Error ? e.message : String(e);
   } finally {
     isGenerating.value = false;
@@ -887,15 +976,15 @@ const generateProject = async () => {
 
 // 下载项目方法
 const downloadProject = () => {
-  console.log('点击下载按钮');
+  console.log("点击下载按钮");
   if (projectSize.value === 0) {
-    console.warn('项目未生成完成，无法下载');
+    console.warn("项目未生成完成，无法下载");
     return;
   }
-  
-  const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, '_')}.zip`;
+
+  const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, "_")}.zip`;
   console.log(`准备下载文件: ${filename}`);
-  
+
   // 使用之前已生成的项目进行下载
   generateAndDownload(filename);
 };
@@ -904,28 +993,28 @@ const downloadProject = () => {
 const findAndClickDownloadButton = () => {
   // 等待DOM更新
   nextTick(() => {
-    console.log('查找下载按钮...');
-    
+    console.log("查找下载按钮...");
+
     // 使用更通用的查询方式
-    const downloadButton = 
-      document.querySelector('.download-button') ||
-      document.querySelector('.force-download-button') ||
-      document.getElementById('download-project-button');
-    
-    console.log('找到下载按钮数量:', downloadButton ? 1 : 0);
-    console.log('可见的按钮元素:', document.querySelectorAll('button').length);
-    
+    const downloadButton =
+      document.querySelector(".download-button") ||
+      document.querySelector(".force-download-button") ||
+      document.getElementById("download-project-button");
+
+    console.log("找到下载按钮数量:", downloadButton ? 1 : 0);
+    console.log("可见的按钮元素:", document.querySelectorAll("button").length);
+
     // 检查所有可能的原因
-    console.log('projectSize =', projectSize.value);
-    console.log('currentStep =', currentStep.value);
-    console.log('STEPS.BUILD_CONFIG =', STEPS.BUILD_CONFIG);
-    console.log('isGenerating =', isGenerating.value);
-    
+    console.log("projectSize =", projectSize.value);
+    console.log("currentStep =", currentStep.value);
+    console.log("STEPS.BUILD_CONFIG =", STEPS.BUILD_CONFIG);
+    console.log("isGenerating =", isGenerating.value);
+
     if (downloadButton) {
-      console.log('自动点击下载按钮');
+      console.log("自动点击下载按钮");
       (downloadButton as HTMLElement).click();
     } else {
-      console.warn('未找到下载按钮，使用强制下载');
+      console.warn("未找到下载按钮，使用强制下载");
       forceDownload();
     }
   });
@@ -952,115 +1041,124 @@ const isNextDisabled = computed(() => {
 
 // 初始化时预选当前页面
 onMounted(() => {
-  if (designerStore.currentPageId && pages.value.some(p => p.id === designerStore.currentPageId)) {
+  if (
+    designerStore.currentPageId &&
+    pages.value.some((p) => p.id === designerStore.currentPageId)
+  ) {
     selectedPages.value = [designerStore.currentPageId];
   }
-  
+
   // 尝试从 localStorage 中获取用户信息作为默认作者
-  const savedAuthor = localStorage.getItem('userName');
+  const savedAuthor = localStorage.getItem("userName");
   if (savedAuthor) {
     projectSettings.value.author = savedAuthor;
   }
 });
 
 // Add log entry to logs
-const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
+const addLog = (
+  message: string,
+  type: "info" | "success" | "error" | "warning" = "info"
+) => {
   const now = new Date();
-  const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-  
+  const timeString = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+
   generationLogs.value.push({
     time: timeString,
     message,
-    type
+    type,
   });
 };
 
 // 添加测试下载功能
 const testDownload = () => {
   try {
-    console.log('测试简单文件下载');
+    console.log("测试简单文件下载");
     const testContent = `# ${projectSettings.value.name} 测试文件\n\n这是一个测试下载文件。如果您看到此文件，说明下载功能正常工作。`;
-    const blob = new Blob([testContent], { type: 'text/plain' });
+    const blob = new Blob([testContent], { type: "text/plain" });
     const filename = `${projectSettings.value.name}_test.txt`;
-    
-    console.log('开始下载测试文件', filename);
+
+    console.log("开始下载测试文件", filename);
     saveAs(blob, filename);
-    console.log('测试文件下载请求已发送');
+    console.log("测试文件下载请求已发送");
   } catch (error) {
-    console.error('测试下载出错:', error);
-    alert('测试下载失败: ' + error);
+    console.error("测试下载出错:", error);
+    alert("测试下载失败: " + error);
   }
 };
 
 // 监听生成完成状态自动触发下载
-watch(() => generationComplete.value, (newValue) => {
-  if (newValue) {
-    console.log('项目生成完成，准备自动下载');
-    // 延迟一点时间，确保界面已更新
-    setTimeout(() => {
-      downloadProject();
-    }, 800);
+watch(
+  () => generationComplete.value,
+  (newValue) => {
+    if (newValue) {
+      console.log("项目生成完成，准备自动下载");
+      // 延迟一点时间，确保界面已更新
+      setTimeout(() => {
+        downloadProject();
+      }, 800);
+    }
   }
-});
+);
 
 // 添加手动下载方法
 const manualDownload = () => {
   if (!currentGenerator.value) {
-    addLog('项目生成器不可用', 'error');
+    addLog("项目生成器不可用", "error");
     return;
   }
-  
+
   try {
     // 创建时间戳防止缓存
     const timestamp = new Date().getTime();
     const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
-    
-    addLog('尝试手动下载方法...', 'info');
+
+    addLog("尝试手动下载方法...", "info");
     currentGenerator.value.downloadProject(filename);
   } catch (error) {
-    console.error('手动下载失败:', error);
-    addLog(`手动下载失败: ${error}`, 'error');
+    console.error("手动下载失败:", error);
+    addLog(`手动下载失败: ${error}`, "error");
   }
 };
 
 // 添加一个直接测试生成项目大小的函数
 const testGenerator = async () => {
-  console.log('测试生成器启动...');
+  console.log("测试生成器启动...");
   isGenerating.value = true;
   projectSize.value = 0; // 重置项目大小
-  
+
   try {
     // 创建新的生成器实例
     const generator = new ProjectGenerator(
-      selectedPages.value.map(id => 
-        designerStore.pages.find(p => p.id === id)
-      ).filter(Boolean) as Page[],
+      selectedPages.value
+        .map((id) => designerStore.pages.find((p) => p.id === id))
+        .filter(Boolean) as Page[],
       projectSettings.value as unknown as ProjectSettings,
       buildConfig.value as unknown as BuildConfig,
       {
-        onStart: () => console.log('测试生成器开始...'),
+        onStart: () => console.log("测试生成器开始..."),
         onProgress: () => {},
-        onLog: (msg) => console.log('测试生成器日志:', msg),
+        onLog: (msg) => console.log("测试生成器日志:", msg),
         onComplete: (size) => {
           console.log(`测试生成器完成，大小: ${size} 字节`);
           // 直接在UI中更新项目大小
           projectSize.value = size;
         },
-        onError: (e) => console.error('测试生成器错误:', e)
+        onError: (e) => console.error("测试生成器错误:", e),
       }
     );
-    
+
     // 生成项目
     const blob = await generator.generateProject();
     console.log(`测试生成成功，获取到blob大小: ${blob.size} 字节`);
-    
+
     // 确保UI状态更新
     if (projectSize.value === 0 && blob.size > 0) {
-      console.log('强制更新项目大小');
+      console.log("强制更新项目大小");
       projectSize.value = blob.size;
     }
   } catch (error) {
-    console.error('测试生成失败:', error);
+    console.error("测试生成失败:", error);
   } finally {
     isGenerating.value = false;
   }
@@ -1068,44 +1166,44 @@ const testGenerator = async () => {
 
 // 修改强制下载函数
 const forceDownload = async () => {
-  console.log('开始强制下载...');
+  console.log("开始强制下载...");
   isGenerating.value = true;
-  
+
   try {
-    const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, '_')}.zip`;
+    const filename = `iolite-project_${new Date().toISOString().replace(/[:.]/g, "_")}.zip`;
     console.log(`准备强制下载文件: ${filename}`);
-    
+
     // 使用新的测试生成器方法获取blob
     const generator = new ProjectGenerator(
-      selectedPages.value.map(id => 
-        designerStore.pages.find(p => p.id === id)
-      ).filter(Boolean) as Page[],
+      selectedPages.value
+        .map((id) => designerStore.pages.find((p) => p.id === id))
+        .filter(Boolean) as Page[],
       projectSettings.value as unknown as ProjectSettings,
       buildConfig.value as unknown as BuildConfig,
       {
-        onStart: () => console.log('开始生成...'),
+        onStart: () => console.log("开始生成..."),
         onProgress: () => {},
         onLog: (msg) => console.log(msg),
         onComplete: (size) => {
           console.log(`设置项目大小为: ${size} 字节`);
           projectSize.value = size; // 这里是关键 - 确保更新状态
         },
-        onError: (e) => console.error(e)
+        onError: (e) => console.error(e),
       }
     );
-    
+
     // 生成项目并直接下载
     const blob = await generator.generateProject();
     console.log(`项目生成完成，大小: ${blob.size} 字节`);
-    
+
     // 更新UI状态
     projectSize.value = blob.size;
-    
+
     // 直接下载
     saveAs(blob, filename);
-    console.log('文件下载请求已发送');
+    console.log("文件下载请求已发送");
   } catch (error) {
-    console.error('强制下载失败:', error);
+    console.error("强制下载失败:", error);
   } finally {
     isGenerating.value = false;
   }
@@ -1115,12 +1213,12 @@ const forceDownload = async () => {
 const generateAndDownload = async (filename: string) => {
   try {
     const zip = new JSZip();
-    
+
     // 创建项目生成器
     const generator = new ProjectGenerator(
-      selectedPages.value.map(id => 
-        designerStore.pages.find(p => p.id === id)
-      ).filter(Boolean) as Page[],
+      selectedPages.value
+        .map((id) => designerStore.pages.find((p) => p.id === id))
+        .filter(Boolean) as Page[],
       projectSettings.value as unknown as ProjectSettings,
       buildConfig.value as unknown as BuildConfig,
       {
@@ -1131,46 +1229,50 @@ const generateAndDownload = async (filename: string) => {
           console.log(`下载日志: ${message} [${type}]`);
         },
         onStart: () => {
-          console.log('开始生成下载文件...');
+          console.log("开始生成下载文件...");
         },
         onComplete: () => {
-          console.log('ZIP生成完成');
+          console.log("ZIP生成完成");
         },
         onError: (msg) => {
           console.error(`下载错误: ${msg}`);
-        }
+        },
       }
     );
-    
+
     // 获取ZIP内容
     const content = await generator.generateProject();
-    
-    console.log('ZIP生成完成，大小:', Math.round((content.size / 1024) * 100) / 100, 'KB');
-    console.log('使用file-saver尝试下载...');
-    
+
+    console.log(
+      "ZIP生成完成，大小:",
+      Math.round((content.size / 1024) * 100) / 100,
+      "KB"
+    );
+    console.log("使用file-saver尝试下载...");
+
     // 使用file-saver下载
     saveAs(content, filename);
-    
-    console.log('file-saver下载请求已发送');
+
+    console.log("file-saver下载请求已发送");
     generationLogs.value.push({
       time: new Date().toLocaleString(),
-      message: '下载请求已发送',
-      type: 'success'
+      message: "下载请求已发送",
+      type: "success",
     });
   } catch (error) {
-    console.error('下载生成失败:', error);
+    console.error("下载生成失败:", error);
     generationLogs.value.push({
       time: new Date().toLocaleString(),
       message: `下载生成失败: ${error}`,
-      type: 'error'
+      type: "error",
     });
   }
 };
 
 // 在script setup区域，添加以下状态变量
 const isGenerating = ref(false);
-const error = ref('');
-const currentStatus = ref('');
+const error = ref("");
+const currentStatus = ref("");
 </script>
 
 <style scoped>
@@ -1247,7 +1349,7 @@ const currentStatus = ref('');
 }
 
 .step:not(:last-child)::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 1rem;
   left: 50%;
@@ -1526,7 +1628,7 @@ const currentStatus = ref('');
   .form-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .form-section:first-child {
     grid-column: 1 / -1;
   }
@@ -1850,4 +1952,4 @@ const currentStatus = ref('');
 .debug-info button:hover {
   background-color: #2563eb;
 }
-</style> 
+</style>

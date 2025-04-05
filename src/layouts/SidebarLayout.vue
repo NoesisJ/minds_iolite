@@ -134,7 +134,7 @@ const navMenus = [
         label: "HighCharts",
         icon: "pi pi-chart-bar",
         route: "/charts/highcharts",
-      }
+      },
     ],
   },
   {
@@ -161,7 +161,7 @@ const navMenus = [
         icon: "pi pi-pencil",
         route: "/forms/layouts",
       },
-    ],  
+    ],
   },
   {
     label: "设计器",

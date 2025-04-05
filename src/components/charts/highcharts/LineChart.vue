@@ -47,99 +47,99 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-import Highcharts from 'highcharts';
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import Highcharts from "highcharts";
 
 const props = defineProps({
   // 容器ID
   chartId: {
     type: String,
-    default: () => `line-chart-${Date.now()}`
+    default: () => `line-chart-${Date.now()}`,
   },
   // 自定义类名
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // 宽度
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   // 高度
   height: {
     type: String,
-    default: '400px'
+    default: "400px",
   },
   // 系列数据
   seriesData: {
     type: Array,
     default: () => [
       {
-        name: '安装与开发',
-        data: [43934, 48656, 65165, 81827, 112143, 142383, 171533]
+        name: "安装与开发",
+        data: [43934, 48656, 65165, 81827, 112143, 142383, 171533],
       },
       {
-        name: '制造业',
-        data: [24916, 37941, 29742, 29851, 32490, 30282, 38121]
-      }
-    ]
+        name: "制造业",
+        data: [24916, 37941, 29742, 29851, 32490, 30282, 38121],
+      },
+    ],
   },
   // X轴分类
   categories: {
     type: Array,
-    default: null
+    default: null,
   },
   // 起始点
   pointStart: {
     type: Number,
-    default: 2010
+    default: 2010,
   },
   // 标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 副标题
   subtitle: {
     type: String,
-    default: ''
+    default: "",
   },
   // Y轴标题
   yAxisTitle: {
     type: String,
-    default: ''
+    default: "",
   },
   // 图例布局
   legendLayout: {
     type: String,
-    default: 'vertical' // 'vertical', 'horizontal'
+    default: "vertical", // 'vertical', 'horizontal'
   },
   // 图例水平对齐
   legendAlign: {
     type: String,
-    default: 'right' // 'left', 'center', 'right'
+    default: "right", // 'left', 'center', 'right'
   },
   // 图例垂直对齐
   legendVerticalAlign: {
     type: String,
-    default: 'middle' // 'top', 'middle', 'bottom'
+    default: "middle", // 'top', 'middle', 'bottom'
   },
   // 颜色
   colors: {
     type: Array,
-    default: () => ['#4E9BFF', '#FF7B92', '#FFC233', '#38BFFF', '#4DE6A8']
+    default: () => ["#4E9BFF", "#FF7B92", "#FFC233", "#38BFFF", "#4DE6A8"],
   },
   // 暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -151,94 +151,96 @@ const chartOptions = computed(() => {
   const colors = props.colors;
 
   // 背景色和文字色
-  const backgroundColor = props.darkMode ? '#333' : '#fff';
-  const textColor = props.darkMode ? '#fff' : '#333';
-  const gridColor = props.darkMode ? '#444' : '#e6e6e6';
+  const backgroundColor = props.darkMode ? "#333" : "#fff";
+  const textColor = props.darkMode ? "#fff" : "#333";
+  const gridColor = props.darkMode ? "#444" : "#e6e6e6";
 
   // 基础配置
   const baseOptions = {
     chart: {
       backgroundColor: backgroundColor,
       style: {
-        fontFamily: 'Arial, sans-serif',
-        color: textColor
-      }
+        fontFamily: "Arial, sans-serif",
+        color: textColor,
+      },
     },
     colors: colors,
     title: {
       text: props.title,
-      align: 'left',
+      align: "left",
       style: {
         color: textColor,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     subtitle: {
       text: props.subtitle,
-      align: 'left',
+      align: "left",
       style: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
     yAxis: {
       title: {
         text: props.yAxisTitle,
         style: {
-          color: textColor
-        }
+          color: textColor,
+        },
       },
       labels: {
         style: {
-          color: textColor
-        }
+          color: textColor,
+        },
       },
-      gridLineColor: gridColor
+      gridLineColor: gridColor,
     },
     xAxis: {
       categories: props.categories,
       labels: {
         style: {
-          color: textColor
-        }
+          color: textColor,
+        },
       },
       accessibility: {
-        rangeDescription: `Range: ${props.pointStart} to ${props.pointStart + Math.max(...props.seriesData.map(s => s.data.length)) - 1}`
-      }
+        rangeDescription: `Range: ${props.pointStart} to ${props.pointStart + Math.max(...props.seriesData.map((s) => s.data.length)) - 1}`,
+      },
     },
     legend: {
       layout: props.legendLayout,
       align: props.legendAlign,
       verticalAlign: props.legendVerticalAlign,
       itemStyle: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
     plotOptions: {
       series: {
         label: {
-          connectorAllowed: false
+          connectorAllowed: false,
         },
-        pointStart: props.pointStart
-      }
+        pointStart: props.pointStart,
+      },
     },
     series: props.seriesData,
     responsive: {
-      rules: [{
-        condition: {
-          maxWidth: 500
+      rules: [
+        {
+          condition: {
+            maxWidth: 500,
+          },
+          chartOptions: {
+            legend: {
+              layout: "horizontal",
+              align: "center",
+              verticalAlign: "bottom",
+            },
+          },
         },
-        chartOptions: {
-          legend: {
-            layout: 'horizontal',
-            align: 'center',
-            verticalAlign: 'bottom'
-          }
-        }
-      }]
+      ],
     },
     credits: {
-      enabled: false
-    }
+      enabled: false,
+    },
   };
 
   // 合并自定义配置
@@ -267,7 +269,7 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
@@ -275,7 +277,7 @@ onUnmounted(() => {
   if (chartInstance) {
     chartInstance.destroy();
   }
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -292,7 +294,7 @@ watch(
     props.legendLayout,
     props.legendAlign,
     props.legendVerticalAlign,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -305,6 +307,6 @@ defineExpose({
     if (chartInstance) {
       chartInstance.update(options);
     }
-  }
+  },
 });
-</script> 
+</script>

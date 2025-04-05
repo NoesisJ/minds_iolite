@@ -2,30 +2,32 @@
   <div class="component-preview" :style="styles">
     <!-- 文本组件 -->
     <template v-if="componentType === 'text'">
-      <div 
-        class="text-component" 
-        :style="{ 
-          fontSize: componentProps.fontSize, 
+      <div
+        class="text-component"
+        :style="{
+          fontSize: componentProps.fontSize,
           textAlign: componentProps.textAlign,
-          color: componentProps.color || '#333333'
+          color: componentProps.color || '#333333',
         }"
       >
         {{ componentProps.content }}
       </div>
     </template>
-    
+
     <!-- 图片组件 -->
     <template v-else-if="componentType === 'image'">
-      <div class="image-preview flex items-center justify-center bg-gray-100 dark:bg-gray-800 min-h-[100px]">
-        <img 
-          v-if="componentProps.src" 
+      <div
+        class="image-preview flex items-center justify-center bg-gray-100 dark:bg-gray-800 min-h-[100px]"
+      >
+        <img
+          v-if="componentProps.src"
           :src="getImageSrc(componentProps.src)"
-          :alt="componentProps.alt" 
-          :style="{ 
-            width: componentProps.width || '100%', 
+          :alt="componentProps.alt"
+          :style="{
+            width: componentProps.width || '100%',
             height: componentProps.height || 'auto',
             maxHeight: '200px',
-            objectFit: 'contain'
+            objectFit: 'contain',
           }"
           @error="handleImageError"
         />
@@ -35,14 +37,14 @@
         </div>
       </div>
     </template>
-    
+
     <!-- 按钮组件 -->
     <template v-else-if="componentType === 'button'">
       <n-button :type="componentProps.type" :size="componentProps.size">
         {{ componentProps.label }}
       </n-button>
     </template>
-    
+
     <!-- 输入框组件 -->
     <template v-else-if="componentType === 'input'">
       <div class="form-field">
@@ -53,7 +55,7 @@
         <n-input :placeholder="componentProps.placeholder" disabled />
       </div>
     </template>
-    
+
     <!-- 下拉框组件 -->
     <template v-else-if="componentType === 'select'">
       <div class="form-field">
@@ -61,16 +63,31 @@
           {{ componentProps.label }}
           <span v-if="componentProps.required" class="text-red-500">*</span>
         </div>
-        <n-select :options="componentProps.options" :placeholder="componentProps.placeholder" disabled />
+        <n-select
+          :options="componentProps.options"
+          :placeholder="componentProps.placeholder"
+          disabled
+        />
       </div>
     </template>
-    
+
     <!-- 表格组件 -->
     <template v-else-if="componentType === 'table'">
-      <div class="table-preview border border-gray-200 dark:border-gray-700 rounded overflow-hidden">
+      <div
+        class="table-preview border border-gray-200 dark:border-gray-700 rounded overflow-hidden"
+      >
         <div class="table-header bg-gray-100 dark:bg-gray-800 p-2 text-sm">
-          <div class="grid" :style="{ gridTemplateColumns: `repeat(${componentProps.columns.length}, 1fr)` }">
-            <div v-for="column in componentProps.columns" :key="column.field" class="font-medium">
+          <div
+            class="grid"
+            :style="{
+              gridTemplateColumns: `repeat(${componentProps.columns.length}, 1fr)`,
+            }"
+          >
+            <div
+              v-for="column in componentProps.columns"
+              :key="column.field"
+              class="font-medium"
+            >
               {{ column.header }}
             </div>
           </div>
@@ -82,29 +99,46 @@
         </div>
       </div>
     </template>
-    
+
     <!-- 图表组件 -->
     <template v-else-if="componentType === 'chart'">
       <div class="chart-preview" :style="componentStyles">
-        <div v-if="chartLoaded" class="chart-container" style="width: 100%; height: 100%;">
+        <div
+          v-if="chartLoaded"
+          class="chart-container"
+          style="width: 100%; height: 100%"
+        >
           <!-- 实际图表容器，动态加载图表组件 -->
-          <component :is="getChartComponent(componentProps.chartType)" v-bind="componentProps" />
+          <component
+            :is="getChartComponent(componentProps.chartType)"
+            v-bind="componentProps"
+          />
         </div>
-        <div v-else class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600" :style="{height: componentProps.height || '300px'}">
+        <div
+          v-else
+          class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
+          :style="{ height: componentProps.height || '300px' }"
+        >
           <div class="text-3xl mb-2">
             <i :class="getChartIcon(componentProps.chartType)"></i>
           </div>
           <div class="text-gray-500 dark:text-gray-400 text-center">
-            <div class="font-medium">{{ getChartName(componentProps.chartType) }}</div>
-            <div class="text-sm mt-1">{{ getChartDescription(componentProps.chartType) }}</div>
+            <div class="font-medium">
+              {{ getChartName(componentProps.chartType) }}
+            </div>
+            <div class="text-sm mt-1">
+              {{ getChartDescription(componentProps.chartType) }}
+            </div>
           </div>
         </div>
       </div>
     </template>
-    
+
     <!-- 未知组件类型 -->
     <template v-else>
-      <div class="unknown-component p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600">
+      <div
+        class="unknown-component p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
+      >
         <div class="text-center text-gray-500 dark:text-gray-400">
           <i class="pi pi-question-circle text-2xl mb-2"></i>
           <div>未知组件类型: {{ componentType }}</div>
@@ -115,25 +149,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, onMounted } from 'vue';
-import { getComponentDefinition } from '@/data/componentLibrary';
-import { getImageUrl } from '@/assets/imageImports';
+import { ref, computed, defineProps, onMounted } from "vue";
+import { getComponentDefinition } from "@/data/componentLibrary";
+import { getImageUrl } from "@/assets/imageImports";
 // 导入图表组件
-import EchartsLineWidget from '@/components/widgets/charts/EchartsLineWidget.vue';
-import EchartsBarWidget from '@/components/widgets/charts/EchartsBarWidget.vue';
-import EchartsPieWidget from '@/components/widgets/charts/EchartsPieWidget.vue';
-import EchartsRadarWidget from '@/components/widgets/charts/EchartsRadarWidget.vue';
-import EchartsSmoothLineWidget from '@/components/widgets/charts/EchartsSmoothLineWidget.vue';
-import EchartsMixBarLineWidget from '@/components/widgets/charts/EchartsMixBarLineWidget.vue';
-import EchartsInteractivePieLineWidget from '@/components/widgets/charts/EchartsInteractivePieLineWidget.vue';
-import HighchartsPieWidget from '@/components/widgets/charts/HighchartsPieWidget.vue';
-import HighchartsAreaWidget from '@/components/widgets/charts/HighchartsAreaWidget.vue';
+import EchartsLineWidget from "@/components/widgets/charts/EchartsLineWidget.vue";
+import EchartsBarWidget from "@/components/widgets/charts/EchartsBarWidget.vue";
+import EchartsPieWidget from "@/components/widgets/charts/EchartsPieWidget.vue";
+import EchartsRadarWidget from "@/components/widgets/charts/EchartsRadarWidget.vue";
+import EchartsSmoothLineWidget from "@/components/widgets/charts/EchartsSmoothLineWidget.vue";
+import EchartsMixBarLineWidget from "@/components/widgets/charts/EchartsMixBarLineWidget.vue";
+import EchartsInteractivePieLineWidget from "@/components/widgets/charts/EchartsInteractivePieLineWidget.vue";
+import HighchartsPieWidget from "@/components/widgets/charts/HighchartsPieWidget.vue";
+import HighchartsAreaWidget from "@/components/widgets/charts/HighchartsAreaWidget.vue";
 
 const props = defineProps({
   component: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 });
 
 // 图表加载状态
@@ -142,7 +176,7 @@ const chartLoaded = ref(true);
 // 组件类型
 const componentType = computed(() => {
   const definition = getComponentDefinition(props.component.componentId);
-  return definition?.type || 'unknown';
+  return definition?.type || "unknown";
 });
 
 // 组件属性
@@ -162,13 +196,13 @@ const componentStyles = computed(() => {
 
 // 获取图片源路径 - 使用Vite的资源导入
 const getImageSrc = (src: string) => {
-  if (!src) return '';
-  
+  if (!src) return "";
+
   // 判断是否为完整URL
-  if (src.startsWith('http://') || src.startsWith('https://')) {
+  if (src.startsWith("http://") || src.startsWith("https://")) {
     return src;
   }
-  
+
   // 使用资源导入
   return getImageUrl(src);
 };
@@ -176,22 +210,22 @@ const getImageSrc = (src: string) => {
 // 改进错误处理
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement;
-  console.error('图片加载失败:', target.src);
-  
+  console.error("图片加载失败:", target.src);
+
   // 添加错误样式
-  target.classList.add('error');
-  target.parentElement?.classList.add('error-container');
-  
+  target.classList.add("error");
+  target.parentElement?.classList.add("error-container");
+
   // 改变alt文本提供反馈
-  target.alt = '图片未找到';
-  
+  target.alt = "图片未找到";
+
   // 错误信息
-  const errorText = document.createElement('div');
-  errorText.className = 'error-text';
-  errorText.textContent = '无法加载图片';
-  
+  const errorText = document.createElement("div");
+  errorText.className = "error-text";
+  errorText.textContent = "无法加载图片";
+
   // 确保只添加一次错误信息
-  if (!target.parentElement?.querySelector('.error-text')) {
+  if (!target.parentElement?.querySelector(".error-text")) {
     target.parentElement?.appendChild(errorText);
   }
 };
@@ -199,26 +233,26 @@ const handleImageError = (e: Event) => {
 // 获取图表组件
 function getChartComponent(chartType: string) {
   if (!chartType) return null;
-  
+
   // 根据图表类型返回对应的组件
-  switch(chartType) {
-    case 'line':
+  switch (chartType) {
+    case "line":
       return EchartsLineWidget;
-    case 'bar':
+    case "bar":
       return EchartsBarWidget;
-    case 'pie':
+    case "pie":
       return EchartsPieWidget;
-    case 'radar':
+    case "radar":
       return EchartsRadarWidget;
-    case 'smoothLine':
+    case "smoothLine":
       return EchartsSmoothLineWidget;
-    case 'mixBarLine':
+    case "mixBarLine":
       return EchartsMixBarLineWidget;
-    case 'interactivePieLine':
+    case "interactivePieLine":
       return EchartsInteractivePieLineWidget;
-    case 'highchartsPie':
+    case "highchartsPie":
       return HighchartsPieWidget;
-    case 'area':
+    case "area":
       return HighchartsAreaWidget;
     default:
       return null;
@@ -227,46 +261,73 @@ function getChartComponent(chartType: string) {
 
 // 获取图表图标
 function getChartIcon(chartType: string): string {
-  switch(chartType) {
-    case 'line': return 'pi pi-chart-line';
-    case 'bar': return 'pi pi-chart-bar';
-    case 'pie': return 'pi pi-chart-pie';
-    case 'radar': return 'pi pi-chart-pie';
-    case 'smoothLine': return 'pi pi-chart-line';
-    case 'area': return 'pi pi-chart-line';
-    case 'mixBarLine': return 'pi pi-chart-bar';
-    case 'interactivePieLine': return 'pi pi-chart-pie';
-    default: return 'pi pi-chart-bar';
+  switch (chartType) {
+    case "line":
+      return "pi pi-chart-line";
+    case "bar":
+      return "pi pi-chart-bar";
+    case "pie":
+      return "pi pi-chart-pie";
+    case "radar":
+      return "pi pi-chart-pie";
+    case "smoothLine":
+      return "pi pi-chart-line";
+    case "area":
+      return "pi pi-chart-line";
+    case "mixBarLine":
+      return "pi pi-chart-bar";
+    case "interactivePieLine":
+      return "pi pi-chart-pie";
+    default:
+      return "pi pi-chart-bar";
   }
 }
 
 // 获取图表名称
 function getChartName(chartType: string): string {
-  switch(chartType) {
-    case 'line': return '折线图';
-    case 'bar': return '柱状图';
-    case 'pie': return '饼图';
-    case 'radar': return '雷达图';
-    case 'smoothLine': return '平滑折线图';
-    case 'area': return '面积图';
-    case 'mixBarLine': return '柱状折线混合图';
-    case 'interactivePieLine': return '交互式饼图折线图';
-    default: return '图表';
+  switch (chartType) {
+    case "line":
+      return "折线图";
+    case "bar":
+      return "柱状图";
+    case "pie":
+      return "饼图";
+    case "radar":
+      return "雷达图";
+    case "smoothLine":
+      return "平滑折线图";
+    case "area":
+      return "面积图";
+    case "mixBarLine":
+      return "柱状折线混合图";
+    case "interactivePieLine":
+      return "交互式饼图折线图";
+    default:
+      return "图表";
   }
 }
 
 // 获取图表描述
 function getChartDescription(chartType: string): string {
-  switch(chartType) {
-    case 'line': return '用于展示数据变化趋势';
-    case 'bar': return '用于展示分类数据对比';
-    case 'pie': return '用于展示数据占比分布';
-    case 'radar': return '用于多维数据比较分析';
-    case 'smoothLine': return '用于平滑展示数据趋势变化';
-    case 'area': return '用于展示数据范围及趋势';
-    case 'mixBarLine': return '用于展示对比数据及趋势';
-    case 'interactivePieLine': return '用于展示关联数据的交互分析';
-    default: return '各类数据可视化图表';
+  switch (chartType) {
+    case "line":
+      return "用于展示数据变化趋势";
+    case "bar":
+      return "用于展示分类数据对比";
+    case "pie":
+      return "用于展示数据占比分布";
+    case "radar":
+      return "用于多维数据比较分析";
+    case "smoothLine":
+      return "用于平滑展示数据趋势变化";
+    case "area":
+      return "用于展示数据范围及趋势";
+    case "mixBarLine":
+      return "用于展示对比数据及趋势";
+    case "interactivePieLine":
+      return "用于展示关联数据的交互分析";
+    default:
+      return "各类数据可视化图表";
   }
 }
 </script>
@@ -316,4 +377,4 @@ function getChartDescription(chartType: string): string {
   width: 100%;
   min-height: 200px;
 }
-</style> 
+</style>

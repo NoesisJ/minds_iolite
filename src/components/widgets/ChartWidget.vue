@@ -1,7 +1,7 @@
 <template>
   <div class="chart-widget" :style="styles">
-    <component 
-      :is="getChartComponent(chartType)" 
+    <component
+      :is="getChartComponent(chartType)"
       v-bind="chartProps"
       v-if="chartType"
     />
@@ -13,76 +13,76 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
-import EchartsLineWidget from './charts/EchartsLineWidget.vue';
-import EchartsBarWidget from './charts/EchartsBarWidget.vue';
-import EchartsPieWidget from './charts/EchartsPieWidget.vue';
-import EchartsRadarWidget from './charts/EchartsRadarWidget.vue';
-import EchartsSmoothLineWidget from './charts/EchartsSmoothLineWidget.vue';
-import EchartsMixBarLineWidget from './charts/EchartsMixBarLineWidget.vue';
-import EchartsInteractivePieLineWidget from './charts/EchartsInteractivePieLineWidget.vue';
-import HighchartsPieWidget from './charts/HighchartsPieWidget.vue';
-import HighchartsAreaWidget from './charts/HighchartsAreaWidget.vue';
-import HighchartsLineWidget from './charts/HighchartsLineWidget.vue';
-import HighchartsColumnWidget from './charts/HighchartsColumnWidget.vue';
+import { computed, defineProps } from "vue";
+import EchartsLineWidget from "./charts/EchartsLineWidget.vue";
+import EchartsBarWidget from "./charts/EchartsBarWidget.vue";
+import EchartsPieWidget from "./charts/EchartsPieWidget.vue";
+import EchartsRadarWidget from "./charts/EchartsRadarWidget.vue";
+import EchartsSmoothLineWidget from "./charts/EchartsSmoothLineWidget.vue";
+import EchartsMixBarLineWidget from "./charts/EchartsMixBarLineWidget.vue";
+import EchartsInteractivePieLineWidget from "./charts/EchartsInteractivePieLineWidget.vue";
+import HighchartsPieWidget from "./charts/HighchartsPieWidget.vue";
+import HighchartsAreaWidget from "./charts/HighchartsAreaWidget.vue";
+import HighchartsLineWidget from "./charts/HighchartsLineWidget.vue";
+import HighchartsColumnWidget from "./charts/HighchartsColumnWidget.vue";
 
 const props = defineProps({
   // 图表类型: line, bar, pie, area 等
   chartType: {
     type: String,
-    required: true
+    required: true,
   },
   // 图表标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 图表副标题
   subtitle: {
     type: String,
-    default: ''
+    default: "",
   },
   // 图表高度
   height: {
     type: String,
-    default: '350px'
+    default: "350px",
   },
   // 图表数据
   data: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   // X轴数据
   xAxisData: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   // 其他图表特定属性
   indicator: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   // 饼图配置
   pieConfig: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   // 样式
   styles: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 样式组合
 const styles = computed(() => {
   // 基本样式
   const baseStyles = {
-    width: '100%',
-    height: props.height || '350px',
-    overflow: 'hidden'
+    width: "100%",
+    height: props.height || "350px",
+    overflow: "hidden",
   };
-  
+
   // 合并组件的样式
   return { ...baseStyles, ...props.styles };
 });
@@ -96,37 +96,37 @@ const chartProps = computed(() => {
     data: props.data,
     xAxisData: props.xAxisData,
     indicator: props.indicator,
-    pieConfig: props.pieConfig
+    pieConfig: props.pieConfig,
   };
 });
 
 // 获取图表组件
 function getChartComponent(chartType: string) {
   if (!chartType) return null;
-  
+
   // 根据图表类型返回对应的组件
-  switch(chartType) {
-    case 'line':
+  switch (chartType) {
+    case "line":
       return EchartsLineWidget;
-    case 'bar':
+    case "bar":
       return EchartsBarWidget;
-    case 'pie':
+    case "pie":
       return EchartsPieWidget;
-    case 'radar':
+    case "radar":
       return EchartsRadarWidget;
-    case 'smoothLine':
+    case "smoothLine":
       return EchartsSmoothLineWidget;
-    case 'mixBarLine':
+    case "mixBarLine":
       return EchartsMixBarLineWidget;
-    case 'interactivePieLine':
+    case "interactivePieLine":
       return EchartsInteractivePieLineWidget;
-    case 'highchartsLine':
+    case "highchartsLine":
       return HighchartsLineWidget;
-    case 'highchartsColumn':
+    case "highchartsColumn":
       return HighchartsColumnWidget;
-    case 'highchartsPie':
+    case "highchartsPie":
       return HighchartsPieWidget;
-    case 'area':
+    case "area":
       return HighchartsAreaWidget;
     default:
       return null;
@@ -150,4 +150,4 @@ function getChartComponent(chartType: string) {
   border: 1px dashed #ccc;
   border-radius: 4px;
 }
-</style> 
+</style>

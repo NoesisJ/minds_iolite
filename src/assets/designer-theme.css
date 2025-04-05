@@ -7,12 +7,12 @@
   --designer-text-primary: #333333;
   --designer-text-secondary: #666666;
   --designer-accent-color: #2563eb;
-  
+
   /* 布局变量 */
   --designer-header-height: 56px;
   --designer-panel-width: 260px;
   --designer-footer-height: 40px;
-  
+
   /* 组件变量 */
   --designer-region-bg: #f9fafb;
   --designer-region-border: #e5e7eb;
@@ -20,14 +20,14 @@
   --designer-component-border: #d1d5db;
   --designer-component-selected: rgba(59, 130, 246, 0.5);
   --designer-component-hover: rgba(59, 130, 246, 0.2);
-  
+
   /* 暗色模式变量 */
   --designer-dark-bg-primary: #1f2937;
   --designer-dark-bg-secondary: #111827;
   --designer-dark-border-color: #374151;
   --designer-dark-text-primary: #f3f4f6;
   --designer-dark-text-secondary: #d1d5db;
-  
+
   /* 暗色模式组件变量 */
   --designer-dark-region-bg: #111827;
   --designer-dark-region-border: #374151;
@@ -40,13 +40,13 @@
 /* 暗色模式样式覆盖 */
 .dark .designer-view {
   color-scheme: dark;
-  
+
   --designer-bg-primary: var(--designer-dark-bg-primary);
   --designer-bg-secondary: var(--designer-dark-bg-secondary);
   --designer-border-color: var(--designer-dark-border-color);
   --designer-text-primary: var(--designer-dark-text-primary);
   --designer-text-secondary: var(--designer-dark-text-secondary);
-  
+
   --designer-region-bg: var(--designer-dark-region-bg);
   --designer-region-border: var(--designer-dark-region-border);
   --designer-component-bg: var(--designer-dark-component-bg);
@@ -170,4 +170,4 @@
 .dark .designer-view .dropdown-toggle,
 .dark .designer-view .dropdown-menu {
   color: #ffffff !important;
-} 
+}

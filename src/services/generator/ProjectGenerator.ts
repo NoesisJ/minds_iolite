@@ -1,14 +1,17 @@
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { Page, ComponentInstance } from '@/types/designer';
-import { componentGeneratorRegistry } from './index';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import { Page, ComponentInstance } from "@/types/designer";
+import { componentGeneratorRegistry } from "./index";
 
 // 回调函数接口
 export interface ProjectGeneratorCallbacks {
   onProgress: (progress: number, message: string) => void;
   onComplete: (zipBlob: Blob) => void;
   onError: (error: Error) => void;
-  onLog: (message: string, type: 'info' | 'success' | 'warning' | 'error') => void;
+  onLog: (
+    message: string,
+    type: "info" | "success" | "warning" | "error"
+  ) => void;
 }
 
 // 项目设置类型
@@ -39,24 +42,24 @@ export class ProjectGenerator {
   // 开始生成项目
   async generate(): Promise<void> {
     try {
-      this.callbacks.onProgress(10, '初始化项目...');
+      this.callbacks.onProgress(10, "初始化项目...");
       await this.initializeProject();
 
-      this.callbacks.onProgress(20, '生成页面结构...');
+      this.callbacks.onProgress(20, "生成页面结构...");
       await this.generatePageStructure();
 
       await this.generatePageComponents();
 
-      this.callbacks.onProgress(50, '生成路由配置...');
+      this.callbacks.onProgress(50, "生成路由配置...");
       await this.generateRoutes();
 
-      this.callbacks.onProgress(70, '生成项目配置...');
+      this.callbacks.onProgress(70, "生成项目配置...");
       await this.generateConfig();
 
-      this.callbacks.onProgress(90, '打包项目文件...');
-      const zipBlob = await this.zip.generateAsync({ type: 'blob' });
+      this.callbacks.onProgress(90, "打包项目文件...");
+      const zipBlob = await this.zip.generateAsync({ type: "blob" });
 
-      this.callbacks.onProgress(100, '项目生成完成');
+      this.callbacks.onProgress(100, "项目生成完成");
       this.callbacks.onComplete(zipBlob);
     } catch (error) {
       this.callbacks.onError(error as Error);
@@ -66,13 +69,13 @@ export class ProjectGenerator {
   // 初始化项目
   private async initializeProject(): Promise<void> {
     // 创建项目结构
-    this.zip.folder('src');
-    this.zip.folder('src/components');
-    this.zip.folder('src/components/generated');
-    this.zip.folder('src/views');
-    this.zip.folder('src/router');
-    this.zip.folder('src/assets');
-    this.zip.folder('public');
+    this.zip.folder("src");
+    this.zip.folder("src/components");
+    this.zip.folder("src/components/generated");
+    this.zip.folder("src/views");
+    this.zip.folder("src/router");
+    this.zip.folder("src/assets");
+    this.zip.folder("public");
 
     // 创建基本文件
     this.generatePackageJson();
@@ -92,55 +95,66 @@ export class ProjectGenerator {
 
   // 生成页面组件
   private async generatePageComponents(): Promise<void> {
-    this.callbacks.onProgress(30, '生成页面组件...');
-    
+    this.callbacks.onProgress(30, "生成页面组件...");
+
     // 用于记录生成的所有组件，避免重复生成
     const generatedComponents = new Set<string>();
-    
+
     // 遍历所有页面
     for (const page of this.pages) {
       if (!page.regions || page.regions.length === 0) {
-        this.callbacks.onLog(`警告: 页面 "${page.title}" 没有定义区域`, 'warning');
+        this.callbacks.onLog(
+          `警告: 页面 "${page.title}" 没有定义区域`,
+          "warning"
+        );
         continue;
       }
-      
+
       // 遍历页面中的所有区域
       for (const region of page.regions) {
         if (!region.components || region.components.length === 0) {
           continue; // 跳过空区域
         }
-        
+
         // 遍历区域中的所有组件
         for (const component of region.components) {
           // 如果已经生成过该组件，跳过
           if (generatedComponents.has(component.id)) {
             continue;
           }
-          
+
           // 获取对应的组件生成器
-          const generator = componentGeneratorRegistry.getGeneratorForComponent(component.componentId);
-          
+          const generator = componentGeneratorRegistry.getGeneratorForComponent(
+            component.componentId
+          );
+
           if (generator) {
             const componentCode = generator.generateCode(component);
-            
+
             // 将组件代码写入ZIP文件
             const typeName = generator.getComponentTypeName();
             const componentPath = `src/components/generated/${typeName}${component.id}.vue`;
             this.zip.file(componentPath, componentCode);
-            
+
             // 标记该组件已生成
             generatedComponents.add(component.id);
-            
-            this.callbacks.onLog(`已生成组件: ${typeName}${component.id}`, 'info');
+
+            this.callbacks.onLog(
+              `已生成组件: ${typeName}${component.id}`,
+              "info"
+            );
           } else {
-            this.callbacks.onLog(`未找到组件 ${component.componentId} 的生成器`, 'warning');
+            this.callbacks.onLog(
+              `未找到组件 ${component.componentId} 的生成器`,
+              "warning"
+            );
           }
         }
       }
     }
-    
+
     // 更新进度
-    this.callbacks.onProgress(40, '组件生成完成');
+    this.callbacks.onProgress(40, "组件生成完成");
   }
 
   // 生成路由配置
@@ -184,7 +198,7 @@ export default router
 `;
 
     // 保存路由文件
-    this.zip.file('src/router/index.js', routesCode);
+    this.zip.file("src/router/index.js", routesCode);
   }
 
   // 生成项目配置
@@ -195,39 +209,34 @@ export default router
   // 生成package.json
   private generatePackageJson(): void {
     const packageJson = {
-      name: this.settings.name.toLowerCase().replace(/\s+/g, '-'),
+      name: this.settings.name.toLowerCase().replace(/\s+/g, "-"),
       version: this.settings.version,
       private: true,
       author: this.settings.author,
       description: this.settings.description,
       scripts: {
-        serve: 'vue-cli-service serve',
-        build: 'vue-cli-service build',
-        lint: 'vue-cli-service lint'
+        serve: "vue-cli-service serve",
+        build: "vue-cli-service build",
+        lint: "vue-cli-service lint",
       },
       dependencies: {
-        'core-js': '^3.8.3',
-        'vue': '^3.2.13',
-        'vue-router': '^4.0.3',
-        'primevue': '^3.15.0',
-        'primeicons': '^5.0.0'
+        "core-js": "^3.8.3",
+        vue: "^3.2.13",
+        "vue-router": "^4.0.3",
+        primevue: "^3.15.0",
+        primeicons: "^5.0.0",
       },
       devDependencies: {
-        '@vue/cli-plugin-babel': '~5.0.0',
-        '@vue/cli-plugin-router': '~5.0.0',
-        '@vue/cli-plugin-typescript': '~5.0.0',
-        '@vue/cli-service': '~5.0.0',
-        'typescript': '~4.5.5'
+        "@vue/cli-plugin-babel": "~5.0.0",
+        "@vue/cli-plugin-router": "~5.0.0",
+        "@vue/cli-plugin-typescript": "~5.0.0",
+        "@vue/cli-service": "~5.0.0",
+        typescript: "~4.5.5",
       },
-      browserslist: [
-        '> 1%',
-        'last 2 versions',
-        'not dead',
-        'not ie 11'
-      ]
+      browserslist: ["> 1%", "last 2 versions", "not dead", "not ie 11"],
     };
 
-    this.zip.file('package.json', JSON.stringify(packageJson, null, 2));
+    this.zip.file("package.json", JSON.stringify(packageJson, null, 2));
   }
 
   // 生成main.js
@@ -246,7 +255,7 @@ app.use(PrimeVue)
 app.mount('#app')
 `;
 
-    this.zip.file('src/main.js', mainJs);
+    this.zip.file("src/main.js", mainJs);
   }
 
   // 生成App.vue
@@ -263,7 +272,7 @@ body {
 </style>
 `;
 
-    this.zip.file('src/App.vue', appVue);
+    this.zip.file("src/App.vue", appVue);
   }
 
   // 生成index.html
@@ -287,20 +296,22 @@ body {
 </html>
 `;
 
-    this.zip.file('public/index.html', indexHtml);
+    this.zip.file("public/index.html", indexHtml);
   }
 
   // 导出组件
   async exportComponents(components: ComponentInstance[], appZip: JSZip) {
-    const componentsDir = appZip.folder('src/components');
-    if (!componentsDir) throw new Error('无法创建组件目录');
+    const componentsDir = appZip.folder("src/components");
+    if (!componentsDir) throw new Error("无法创建组件目录");
 
     // 导出使用的组件
     const usedComponents = new Set<string>();
-    
+
     // 使用组件生成器找到使用的组件类型
     for (const component of components) {
-      const generator = componentGeneratorRegistry.getGeneratorForComponent(component.componentId);
+      const generator = componentGeneratorRegistry.getGeneratorForComponent(
+        component.componentId
+      );
       if (generator) {
         usedComponents.add(generator.getComponentTypeName());
       }
@@ -311,11 +322,13 @@ body {
       // 如果这种类型的组件被使用
       if (usedComponents.has(generator.getComponentTypeName())) {
         // 使用第一个该类型的组件作为模板
-        const templateComponent = components.find(c => {
-          const comp = componentGeneratorRegistry.getGeneratorForComponent(c.componentId);
+        const templateComponent = components.find((c) => {
+          const comp = componentGeneratorRegistry.getGeneratorForComponent(
+            c.componentId
+          );
           return comp === generator;
         });
-        
+
         if (templateComponent) {
           const code = generator.generateCode(templateComponent);
           componentsDir.file(`${generator.getComponentTypeName()}.vue`, code);
@@ -325,39 +338,41 @@ body {
 
     return Array.from(usedComponents);
   }
-  
+
   // 生成页面
   private generatePage(page: Page, usedComponents: string[]): string {
     // 导入部分
     let imports = `<script>
 import { defineComponent } from 'vue'
 `;
-    
+
     // 添加组件导入
     for (const component of usedComponents) {
       imports += `import ${component} from '@/components/${component}.vue'\n`;
     }
-    
+
     // 组件渲染函数
     const componentCode = (component: ComponentInstance): string => {
-      const generator = componentGeneratorRegistry.getGeneratorForComponent(component.componentId);
+      const generator = componentGeneratorRegistry.getGeneratorForComponent(
+        component.componentId
+      );
       if (generator) {
         return generator.renderInPage(component);
       }
       return `<div>未知组件类型: ${component.componentId}</div>`;
     };
-    
+
     // 完成脚本部分
     imports += `
 export default defineComponent({
   name: '${page.name || page.title}Page',
   components: {
-    ${usedComponents.join(',\n    ')}
+    ${usedComponents.join(",\n    ")}
   }
 })
 </script>
 `;
-    
+
     // 模板部分
     let template = `<template>
   <div class="page-container">
@@ -365,13 +380,13 @@ export default defineComponent({
     
     <!-- 页面内容 -->
 `;
-    
+
     // 添加区域内容
     if (page.regions && page.regions.length > 0) {
       for (const region of page.regions) {
         template += `    <div class="region ${region.id}">
 `;
-        
+
         // 添加区域中的组件
         if (region.components && region.components.length > 0) {
           for (const component of region.components) {
@@ -382,7 +397,7 @@ export default defineComponent({
           template += `      <div class="empty-region">空区域</div>
 `;
         }
-        
+
         template += `    </div>
 `;
       }
@@ -390,12 +405,12 @@ export default defineComponent({
       template += `    <div class="empty-page">此页面没有内容</div>
 `;
     }
-    
+
     // 关闭模板
     template += `  </div>
 </template>
 `;
-    
+
     // 样式部分
     const style = `
 <style scoped>
@@ -421,18 +436,20 @@ export default defineComponent({
 }
 </style>
 `;
-    
+
     // 组合所有部分
     return template + imports + style;
   }
-  
+
   // 获取页面文件名
   private getPageFileName(page: Page): string {
-    return page.name || page.title.replace(/\s+/g, '');
+    return page.name || page.title.replace(/\s+/g, "");
   }
-  
+
   // 获取页面路径
   private getPagePath(page: Page): string {
-    return page.name?.toLowerCase() || page.title.toLowerCase().replace(/\s+/g, '-');
+    return (
+      page.name?.toLowerCase() || page.title.toLowerCase().replace(/\s+/g, "-")
+    );
   }
-} 
+}

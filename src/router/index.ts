@@ -1,8 +1,8 @@
 // router/index.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import DatepickerView from '@/views/FormViews/DatepickerView.vue';
-import ButtonsView from '@/views/FormViews/ButtonsView.vue';
-import FormLayoutsView from '@/views/FormViews/FormLayoutsView.vue';
+import DatepickerView from "@/views/FormViews/DatepickerView.vue";
+import ButtonsView from "@/views/FormViews/ButtonsView.vue";
+import FormLayoutsView from "@/views/FormViews/FormLayoutsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -110,31 +110,31 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/FormViews/InputViews.vue"),
       },
       {
-        path: 'datepicker',
-        name: 'form-datepicker',
+        path: "datepicker",
+        name: "form-datepicker",
         component: () => import("../views/FormViews/DatepickerView.vue"),
       },
       {
-        path: 'buttons',
-        name: 'form-buttons',
+        path: "buttons",
+        name: "form-buttons",
         component: () => import("../views/FormViews/ButtonsView.vue"),
       },
       {
-        path: 'layouts',
-        name: 'form-layouts',
+        path: "layouts",
+        name: "form-layouts",
         component: () => import("../views/FormViews/FormLayoutsView.vue"),
-      }
+      },
     ],
   },
   {
-    path: '/designer',
-    name: 'Designer',
-    component: () => import("@/views/designer/DesignerView.vue")
+    path: "/designer",
+    name: "Designer",
+    component: () => import("@/views/designer/DesignerView.vue"),
   },
   {
     path: "/viewer/:id?",
     name: "Viewer",
-    component: () => import("@/views/designer/ViewerView.vue")
+    component: () => import("@/views/designer/ViewerView.vue"),
   },
 ];
 

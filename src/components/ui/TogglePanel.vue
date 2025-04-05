@@ -103,7 +103,7 @@ onMounted(() => {
 
 .panel-content {
   width: 93%;
-    margin: 0 auto;
+  margin: 0 auto;
   overflow: hidden;
   background-color: var(--material-item-bg);
   transition: max-height 0.3s ease-in-out;

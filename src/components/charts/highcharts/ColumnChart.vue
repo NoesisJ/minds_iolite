@@ -47,106 +47,122 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-import Highcharts from 'highcharts';
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import Highcharts from "highcharts";
 
 const props = defineProps({
   // 容器ID
   chartId: {
     type: String,
-    default: () => `column-chart-${Date.now()}`
+    default: () => `column-chart-${Date.now()}`,
   },
   // 自定义类名
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // 宽度
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   // 高度
   height: {
     type: String,
-    default: '400px'
+    default: "400px",
   },
   // 数据
   data: {
     type: Array,
     default: () => [
-      ['东京', 37.33],
-      ['德里', 31.18],
-      ['上海', 27.79],
-      ['圣保罗', 22.23],
-      ['墨西哥城', 21.91]
-    ]
+      ["东京", 37.33],
+      ["德里", 31.18],
+      ["上海", 27.79],
+      ["圣保罗", 22.23],
+      ["墨西哥城", 21.91],
+    ],
   },
   // 系列名称
   seriesName: {
     type: String,
-    default: '数据'
+    default: "数据",
   },
   // 标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 副标题
   subtitle: {
     type: String,
-    default: ''
+    default: "",
   },
   // Y轴标题
   yAxisTitle: {
     type: String,
-    default: ''
+    default: "",
   },
   // 颜色
   colors: {
     type: Array,
     default: () => [
-      '#9b20d9', '#9215ac', '#861ec9', '#7a17e6', '#7010f9', '#691af3',
-      '#6225ed', '#5b30e7', '#533be1', '#4c46db', '#4551d5', '#3e5ccf',
-      '#3667c9', '#2f72c3', '#277dbd', '#1f88b7', '#1693b1', '#0a9eaa',
-      '#03c69b', '#00f194'
-    ]
+      "#9b20d9",
+      "#9215ac",
+      "#861ec9",
+      "#7a17e6",
+      "#7010f9",
+      "#691af3",
+      "#6225ed",
+      "#5b30e7",
+      "#533be1",
+      "#4c46db",
+      "#4551d5",
+      "#3e5ccf",
+      "#3667c9",
+      "#2f72c3",
+      "#277dbd",
+      "#1f88b7",
+      "#1693b1",
+      "#0a9eaa",
+      "#03c69b",
+      "#00f194",
+    ],
   },
   // 按点着色
   colorByPoint: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 数据标签是否启用
   dataLabelsEnabled: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 数据标签旋转角度
   dataLabelsRotation: {
     type: Number,
-    default: -90
+    default: -90,
   },
   // 提示框格式
   tooltipFormat: {
     type: String,
-    default: '{point.y:.1f}'
+    default: "{point.y:.1f}",
   },
   // 标签后缀
   labelsSuffix: {
     type: String,
-    default: ''
+    default: "",
   },
   // 暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -155,92 +171,94 @@ let chartInstance = null;
 // 图表配置
 const chartOptions = computed(() => {
   // 背景色和文字色
-  const backgroundColor = props.darkMode ? '#333' : '#fff';
-  const textColor = props.darkMode ? '#fff' : '#333';
-  const gridColor = props.darkMode ? '#444' : '#e6e6e6';
+  const backgroundColor = props.darkMode ? "#333" : "#fff";
+  const textColor = props.darkMode ? "#fff" : "#333";
+  const gridColor = props.darkMode ? "#444" : "#e6e6e6";
 
   // 基础配置
   const baseOptions = {
     chart: {
-      type: 'column',
+      type: "column",
       backgroundColor: backgroundColor,
       style: {
-        fontFamily: 'Arial, sans-serif',
-        color: textColor
-      }
+        fontFamily: "Arial, sans-serif",
+        color: textColor,
+      },
     },
     title: {
       text: props.title,
       style: {
         color: textColor,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     subtitle: {
       text: props.subtitle,
       style: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       labels: {
         autoRotation: [-45, -90],
         style: {
-          fontSize: '13px',
-          fontFamily: 'Verdana, sans-serif',
-          color: textColor
-        }
-      }
+          fontSize: "13px",
+          fontFamily: "Verdana, sans-serif",
+          color: textColor,
+        },
+      },
     },
     yAxis: {
       min: 0,
       title: {
         text: props.yAxisTitle,
         style: {
-          color: textColor
-        }
+          color: textColor,
+        },
       },
       labels: {
         style: {
-          color: textColor
-        }
+          color: textColor,
+        },
       },
-      gridLineColor: gridColor
+      gridLineColor: gridColor,
     },
     legend: {
-      enabled: false
+      enabled: false,
     },
     tooltip: {
       pointFormat: props.tooltipFormat,
-      backgroundColor: props.darkMode ? '#1a1a1a' : '#ffffff',
+      backgroundColor: props.darkMode ? "#1a1a1a" : "#ffffff",
       style: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
-    series: [{
-      name: props.seriesName,
-      colors: props.colors,
-      colorByPoint: props.colorByPoint,
-      groupPadding: 0,
-      data: props.data,
-      dataLabels: {
-        enabled: props.dataLabelsEnabled,
-        rotation: props.dataLabelsRotation,
-        color: '#FFFFFF',
-        inside: true,
-        verticalAlign: 'top',
-        format: `{point.y:.1f}${props.labelsSuffix}`, // 格式化，带后缀
-        y: 10, // 从顶部向下10像素
-        style: {
-          fontSize: '13px',
-          fontFamily: 'Verdana, sans-serif'
-        }
-      }
-    }],
+    series: [
+      {
+        name: props.seriesName,
+        colors: props.colors,
+        colorByPoint: props.colorByPoint,
+        groupPadding: 0,
+        data: props.data,
+        dataLabels: {
+          enabled: props.dataLabelsEnabled,
+          rotation: props.dataLabelsRotation,
+          color: "#FFFFFF",
+          inside: true,
+          verticalAlign: "top",
+          format: `{point.y:.1f}${props.labelsSuffix}`, // 格式化，带后缀
+          y: 10, // 从顶部向下10像素
+          style: {
+            fontSize: "13px",
+            fontFamily: "Verdana, sans-serif",
+          },
+        },
+      },
+    ],
     credits: {
-      enabled: false
-    }
+      enabled: false,
+    },
   };
 
   // 合并自定义配置
@@ -269,7 +287,7 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
@@ -277,7 +295,7 @@ onUnmounted(() => {
   if (chartInstance) {
     chartInstance.destroy();
   }
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -295,7 +313,7 @@ watch(
     props.dataLabelsRotation,
     props.tooltipFormat,
     props.labelsSuffix,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -308,6 +326,6 @@ defineExpose({
     if (chartInstance) {
       chartInstance.update(options);
     }
-  }
+  },
 });
-</script> 
+</script>

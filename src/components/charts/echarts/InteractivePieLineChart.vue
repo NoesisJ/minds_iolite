@@ -37,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed, PropType } from 'vue';
-import * as echarts from 'echarts/core';
+import { ref, onMounted, onUnmounted, watch, computed, PropType } from "vue";
+import * as echarts from "echarts/core";
 import {
   DatasetComponent,
   DatasetComponentOption,
@@ -47,16 +47,16 @@ import {
   GridComponent,
   GridComponentOption,
   LegendComponent,
-  LegendComponentOption
-} from 'echarts/components';
+  LegendComponentOption,
+} from "echarts/components";
 import {
   LineChart,
   LineSeriesOption,
   PieChart,
-  PieSeriesOption
-} from 'echarts/charts';
-import { UniversalTransition, LabelLayout } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
+  PieSeriesOption,
+} from "echarts/charts";
+import { UniversalTransition, LabelLayout } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
   DatasetComponent,
@@ -67,7 +67,7 @@ echarts.use([
   PieChart,
   CanvasRenderer,
   UniversalTransition,
-  LabelLayout
+  LabelLayout,
 ]);
 
 // Define a more specific type for the chart data
@@ -86,69 +86,69 @@ type EChartsOption = echarts.ComposeOption<
 const props = defineProps({
   chartId: {
     type: String,
-    default: () => `interactive-chart-${Date.now()}`
+    default: () => `interactive-chart-${Date.now()}`,
   },
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   height: {
     type: String,
-    default: '500px'
+    default: "500px",
   },
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // 数据源
   chartData: {
     type: Array as PropType<ChartDataSource>,
     default: () => [
-      ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
-      ['Milk Tea', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
-      ['Matcha Latte', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
-      ['Cheese Cocoa', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
-      ['Walnut Brownie', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
-    ]
+      ["product", "2012", "2013", "2014", "2015", "2016", "2017"],
+      ["Milk Tea", 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
+      ["Matcha Latte", 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
+      ["Cheese Cocoa", 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
+      ["Walnut Brownie", 25.2, 37.1, 41.2, 18, 33.9, 49.1],
+    ],
   },
   // 饼图位置和大小
   pieConfig: {
     type: Object,
     default: () => ({
-      radius: '30%',
-      center: ['50%', '25%']
-    })
+      radius: "30%",
+      center: ["50%", "25%"],
+    }),
   },
   // 主题色数组
   colorPalette: {
     type: Array,
-    default: () => ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de']
+    default: () => ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de"],
   },
   // 是否启用暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 字体大小
   fontSize: {
     type: Number,
-    default: 12
+    default: 12,
   },
   // 字体颜色
   fontColor: {
     type: String,
-    default: '#fff'
+    default: "#fff",
   },
   // 标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -158,112 +158,114 @@ let chartInstance: echarts.ECharts | null = null;
 const chartOptions = computed((): EChartsOption => {
   // 基础配置
   const baseOptions: EChartsOption = {
-    backgroundColor: props.darkMode ? '#333' : '#fff',
+    backgroundColor: props.darkMode ? "#333" : "#fff",
     textStyle: {
       color: props.fontColor,
-      fontSize: props.fontSize
+      fontSize: props.fontSize,
     },
     color: props.colorPalette,
-    title: props.title ? {
-      text: props.title,
-      left: 'center',
-      textStyle: {
-        color: props.fontColor,
-        fontSize: props.fontSize + 4
-      }
-    } : undefined,
+    title: props.title
+      ? {
+          text: props.title,
+          left: "center",
+          textStyle: {
+            color: props.fontColor,
+            fontSize: props.fontSize + 4,
+          },
+        }
+      : undefined,
     legend: {
       textStyle: {
         color: props.fontColor,
-        fontSize: props.fontSize
-      }
+        fontSize: props.fontSize,
+      },
     },
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       showContent: false,
       textStyle: {
-        color: props.darkMode ? '#fff' : '#333',
-        fontSize: props.fontSize
-      }
+        color: props.darkMode ? "#fff" : "#333",
+        fontSize: props.fontSize,
+      },
     },
     dataset: {
-      source: props.chartData
+      source: props.chartData,
     },
-    xAxis: { 
-      type: 'category',
+    xAxis: {
+      type: "category",
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
-      }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
+      },
     },
-    yAxis: { 
+    yAxis: {
       gridIndex: 0,
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
       },
       splitLine: {
         lineStyle: {
-          color: props.darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-        }
-      }
+          color: props.darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+        },
+      },
     },
-    grid: { top: '55%' },
+    grid: { top: "55%" },
     series: [
       {
-        type: 'line',
+        type: "line",
         smooth: true,
-        seriesLayoutBy: 'row',
-        emphasis: { focus: 'series' }
+        seriesLayoutBy: "row",
+        emphasis: { focus: "series" },
       },
       {
-        type: 'line',
+        type: "line",
         smooth: true,
-        seriesLayoutBy: 'row',
-        emphasis: { focus: 'series' }
+        seriesLayoutBy: "row",
+        emphasis: { focus: "series" },
       },
       {
-        type: 'line',
+        type: "line",
         smooth: true,
-        seriesLayoutBy: 'row',
-        emphasis: { focus: 'series' }
+        seriesLayoutBy: "row",
+        emphasis: { focus: "series" },
       },
       {
-        type: 'line',
+        type: "line",
         smooth: true,
-        seriesLayoutBy: 'row',
-        emphasis: { focus: 'series' }
+        seriesLayoutBy: "row",
+        emphasis: { focus: "series" },
       },
       {
-        type: 'pie',
-        id: 'pie',
+        type: "pie",
+        id: "pie",
         radius: props.pieConfig.radius,
         center: props.pieConfig.center,
         emphasis: {
-          focus: 'self'
+          focus: "self",
         },
         label: {
-          formatter: '{b}: {@2012} ({d}%)',
+          formatter: "{b}: {@2012} ({d}%)",
           color: props.fontColor,
-          fontSize: props.fontSize
+          fontSize: props.fontSize,
         },
         encode: {
-          itemName: 'product',
-          value: '2012',
-          tooltip: '2012'
-        }
-      }
-    ]
+          itemName: "product",
+          value: "2012",
+          tooltip: "2012",
+        },
+      },
+    ],
   };
 
   // 合并自定义配置
@@ -275,28 +277,28 @@ const initChart = () => {
   const chartDom = document.getElementById(props.chartId);
   if (!chartDom) return;
 
-  chartInstance = echarts.init(chartDom, props.darkMode ? 'dark' : 'light');
-  
+  chartInstance = echarts.init(chartDom, props.darkMode ? "dark" : "light");
+
   // 设置updateAxisPointer事件
-  chartInstance.on('updateAxisPointer', function (event: any) {
+  chartInstance.on("updateAxisPointer", function (event: any) {
     const xAxisInfo = event.axesInfo[0];
     if (xAxisInfo) {
       const dimension = xAxisInfo.value + 1;
       chartInstance?.setOption<echarts.EChartsCoreOption>({
         series: {
-          id: 'pie',
+          id: "pie",
           label: {
-            formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+            formatter: "{b}: {@[" + dimension + "]} ({d}%)",
           },
           encode: {
             value: dimension,
-            tooltip: dimension
-          }
-        }
+            tooltip: dimension,
+          },
+        },
       });
     }
   });
-  
+
   updateChart();
 };
 
@@ -314,13 +316,13 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
 onUnmounted(() => {
   chartInstance?.dispose();
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -333,7 +335,7 @@ watch(
     props.fontSize,
     props.fontColor,
     props.title,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -344,6 +346,6 @@ defineExpose({
   getChartInstance: () => chartInstance,
   updateOptions: (options: any) => {
     chartInstance?.setOption(options);
-  }
+  },
 });
-</script> 
+</script>

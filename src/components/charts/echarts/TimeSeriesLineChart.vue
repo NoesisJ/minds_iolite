@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed, PropType } from 'vue';
-import * as echarts from 'echarts/core';
+import { ref, onMounted, onUnmounted, watch, computed, PropType } from "vue";
+import * as echarts from "echarts/core";
 import {
   TitleComponent,
   TitleComponentOption,
@@ -47,11 +47,11 @@ import {
   GridComponent,
   GridComponentOption,
   DataZoomComponent,
-  DataZoomComponentOption
-} from 'echarts/components';
-import { LineChart, LineSeriesOption } from 'echarts/charts';
-import { UniversalTransition } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
+  DataZoomComponentOption,
+} from "echarts/components";
+import { LineChart, LineSeriesOption } from "echarts/charts";
+import { UniversalTransition } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
   TitleComponent,
@@ -61,7 +61,7 @@ echarts.use([
   DataZoomComponent,
   LineChart,
   CanvasRenderer,
-  UniversalTransition
+  UniversalTransition,
 ]);
 
 type EChartsOption = echarts.ComposeOption<
@@ -79,19 +79,19 @@ type TimeSeriesDataPoint = [number, number]; // [timestamp, value]
 const props = defineProps({
   chartId: {
     type: String,
-    default: () => `time-series-chart-${Date.now()}`
+    default: () => `time-series-chart-${Date.now()}`,
   },
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   height: {
     type: String,
-    default: '500px'
+    default: "500px",
   },
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // 时间序列数据
   seriesData: {
@@ -100,63 +100,66 @@ const props = defineProps({
       let base = +new Date(1988, 9, 3);
       let oneDay = 24 * 3600 * 1000;
       let data: TimeSeriesDataPoint[] = [[base, Math.random() * 300]];
-      
+
       for (let i = 1; i < 1000; i++) {
         let now = new Date((base += oneDay));
-        data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+        data.push([
+          +now,
+          Math.round((Math.random() - 0.5) * 20 + data[i - 1][1]),
+        ]);
       }
-      
+
       return data;
-    }
+    },
   },
   // 主题色
   themeColor: {
     type: String,
-    default: '#5470c6'
+    default: "#5470c6",
   },
   // 面积图填充色
   areaColor: {
     type: String,
-    default: 'rgba(84, 112, 198, 0.5)'
+    default: "rgba(84, 112, 198, 0.5)",
   },
   // 是否启用暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 字体大小
   fontSize: {
     type: Number,
-    default: 12
+    default: 12,
   },
   // 字体颜色
   fontColor: {
     type: String,
-    default: '#fff'
+    default: "#fff",
   },
   // 标题
   title: {
     type: String,
-    default: '时间序列数据'
+    default: "时间序列数据",
   },
   // 系列名称
   seriesName: {
     type: String,
-    default: '数据'
+    default: "数据",
   },
   // 数据缩放初始范围
   zoomRange: {
     type: Object,
     default: () => ({
       start: 0,
-      end: 20
-    })
+      end: 20,
+    }),
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -166,145 +169,145 @@ let chartInstance: echarts.ECharts | null = null;
 const chartOptions = computed((): EChartsOption => {
   // 基础配置
   const baseOptions: EChartsOption = {
-    backgroundColor: props.darkMode ? '#333' : '#fff',
+    backgroundColor: props.darkMode ? "#333" : "#fff",
     textStyle: {
       color: props.fontColor,
-      fontSize: props.fontSize
+      fontSize: props.fontSize,
     },
     title: {
-      left: 'center',
+      left: "center",
       text: props.title,
       textStyle: {
         color: props.fontColor,
-        fontSize: props.fontSize + 4
-      }
+        fontSize: props.fontSize + 4,
+      },
     },
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       position: function (pt) {
-        return [pt[0], '10%'];
+        return [pt[0], "10%"];
       },
       textStyle: {
-        fontSize: props.fontSize
-      }
+        fontSize: props.fontSize,
+      },
     },
     toolbox: {
       feature: {
         dataZoom: {
-          yAxisIndex: 'none',
+          yAxisIndex: "none",
           iconStyle: {
-            borderColor: props.fontColor
+            borderColor: props.fontColor,
           },
           emphasis: {
             iconStyle: {
-              borderColor: props.themeColor
-            }
-          }
+              borderColor: props.themeColor,
+            },
+          },
         },
         restore: {
           iconStyle: {
-            borderColor: props.fontColor
+            borderColor: props.fontColor,
           },
           emphasis: {
             iconStyle: {
-              borderColor: props.themeColor
-            }
-          }
+              borderColor: props.themeColor,
+            },
+          },
         },
         saveAsImage: {
           iconStyle: {
-            borderColor: props.fontColor
+            borderColor: props.fontColor,
           },
           emphasis: {
             iconStyle: {
-              borderColor: props.themeColor
-            }
-          }
-        }
+              borderColor: props.themeColor,
+            },
+          },
+        },
       },
-      right: '10%',
-      top: '3%'
+      right: "10%",
+      top: "3%",
     },
     xAxis: {
-      type: 'time',
+      type: "time",
       boundaryGap: [0, 0],
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
       },
       splitLine: {
-        show: false
-      }
+        show: false,
+      },
     },
     yAxis: {
-      type: 'value',
-      boundaryGap: [0, '100%'],
+      type: "value",
+      boundaryGap: [0, "100%"],
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
       },
       splitLine: {
         lineStyle: {
-          color: props.darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-        }
-      }
+          color: props.darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+        },
+      },
     },
     dataZoom: [
       {
-        type: 'inside',
+        type: "inside",
         start: props.zoomRange.start,
-        end: props.zoomRange.end
+        end: props.zoomRange.end,
       },
       {
         start: props.zoomRange.start,
         end: props.zoomRange.end,
         textStyle: {
-          color: props.fontColor
+          color: props.fontColor,
         },
-        borderColor: props.darkMode ? '#777' : '#ddd',
+        borderColor: props.darkMode ? "#777" : "#ddd",
         dataBackground: {
           lineStyle: {
             color: props.themeColor,
-            opacity: 0.5
+            opacity: 0.5,
           },
           areaStyle: {
             color: props.areaColor,
-            opacity: 0.2
-          }
+            opacity: 0.2,
+          },
         },
         fillerColor: props.areaColor,
         handleStyle: {
           color: props.themeColor,
-          borderColor: props.themeColor
-        }
-      }
+          borderColor: props.themeColor,
+        },
+      },
     ],
     series: [
       {
         name: props.seriesName,
-        type: 'line',
+        type: "line",
         smooth: true,
-        symbol: 'none',
+        symbol: "none",
         lineStyle: {
           color: props.themeColor,
-          width: 2
+          width: 2,
         },
         areaStyle: {
-          color: props.areaColor
+          color: props.areaColor,
         },
-        data: props.seriesData
-      }
-    ]
+        data: props.seriesData,
+      },
+    ],
   };
 
   // 合并自定义配置
@@ -316,7 +319,7 @@ const initChart = () => {
   const chartDom = document.getElementById(props.chartId);
   if (!chartDom) return;
 
-  chartInstance = echarts.init(chartDom, props.darkMode ? 'dark' : 'light');
+  chartInstance = echarts.init(chartDom, props.darkMode ? "dark" : "light");
   updateChart();
 };
 
@@ -334,13 +337,13 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
 onUnmounted(() => {
   chartInstance?.dispose();
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -355,7 +358,7 @@ watch(
     props.title,
     props.seriesName,
     props.zoomRange,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -366,6 +369,6 @@ defineExpose({
   getChartInstance: () => chartInstance,
   updateOptions: (options: any) => {
     chartInstance?.setOption(options);
-  }
+  },
 });
-</script> 
+</script>

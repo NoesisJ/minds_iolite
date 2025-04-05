@@ -50,107 +50,107 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-import Highcharts from 'highcharts';
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import Highcharts from "highcharts";
 
 const props = defineProps({
   // 容器ID
   chartId: {
     type: String,
-    default: () => `pie-chart-${Date.now()}`
+    default: () => `pie-chart-${Date.now()}`,
   },
   // 自定义类名
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // 宽度
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   // 高度
   height: {
     type: String,
-    default: '400px'
+    default: "400px",
   },
   // 数据
   data: {
     type: Array,
     default: () => [
       {
-        name: 'Chrome',
+        name: "Chrome",
         y: 74.77,
         sliced: true,
-        selected: true
+        selected: true,
       },
       {
-        name: 'Edge',
-        y: 12.82
+        name: "Edge",
+        y: 12.82,
       },
       {
-        name: 'Firefox',
-        y: 4.63
+        name: "Firefox",
+        y: 4.63,
       },
       {
-        name: 'Safari',
-        y: 2.44
+        name: "Safari",
+        y: 2.44,
       },
       {
-        name: 'Internet Explorer',
-        y: 2.02
+        name: "Internet Explorer",
+        y: 2.02,
       },
       {
-        name: 'Other',
-        y: 3.28
-      }
-    ]
+        name: "Other",
+        y: 3.28,
+      },
+    ],
   },
   // 系列名称
   seriesName: {
     type: String,
-    default: '市场份额'
+    default: "市场份额",
   },
   // 标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 允许选择点
   allowPointSelect: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 显示图例
   showInLegend: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 启用数据标签
   enableDataLabels: {
     type: Boolean,
-    default: false
+    default: false,
   },
   // 提示框格式
   tooltipFormat: {
     type: String,
-    default: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    default: "{series.name}: <b>{point.percentage:.1f}%</b>",
   },
   // 颜色
   colors: {
     type: Array,
-    default: () => ['#4E9BFF', '#FFC233', '#38BFFF', '#FF7B92', '#4DE6A8']
+    default: () => ["#4E9BFF", "#FFC233", "#38BFFF", "#FF7B92", "#4DE6A8"],
   },
   // 暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -159,8 +159,8 @@ let chartInstance = null;
 // 图表配置
 const chartOptions = computed(() => {
   // 背景色和文字色
-  const backgroundColor = props.darkMode ? '#333' : '#fff';
-  const textColor = props.darkMode ? '#fff' : '#333';
+  const backgroundColor = props.darkMode ? "#333" : "#fff";
+  const textColor = props.darkMode ? "#fff" : "#333";
 
   // 基础配置
   const baseOptions = {
@@ -168,60 +168,62 @@ const chartOptions = computed(() => {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: 'pie',
+      type: "pie",
       backgroundColor: backgroundColor,
       style: {
-        fontFamily: 'Arial, sans-serif',
-        color: textColor
-      }
+        fontFamily: "Arial, sans-serif",
+        color: textColor,
+      },
     },
     colors: props.colors,
     title: {
       text: props.title,
       style: {
         color: textColor,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     tooltip: {
       pointFormat: props.tooltipFormat,
-      backgroundColor: props.darkMode ? '#1a1a1a' : '#ffffff',
+      backgroundColor: props.darkMode ? "#1a1a1a" : "#ffffff",
       style: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
     accessibility: {
       point: {
-        valueSuffix: '%'
-      }
+        valueSuffix: "%",
+      },
     },
     plotOptions: {
       pie: {
         allowPointSelect: props.allowPointSelect,
-        cursor: 'pointer',
+        cursor: "pointer",
         dataLabels: {
           enabled: props.enableDataLabels,
-          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+          format: "<b>{point.name}</b>: {point.percentage:.1f} %",
           style: {
-            color: textColor
-          }
+            color: textColor,
+          },
         },
-        showInLegend: props.showInLegend
-      }
+        showInLegend: props.showInLegend,
+      },
     },
     legend: {
       itemStyle: {
-        color: textColor
-      }
+        color: textColor,
+      },
     },
-    series: [{
-      name: props.seriesName,
-      colorByPoint: true,
-      data: props.data
-    }],
+    series: [
+      {
+        name: props.seriesName,
+        colorByPoint: true,
+        data: props.data,
+      },
+    ],
     credits: {
-      enabled: false
-    }
+      enabled: false,
+    },
   };
 
   // 合并自定义配置
@@ -250,7 +252,7 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
@@ -258,7 +260,7 @@ onUnmounted(() => {
   if (chartInstance) {
     chartInstance.destroy();
   }
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -273,7 +275,7 @@ watch(
     props.showInLegend,
     props.enableDataLabels,
     props.tooltipFormat,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -286,6 +288,6 @@ defineExpose({
     if (chartInstance) {
       chartInstance.update(options);
     }
-  }
+  },
 });
-</script> 
+</script>

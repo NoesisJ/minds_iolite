@@ -1,27 +1,27 @@
-import { ComponentInstance } from '@/types/designer';
-import { ComponentGeneratorInterface } from '../ComponentGeneratorInterface';
+import { ComponentInstance } from "@/types/designer";
+import { ComponentGeneratorInterface } from "../ComponentGeneratorInterface";
 
 export class TextComponentGenerator implements ComponentGeneratorInterface {
   supportsComponent(componentId: string): boolean {
-    return componentId === 'text';
+    return componentId === "text";
   }
-  
+
   getComponentTypeName(): string {
-    return 'TextComponent';
+    return "TextComponent";
   }
-  
+
   generateCode(component: ComponentInstance): string {
     // 从组件属性中提取文本内容
-    const content = component.props.content || '文本内容';
-    
+    const content = component.props.content || "文本内容";
+
     // 从组件样式中提取样式信息
-    const fontSize = component.styles.fontSize || '16px';
-    const color = component.styles.color || '#333333';
-    const textAlign = component.styles.textAlign || 'left';
-    const fontWeight = component.styles.fontWeight || 'normal';
-    const margin = component.styles.margin || '0';
-    const padding = component.styles.padding || '0';
-    
+    const fontSize = component.styles.fontSize || "16px";
+    const color = component.styles.color || "#333333";
+    const textAlign = component.styles.textAlign || "left";
+    const fontWeight = component.styles.fontWeight || "normal";
+    const margin = component.styles.margin || "0";
+    const padding = component.styles.padding || "0";
+
     // 生成Vue组件代码
     return `<template>
   <div class="text-component" :style="computedStyles">
@@ -65,11 +65,11 @@ export default {
 }
 </style>`;
   }
-  
+
   renderInPage(component: ComponentInstance): string {
     return `<TextComponent 
-  content="${(component.props.content || '').replace(/"/g, '\\"')}" 
+  content="${(component.props.content || "").replace(/"/g, '\\"')}" 
   :styles="${JSON.stringify(component.styles || {}).replace(/"/g, '\\"')}" 
 />`;
   }
-} 
+}

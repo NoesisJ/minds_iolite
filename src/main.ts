@@ -23,8 +23,8 @@ import {
   NSelect,
   NFormItem,
   NTag,
-  NTooltip
-} from 'naive-ui'
+  NTooltip,
+} from "naive-ui";
 
 // 创建Naive UI提供器
 const naive = create({
@@ -37,9 +37,9 @@ const naive = create({
     NSelect,
     NFormItem,
     NTag,
-    NTooltip
-  ]
-})
+    NTooltip,
+  ],
+});
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -59,12 +59,11 @@ app
       darkModeSelector: false,
       cssLayer: false,
     },
-  })
-
+  });
 
 const appStore = useApp();
 if (appStore.isTauri) {
   await appStore.initialize();
 }
 
-app.mount('#app');
+app.mount("#app");

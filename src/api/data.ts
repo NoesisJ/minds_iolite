@@ -7,13 +7,13 @@ import { DataItem } from "@/types/information";
 
 const api = axios.create({
   // 使用实际的后端API地址
-  baseURL: 'http://localhost:8080/api',
-  timeout: 10000
+  baseURL: "http://localhost:8080/api",
+  timeout: 10000,
 });
 
 // 统一错误处理
 const handleError = (error: unknown) => {
-  console.error('API Error:', error);
+  console.error("API Error:", error);
   throw error;
 };
 
@@ -21,7 +21,7 @@ export const dataApi = {
   // 获取所有数据
   getAllData: async (): Promise<DataItem[]> => {
     try {
-      const { data } = await api.get('/data');
+      const { data } = await api.get("/data");
       return data;
     } catch (error) {
       return handleError(error);
@@ -39,9 +39,9 @@ export const dataApi = {
   },
 
   // 创建数据
-  createData: async (dataItem: Omit<DataItem, 'id'>): Promise<DataItem> => {
+  createData: async (dataItem: Omit<DataItem, "id">): Promise<DataItem> => {
     try {
-      const { data } = await api.post('/data', dataItem);
+      const { data } = await api.post("/data", dataItem);
       return data;
     } catch (error) {
       return handleError(error);
@@ -49,7 +49,10 @@ export const dataApi = {
   },
 
   // 更新数据
-  updateData: async (id: number, dataItem: Partial<DataItem>): Promise<DataItem> => {
+  updateData: async (
+    id: number,
+    dataItem: Partial<DataItem>
+  ): Promise<DataItem> => {
     try {
       const { data } = await api.put(`/data/${id}`, dataItem);
       return data;
@@ -65,5 +68,5 @@ export const dataApi = {
     } catch (error) {
       return handleError(error);
     }
-  }
+  },
 };

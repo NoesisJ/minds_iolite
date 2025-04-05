@@ -109,7 +109,9 @@
         <div class="min-w-[350px] flex flex-col gap-6">
           <!-- 物资名称 -->
           <div>
-            <label for="name" class="block font-bold mb-3">物资名称 <span class="text-red-500">*</span></label>
+            <label for="name" class="block font-bold mb-3"
+              >物资名称 <span class="text-red-500">*</span></label
+            >
             <InputText
               id="name"
               v-model.trim="item.name"
@@ -118,7 +120,9 @@
               :class="{ 'p-invalid': submitted && !item.name }"
               fluid
             />
-            <small v-if="submitted && !item.name" class="text-red-500">物资名称为必填项。</small>
+            <small v-if="submitted && !item.name" class="text-red-500"
+              >物资名称为必填项。</small
+            >
           </div>
 
           <!-- 物资信息 -->
@@ -138,10 +142,22 @@
               </InputGroupAddon>
               <InputText
                 v-model="unitPriceStr"
-                :class="{ 'p-invalid': submitted && !!unitPriceStr && !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(unitPriceStr) }"
+                :class="{
+                  'p-invalid':
+                    submitted &&
+                    !!unitPriceStr &&
+                    !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(unitPriceStr),
+                }"
                 placeholder="单价 *"
               />
-              <small v-if="submitted && !!unitPriceStr && !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(unitPriceStr)" class="text-red-500">
+              <small
+                v-if="
+                  submitted &&
+                  !!unitPriceStr &&
+                  !/^(?!0(\.0+)?$)(\d+(\.\d{1,2})?)$/.test(unitPriceStr)
+                "
+                class="text-red-500"
+              >
                 请输入有效的单价。
               </small>
             </InputGroup>
@@ -176,10 +192,26 @@
               </InputGroupAddon>
               <InputText
                 v-model="dateInput"
-                :class="{ 'p-invalid': submitted && !!item.date && !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(item.date) }"
+                :class="{
+                  'p-invalid':
+                    submitted &&
+                    !!item.date &&
+                    !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(
+                      item.date
+                    ),
+                }"
                 placeholder="时间 (YYYY-MM-DD)"
               />
-              <small v-if="submitted && !!item.date && !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(item.date)" class="text-red-500">
+              <small
+                v-if="
+                  submitted &&
+                  !!item.date &&
+                  !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(
+                    item.date
+                  )
+                "
+                class="text-red-500"
+              >
                 请使用正确的日期格式 (YYYY-MM-DD)
               </small>
             </InputGroup>
@@ -374,17 +406,24 @@
 
     <!-- 在表格上方添加 API 状态指示器 -->
     <div v-if="apiStatus.loading" class="fixed top-4 right-4 z-50">
-      <div class="text-white bg-blue-500 px-4 py-2 rounded-md shadow-md flex items-center">
+      <div
+        class="text-white bg-blue-500 px-4 py-2 rounded-md shadow-md flex items-center"
+      >
         <i class="pi pi-spin pi-spinner mr-2"></i>
         <span>加载中...</span>
       </div>
     </div>
-    
+
     <!-- 如果 API 断开连接，显示警告 -->
-    <div v-if="!apiStatus.connected && !apiStatus.loading" class="fixed top-4 right-4 z-50">
-      <div class="text-white bg-red-500 px-4 py-2 rounded-md shadow-md flex items-center">
+    <div
+      v-if="!apiStatus.connected && !apiStatus.loading"
+      class="fixed top-4 right-4 z-50"
+    >
+      <div
+        class="text-white bg-red-500 px-4 py-2 rounded-md shadow-md flex items-center"
+      >
         <i class="pi pi-exclamation-triangle mr-2"></i>
-        <span>{{ apiStatus.lastError || '服务器连接失败' }}</span>
+        <span>{{ apiStatus.lastError || "服务器连接失败" }}</span>
       </div>
     </div>
   </div>
@@ -402,7 +441,7 @@ import Select from "primevue/select";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import DatePicker from "primevue/datepicker";
-import { financeApi, type Item, apiStatus } from '../../api/finance';
+import { financeApi, type Item, apiStatus } from "../../api/finance";
 
 const toast = useToast();
 const dataTable = ref();
@@ -496,122 +535,121 @@ const submitted = ref(false);
 // 在item定义后添加计算属性
 const unitPriceStr = computed<string>({
   get: () => item.value.unitPrice.toString(),
-  set: (val: string) => item.value.unitPrice = parseFloat(val) || 0
+  set: (val: string) => (item.value.unitPrice = parseFloat(val) || 0),
 });
 
 const quantityStr = computed({
   get: () => item.value.quantity.toString(),
-  set: (val) => item.value.quantity = parseInt(val) || 0
+  set: (val) => (item.value.quantity = parseInt(val) || 0),
 });
 
 const shippingCostStr = computed({
   get: () => item.value.shippingCost.toString(),
-  set: (val) => item.value.shippingCost = parseFloat(val) || 0
+  set: (val) => (item.value.shippingCost = parseFloat(val) || 0),
 });
 
 // 添加生命周期钩子
 onMounted(async () => {
-  console.group('【组件初始化】');
-  console.log('检查API连接状态...');
-  
+  console.group("【组件初始化】");
+  console.log("检查API连接状态...");
+
   try {
     const connectionOk = await financeApi.checkConnection();
-    console.log('API连接状态:', connectionOk ? '✅ 连接正常' : '❌ 连接失败');
-    
-    console.log('正在从后端获取财务数据...');
+    console.log("API连接状态:", connectionOk ? "✅ 连接正常" : "❌ 连接失败");
+
+    console.log("正在从后端获取财务数据...");
     const data = await financeApi.getList();
     console.log(`获取到${data.length}条原始财务数据`);
-    console.log('数据示例:', data.length > 0 ? data[0] : '无数据');
-    
+    console.log("数据示例:", data.length > 0 ? data[0] : "无数据");
+
     // 将后端数据映射到前端显示格式
     items.value = data.map((item: any) => {
       return formatApiResponseForFrontend(item);
     });
-    
+
     console.log(`成功加载${items.value.length}条财务数据`);
     if (items.value.length > 0) {
-      console.log('物资示例:', items.value[0]);
+      console.log("物资示例:", items.value[0]);
     }
   } catch (error) {
-    console.error('初始化失败:', error);
-    showToast('获取数据失败');
+    console.error("初始化失败:", error);
+    showToast("获取数据失败");
   }
-  
+
   console.groupEnd();
 });
 
 // 修改保存方法以充分利用新的 API 功能
 const saveItem = async () => {
-  console.group('【添加/更新物资】- 开始处理');
-  console.log('表单状态: 已提交');
+  console.group("【添加/更新物资】- 开始处理");
+  console.log("表单状态: 已提交");
   submitted.value = true;
-  
-  console.log('正在验证表单数据...');
+
+  console.log("正在验证表单数据...");
   const validationResult = validateItem();
-  console.log('表单验证结果:', validationResult ? '✅ 通过' : '❌ 失败');
-  
+  console.log("表单验证结果:", validationResult ? "✅ 通过" : "❌ 失败");
+
   if (validationResult) {
     try {
       // 格式化数据为API需要的格式
       const financialItem = formatItemForApi(item.value);
-      console.log('前端数据格式:', item.value);
-      console.log('转换为API格式:', financialItem);
-      
+      console.log("前端数据格式:", item.value);
+      console.log("转换为API格式:", financialItem);
+
       if (item.value.id) {
         console.log(`📝 更新操作 - ID:${item.value.id}`);
-        console.time('更新请求耗时');
+        console.time("更新请求耗时");
         const response = await financeApi.update(item.value.id, financialItem);
-        console.timeEnd('更新请求耗时');
-        console.log('API响应:', response);
-        
+        console.timeEnd("更新请求耗时");
+        console.log("API响应:", response);
+
         if (!response.success) {
-          console.error('❌ 更新失败:', response.error);
-          throw new Error(response.error || '更新失败');
+          console.error("❌ 更新失败:", response.error);
+          throw new Error(response.error || "更新失败");
         }
-        
-        console.log('✅ 更新成功，更新本地数据...');
-        const updatedItem = response.data 
+
+        console.log("✅ 更新成功，更新本地数据...");
+        const updatedItem = response.data
           ? formatApiResponseForFrontend(response.data)
           : { ...item.value };
-        
-        const index = items.value.findIndex(i => i.id === item.value.id);
+
+        const index = items.value.findIndex((i) => i.id === item.value.id);
         if (index !== -1) {
           items.value[index] = updatedItem;
-          console.log('本地数据已更新:', items.value[index]);
+          console.log("本地数据已更新:", items.value[index]);
         } else {
-          console.warn('⚠️ 未找到要更新的数据，添加为新记录');
+          console.warn("⚠️ 未找到要更新的数据，添加为新记录");
           items.value.push(updatedItem);
         }
       } else {
-        console.log('➕ 创建操作 - 新物资');
-        console.time('创建请求耗时');
+        console.log("➕ 创建操作 - 新物资");
+        console.time("创建请求耗时");
         const response = await financeApi.create(financialItem);
-        console.timeEnd('创建请求耗时');
-        console.log('API响应:', response);
-        
+        console.timeEnd("创建请求耗时");
+        console.log("API响应:", response);
+
         if (!response.success) {
-          console.error('❌ 创建失败:', response.error);
-          throw new Error(response.error || '创建失败');
+          console.error("❌ 创建失败:", response.error);
+          throw new Error(response.error || "创建失败");
         }
-        
-        console.log('✅ 创建成功，更新本地数据...');
+
+        console.log("✅ 创建成功，更新本地数据...");
         const formattedItem = formatApiResponseForFrontend(response.data);
-        console.log('API返回数据:', response.data);
-        console.log('格式化后的前端数据:', formattedItem);
+        console.log("API返回数据:", response.data);
+        console.log("格式化后的前端数据:", formattedItem);
         items.value.push(formattedItem);
-        console.log('本地数据列表现有记录数:', items.value.length);
+        console.log("本地数据列表现有记录数:", items.value.length);
       }
-      
-      console.log('操作完成，关闭对话框');
+
+      console.log("操作完成，关闭对话框");
       itemDialog.value = false;
       submitted.value = false;
       resetItem();
     } catch (error) {
-      console.error('❌ 操作异常:', error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : '操作失败，请稍后重试';
-      
+      console.error("❌ 操作异常:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "操作失败，请稍后重试";
+
       showToast(errorMessage, "error", "错误");
     }
   }
@@ -621,27 +659,33 @@ const saveItem = async () => {
 // 导出CSV方法
 const exportCSV = async () => {
   try {
-    console.log('正在请求导出财务数据...');
+    console.log("正在请求导出财务数据...");
     const blob = await financeApi.export();
-    console.log('导出数据响应成功，数据类型:', blob.type, '数据大小:', blob.size, 'bytes');
-    
+    console.log(
+      "导出数据响应成功，数据类型:",
+      blob.type,
+      "数据大小:",
+      blob.size,
+      "bytes"
+    );
+
     // 创建下载链接并触发下载
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     const fileName = `财务数据_${formatDate(new Date())}.csv`;
-    link.setAttribute('download', fileName);
-    console.log('准备下载文件:', fileName);
-    
+    link.setAttribute("download", fileName);
+    console.log("准备下载文件:", fileName);
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-    console.log('文件下载完成');
-    showToast('导出成功');
+    console.log("文件下载完成");
+    showToast("导出成功");
   } catch (error) {
-    console.error('导出财务数据失败:', error);
-    showToast('导出失败', 'error', '错误');
+    console.error("导出财务数据失败:", error);
+    showToast("导出失败", "error", "错误");
   }
 };
 
@@ -667,7 +711,9 @@ const searchNames = (event: { query: string }) => {
 const searchGroups = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueGroups = [...new Set(items.value.map((item: Item) => item.group))];
+  const uniqueGroups = [
+    ...new Set(items.value.map((item: Item) => item.group)),
+  ];
   filteredGroups.value = uniqueGroups.filter((group) =>
     group.toLowerCase().includes(query)
   );
@@ -680,7 +726,9 @@ const searchGroups = (event: { query: string }) => {
 const searchBranches = (event: { query: string }) => {
   const query = event.query.toLowerCase();
   // 更新建议列表
-  const uniqueBranches = [...new Set(items.value.map((item: Item) => item.branch))];
+  const uniqueBranches = [
+    ...new Set(items.value.map((item: Item) => item.branch)),
+  ];
   filteredBranches.value = uniqueBranches.filter((branch) =>
     branch.toLowerCase().includes(query)
   );
@@ -829,18 +877,18 @@ const resetItem = () => {
 
 // 显示添加物资
 const openNew = () => {
-  console.log('【打开添加表单】重置表单数据');
+  console.log("【打开添加表单】重置表单数据");
   resetItem();
-  console.log('表单当前数据:', JSON.stringify(item.value));
+  console.log("表单当前数据:", JSON.stringify(item.value));
   itemDialog.value = true;
 };
 
 // 显示编辑物资
 const editItem = (i: Item) => {
-  console.group('【编辑物资】');
-  console.log('原始数据:', JSON.stringify(i));
+  console.group("【编辑物资】");
+  console.log("原始数据:", JSON.stringify(i));
   item.value = { ...i };
-  console.log('编辑表单数据:', JSON.stringify(item.value));
+  console.log("编辑表单数据:", JSON.stringify(item.value));
   console.groupEnd();
   itemDialog.value = true;
 };
@@ -870,115 +918,137 @@ const deleteItem = async () => {
     if (item.value.id) {
       console.log(`正在删除ID为${item.value.id}的物资数据...`);
       const response = await financeApi.delete(item.value.id);
-      console.log('删除物资响应数据:', response);
-      
+      console.log("删除物资响应数据:", response);
+
       // 从前端数据中移除已删除的物资
       const beforeLength = items.value.length;
       items.value = items.value.filter((i) => i.id !== item.value.id);
-      console.log(`前端数据更新: 从${beforeLength}条记录减少到${items.value.length}条记录`);
-      
+      console.log(
+        `前端数据更新: 从${beforeLength}条记录减少到${items.value.length}条记录`
+      );
+
       deleteItemDialog.value = false;
       resetItem();
       showToast("删除成功！");
     }
   } catch (error) {
-    console.error('删除物资数据失败:', error);
-    showToast('删除失败，请重试');
+    console.error("删除物资数据失败:", error);
+    showToast("删除失败，请重试");
   }
 };
 
 // 批量删除
 const deleteSelectedItems = async () => {
   try {
-    const ids = selectedItems.value.map(item => item.id).filter(Boolean) as string[];
-    console.log('准备批量删除的物资ID:', ids);
-    
+    const ids = selectedItems.value
+      .map((item) => item.id)
+      .filter(Boolean) as string[];
+    console.log("准备批量删除的物资ID:", ids);
+
     if (ids.length > 0) {
       console.log(`正在批量删除${ids.length}条物资数据...`);
       const response = await financeApi.batchDelete(ids);
-      console.log('批量删除响应数据:', response);
-      
+      console.log("批量删除响应数据:", response);
+
       // 从前端数据中移除已删除的物资
       const beforeLength = items.value.length;
       items.value = items.value.filter(
         (item) => !selectedItems.value.includes(item)
       );
-      console.log(`前端数据更新: 从${beforeLength}条记录减少到${items.value.length}条记录`);
-      
+      console.log(
+        `前端数据更新: 从${beforeLength}条记录减少到${items.value.length}条记录`
+      );
+
       deleteItemsDialog.value = false;
       selectedItems.value = [];
       showToast("批量删除成功！");
     }
   } catch (error) {
-    console.error('批量删除物资数据失败:', error);
-    showToast('批量删除失败，请重试');
+    console.error("批量删除物资数据失败:", error);
+    showToast("批量删除失败，请重试");
   }
 };
 
 // 物资信息验证
 const validateItem = () => {
-  console.group('【验证表单数据】');
+  console.group("【验证表单数据】");
   // 设置错误标志
   let isValid = true;
   let errorMessages = [];
 
   // 验证必填字段
-  console.log('检查物资名称:', item.value.name);
+  console.log("检查物资名称:", item.value.name);
   if (!item.value.name?.trim()) {
     isValid = false;
     errorMessages.push("物资名称不能为空");
-    console.warn('❌ 物资名称为空');
+    console.warn("❌ 物资名称为空");
   }
 
   // 验证数字字段
-  console.log('检查单价:', item.value.unitPrice);
+  console.log("检查单价:", item.value.unitPrice);
   if (item.value.unitPrice < 0) {
     isValid = false;
     errorMessages.push("单价不能为负数");
-    console.warn('❌ 单价为负数');
+    console.warn("❌ 单价为负数");
   }
 
-  console.log('检查数量:', item.value.quantity);
+  console.log("检查数量:", item.value.quantity);
   if (item.value.quantity < 0 || !Number.isInteger(item.value.quantity)) {
     isValid = false;
     errorMessages.push("数量必须是非负整数");
-    console.warn('❌ 数量无效');
+    console.warn("❌ 数量无效");
   }
-  
-  console.log('检查运费:', item.value.shippingCost);
+
+  console.log("检查运费:", item.value.shippingCost);
   if (item.value.shippingCost < 0) {
     isValid = false;
     errorMessages.push("运费不能为负数");
-    console.warn('❌ 运费为负数');
+    console.warn("❌ 运费为负数");
   }
 
   // 验证日期格式
-  console.log('检查日期格式:', item.value.date);
-  if (item.value.date && !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(item.value.date)) {
+  console.log("检查日期格式:", item.value.date);
+  if (
+    item.value.date &&
+    !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(item.value.date)
+  ) {
     isValid = false;
     errorMessages.push("日期格式应为YYYY-MM-DD");
-    console.warn('❌ 日期格式错误');
+    console.warn("❌ 日期格式错误");
   }
-  
+
   // 如果有错误，显示第一个错误信息
   if (!isValid && errorMessages.length > 0) {
-    console.error('表单验证失败:', errorMessages);
+    console.error("表单验证失败:", errorMessages);
     showToast(errorMessages[0], "error", "验证失败");
   } else {
-    console.log('✅ 表单验证通过');
+    console.log("✅ 表单验证通过");
   }
 
   // 计算总价
   const oldTotal = item.value.totalPrice;
-  item.value.totalPrice = (item.value.unitPrice * item.value.quantity) + item.value.shippingCost;
-  console.log(`总价计算: ${item.value.unitPrice} × ${item.value.quantity} + ${item.value.shippingCost} = ${item.value.totalPrice}`);
-  
+  item.value.totalPrice =
+    item.value.unitPrice * item.value.quantity + item.value.shippingCost;
+  console.log(
+    `总价计算: ${item.value.unitPrice} × ${item.value.quantity} + ${item.value.shippingCost} = ${item.value.totalPrice}`
+  );
+
   console.groupEnd();
   return isValid;
 };
 
 // 提示消息
-const showToast = (message: string, severity: "success" | "info" | "warn" | "error" | "secondary" | "contrast" = "success", summary: string = "成功") => {
+const showToast = (
+  message: string,
+  severity:
+    | "success"
+    | "info"
+    | "warn"
+    | "error"
+    | "secondary"
+    | "contrast" = "success",
+  summary: string = "成功"
+) => {
   return toast.add({
     severity: severity,
     summary: summary,
@@ -1002,9 +1072,9 @@ const formatDate = (date: Date | null): string => {
 
 // 添加格式化表单数据的方法
 const formatItemForApi = (itemData: Item) => {
-  console.group('【数据格式转换】前端→API');
-  console.log('原始前端数据:', JSON.stringify(itemData));
-  
+  console.group("【数据格式转换】前端→API");
+  console.log("原始前端数据:", JSON.stringify(itemData));
+
   // 将Item类型转换为后端需要的格式
   const formattedItem = {
     id: itemData.id,
@@ -1021,39 +1091,41 @@ const formatItemForApi = (itemData: Item) => {
     group_name: itemData.group,
     troop_type: itemData.branch,
     project: itemData.project,
-    remarks: itemData.remarks
+    remarks: itemData.remarks,
   };
-  
-  console.log('转换后API数据:', JSON.stringify(formattedItem));
+
+  console.log("转换后API数据:", JSON.stringify(formattedItem));
   console.groupEnd();
   return formattedItem;
 };
 
 // 添加格式化API返回数据的方法
 const formatApiResponseForFrontend = (apiItem: any) => {
-  console.group('【数据格式转换】API→前端');
-  console.log('原始API数据:', JSON.stringify(apiItem));
-  
+  console.group("【数据格式转换】API→前端");
+  console.log("原始API数据:", JSON.stringify(apiItem));
+
   const formattedItem = {
-    id: apiItem.id?.toString() || '',
-    name: apiItem.name || '',
-    model: apiItem.model || '',
+    id: apiItem.id?.toString() || "",
+    name: apiItem.name || "",
+    model: apiItem.model || "",
     unitPrice: parseFloat(apiItem.price) || 0,
     quantity: parseInt(apiItem.quantity) || 0,
-    unit: apiItem.unit || '',
+    unit: apiItem.unit || "",
     shippingCost: parseFloat(apiItem.extra_price) || 0,
-    totalPrice: (parseFloat(apiItem.price) || 0) * (parseInt(apiItem.quantity) || 0) + (parseFloat(apiItem.extra_price) || 0),
-    purchaser: apiItem.purchaser || '',
-    date: apiItem.post_date || '',
-    campus: apiItem.campus || '',
-    group: apiItem.group_name || '',
-    branch: apiItem.troop_type || '',
-    link: apiItem.purchase_link || '',
-    project: apiItem.project || '',
-    remarks: apiItem.remarks || ''
+    totalPrice:
+      (parseFloat(apiItem.price) || 0) * (parseInt(apiItem.quantity) || 0) +
+      (parseFloat(apiItem.extra_price) || 0),
+    purchaser: apiItem.purchaser || "",
+    date: apiItem.post_date || "",
+    campus: apiItem.campus || "",
+    group: apiItem.group_name || "",
+    branch: apiItem.troop_type || "",
+    link: apiItem.purchase_link || "",
+    project: apiItem.project || "",
+    remarks: apiItem.remarks || "",
   };
-  
-  console.log('转换后前端数据:', JSON.stringify(formattedItem));
+
+  console.log("转换后前端数据:", JSON.stringify(formattedItem));
   console.groupEnd();
   return formattedItem;
 };
@@ -1061,34 +1133,34 @@ const formatApiResponseForFrontend = (apiItem: any) => {
 // 添加输入处理函数 - 日期自动格式化
 const formatInputDate = (dateString: string) => {
   // 移除非数字和连字符
-  let cleaned = dateString.replace(/[^\d-]/g, '');
-  
+  let cleaned = dateString.replace(/[^\d-]/g, "");
+
   // 检查是否符合YYYY-MM-DD格式
   const datePattern = /^(\d{4})(-?)(\d{2})(-?)(\d{2})$/;
   const match = cleaned.match(datePattern);
-  
+
   if (match) {
     // 自动添加分隔符
     return `${match[1]}-${match[3]}-${match[5]}`;
   }
-  
+
   return cleaned;
 };
 
 // 添加API错误处理函数
 const handleApiError = (error: unknown) => {
   let errorMessage = "操作失败";
-  
+
   if (error instanceof Error) {
     errorMessage = error.message;
-  } else if (typeof error === 'object' && error !== null) {
+  } else if (typeof error === "object" && error !== null) {
     // @ts-ignore
     errorMessage = error.error || error.message || "未知错误";
   }
-  
-  console.error('API错误:', error);
+
+  console.error("API错误:", error);
   showToast(errorMessage, "error", "错误");
-  
+
   return errorMessage;
 };
 
@@ -1097,7 +1169,7 @@ const dateInput = computed({
   get: () => item.value.date,
   set: (val: string) => {
     item.value.date = formatInputDate(val);
-  }
+  },
 });
 
 // 修改日期表单字段
@@ -1105,13 +1177,13 @@ const dateInput = computed({
 // 添加API调用日志工具函数到全局，方便在控制台手动测试
 window.testFinanceApi = {
   checkConnection: async () => {
-    console.log('测试API连接...');
+    console.log("测试API连接...");
     const result = await financeApi.checkConnection();
-    console.log('连接测试结果:', result ? '✅ 连接成功' : '❌ 连接失败');
+    console.log("连接测试结果:", result ? "✅ 连接成功" : "❌ 连接失败");
     return result;
   },
   testCreate: async () => {
-    console.log('测试创建物资...');
+    console.log("测试创建物资...");
     const testData = {
       name: "测试物资-" + new Date().getTime(),
       model: "TEST-MODEL",
@@ -1126,26 +1198,26 @@ window.testFinanceApi = {
       group_name: "机械组",
       troop_type: "步兵",
       project: "测试项目",
-      remarks: "API测试"
+      remarks: "API测试",
     };
-    
-    console.log('测试数据:', testData);
+
+    console.log("测试数据:", testData);
     try {
       const response = await financeApi.create(testData);
-      console.log('创建响应:', response);
+      console.log("创建响应:", response);
       return response;
     } catch (error) {
-      console.error('测试失败:', error);
+      console.error("测试失败:", error);
       return error;
     }
-  }
+  },
 };
 
 // 在控制台打印API测试指令
-console.log('==== 财务管理系统调试工具已加载 ====');
-console.log('可用的测试命令:');
-console.log('- window.testFinanceApi.checkConnection() - 测试后端连接');
-console.log('- window.testFinanceApi.testCreate() - 测试创建物资');
+console.log("==== 财务管理系统调试工具已加载 ====");
+console.log("可用的测试命令:");
+console.log("- window.testFinanceApi.checkConnection() - 测试后端连接");
+console.log("- window.testFinanceApi.testCreate() - 测试创建物资");
 </script>
 
 <style scoped>

@@ -6,10 +6,10 @@
         <template #header>突出按钮</template>
         <div class="p-4">
           <div class="flex flex-wrap gap-2">
-            <base-button 
-              v-for="status in statuses" 
-              :key="status" 
-              :status="status" 
+            <base-button
+              v-for="status in statuses"
+              :key="status"
+              :status="status"
               hero
             >
               {{ status }}
@@ -24,9 +24,9 @@
         <template #header>默认按钮</template>
         <div class="p-4">
           <div class="flex flex-wrap gap-2">
-            <base-button 
-              v-for="status in statuses" 
-              :key="status" 
+            <base-button
+              v-for="status in statuses"
+              :key="status"
               :status="status"
             >
               {{ status }}
@@ -41,10 +41,10 @@
         <template #header>轮廓按钮</template>
         <div class="p-4">
           <div class="flex flex-wrap gap-2">
-            <base-button 
-              v-for="status in statuses" 
-              :key="status" 
-              :status="status" 
+            <base-button
+              v-for="status in statuses"
+              :key="status"
+              :status="status"
               outline
             >
               {{ status }}
@@ -59,10 +59,10 @@
         <template #header>幽灵按钮</template>
         <div class="p-4">
           <div class="flex flex-wrap gap-2">
-            <base-button 
-              v-for="status in statuses" 
-              :key="status" 
-              :status="status" 
+            <base-button
+              v-for="status in statuses"
+              :key="status"
+              :status="status"
               ghost
             >
               {{ status }}
@@ -78,11 +78,7 @@
           <template #header>按钮形状</template>
           <div class="p-4">
             <div class="flex flex-wrap gap-2">
-              <base-button 
-                v-for="shape in shapes" 
-                :key="shape" 
-                :shape="shape"
-              >
+              <base-button v-for="shape in shapes" :key="shape" :shape="shape">
                 {{ shape }}
               </base-button>
             </div>
@@ -94,11 +90,7 @@
           <template #header>按钮大小</template>
           <div class="p-4">
             <div class="flex flex-wrap gap-2 items-center">
-              <base-button 
-                v-for="size in sizes" 
-                :key="size" 
-                :size="size"
-              >
+              <base-button v-for="size in sizes" :key="size" :size="size">
                 {{ size }}
               </base-button>
             </div>
@@ -110,16 +102,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
-import BaseCard from '@/components/Form/Inputs/BaseCard.vue';
+import { ref } from "vue";
+import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
+import BaseCard from "@/components/Form/Inputs/BaseCard.vue";
 
 // 按钮状态
-const statuses = ['primary', 'success', 'info', 'warning', 'danger'];
+const statuses = ["primary", "success", "info", "warning", "danger"];
 
 // 按钮形状
-const shapes = ['rectangle', 'semi-round', 'round'];
+const shapes = ["rectangle", "semi-round", "round"];
 
 // 按钮大小
-const sizes = ['small', 'medium', 'large'];
-</script> 
+const sizes = ["small", "medium", "large"];
+</script>

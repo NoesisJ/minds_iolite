@@ -1,19 +1,28 @@
-import { ComponentInstance } from '@/types/designer';
-import { ComponentGeneratorInterface } from '../ComponentGeneratorInterface';
+import { ComponentInstance } from "@/types/designer";
+import { ComponentGeneratorInterface } from "../ComponentGeneratorInterface";
 
 export class ButtonComponentGenerator implements ComponentGeneratorInterface {
   supportsComponent(componentId: string): boolean {
-    return componentId === 'button';
+    return componentId === "button";
   }
-  
+
   getComponentTypeName(): string {
-    return 'ButtonComponent';
+    return "ButtonComponent";
   }
-  
+
   generateCode(component: ComponentInstance): string {
-    const { label = '按钮', status = 'primary', size = 'medium', shape = 'rectangle', 
-            hero = false, outline = false, ghost = false, disabled = false, icon = '' } = component.props;
-    
+    const {
+      label = "按钮",
+      status = "primary",
+      size = "medium",
+      shape = "rectangle",
+      hero = false,
+      outline = false,
+      ghost = false,
+      disabled = false,
+      icon = "",
+    } = component.props;
+
     return `<template>
   <button
     :class="[
@@ -148,24 +157,26 @@ button {
   justify-content: center;
   font-weight: 500;
   transition: all 0.2s;
-  ${Object.entries(component.styles || {}).map(([key, value]) => `${key}: ${value};`).join('\n  ')}
+  ${Object.entries(component.styles || {})
+    .map(([key, value]) => `${key}: ${value};`)
+    .join("\n  ")}
 }
 </style>`;
   }
-  
+
   renderInPage(component: ComponentInstance): string {
     const props = component.props || {};
     return `<ButtonComponent 
-  label="${(props.label || '按钮').replace(/"/g, '\\"')}"
-  status="${props.status || 'primary'}"
-  size="${props.size || 'medium'}"
-  shape="${props.shape || 'rectangle'}"
-  ${props.hero ? 'hero' : ''}
-  ${props.outline ? 'outline' : ''}
-  ${props.ghost ? 'ghost' : ''}
-  ${props.disabled ? 'disabled' : ''}
-  ${props.icon ? `icon="${props.icon.replace(/"/g, '\\"')}"` : ''}
+  label="${(props.label || "按钮").replace(/"/g, '\\"')}"
+  status="${props.status || "primary"}"
+  size="${props.size || "medium"}"
+  shape="${props.shape || "rectangle"}"
+  ${props.hero ? "hero" : ""}
+  ${props.outline ? "outline" : ""}
+  ${props.ghost ? "ghost" : ""}
+  ${props.disabled ? "disabled" : ""}
+  ${props.icon ? `icon="${props.icon.replace(/"/g, '\\"')}"` : ""}
   :styles="${JSON.stringify(component.styles || {}).replace(/"/g, '\\"')}"
 />`;
   }
-} 
+}

@@ -22,23 +22,47 @@
         <div class="p-4">
           <form>
             <div class="mb-4 grid grid-cols-12 items-center">
-              <label for="inputEmail1" class="col-span-3 text-sm font-medium">邮箱</label>
+              <label for="inputEmail1" class="col-span-3 text-sm font-medium"
+                >邮箱</label
+              >
               <div class="col-span-9">
                 <base-input id="inputEmail1" placeholder="邮箱" />
               </div>
             </div>
             <div class="mb-4 grid grid-cols-12 items-center">
-              <label for="inputPassword2" class="col-span-3 text-sm font-medium">密码</label>
+              <label for="inputPassword2" class="col-span-3 text-sm font-medium"
+                >密码</label
+              >
               <div class="col-span-9">
-                <base-input id="inputPassword2" type="password" placeholder="密码" />
+                <base-input
+                  id="inputPassword2"
+                  type="password"
+                  placeholder="密码"
+                />
               </div>
             </div>
             <div class="mb-4 grid grid-cols-12 items-center">
               <label class="col-span-3 text-sm font-medium">单选框</label>
               <div class="col-span-9 space-y-2">
-                <base-radio v-model="radioOption" value="option1" name="gridRadios">选项 1</base-radio>
-                <base-radio v-model="radioOption" value="option2" name="gridRadios">选项 2</base-radio>
-                <base-radio v-model="radioOption" value="option3" name="gridRadios" disabled>禁用选项</base-radio>
+                <base-radio
+                  v-model="radioOption"
+                  value="option1"
+                  name="gridRadios"
+                  >选项 1</base-radio
+                >
+                <base-radio
+                  v-model="radioOption"
+                  value="option2"
+                  name="gridRadios"
+                  >选项 2</base-radio
+                >
+                <base-radio
+                  v-model="radioOption"
+                  value="option3"
+                  name="gridRadios"
+                  disabled
+                  >禁用选项</base-radio
+                >
               </div>
             </div>
             <div class="grid grid-cols-12">
@@ -79,15 +103,23 @@
         <div class="p-4">
           <form>
             <div class="mb-4 grid grid-cols-12 items-center">
-              <label for="inputEmail3" class="col-span-2 text-sm font-medium">邮箱</label>
+              <label for="inputEmail3" class="col-span-2 text-sm font-medium"
+                >邮箱</label
+              >
               <div class="col-span-10">
                 <base-input id="inputEmail3" placeholder="邮箱" />
               </div>
             </div>
             <div class="mb-4 grid grid-cols-12 items-center">
-              <label for="inputPassword3" class="col-span-2 text-sm font-medium">密码</label>
+              <label for="inputPassword3" class="col-span-2 text-sm font-medium"
+                >密码</label
+              >
               <div class="col-span-10">
-                <base-input id="inputPassword3" type="password" placeholder="密码" />
+                <base-input
+                  id="inputPassword3"
+                  type="password"
+                  placeholder="密码"
+                />
               </div>
             </div>
             <div class="mb-4 grid grid-cols-12">
@@ -108,15 +140,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import BaseInput from '@/components/Form/Inputs/BaseInput.vue';
-import BaseTextarea from '@/components/Form/Inputs/BaseTextarea.vue';
-import BaseCheckbox from '@/components/Form/Inputs/BaseCheckbox.vue';
-import BaseRadio from '@/components/Form/Inputs/BaseRadio.vue';
-import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
-import BaseCard from '@/components/Form/Inputs/BaseCard.vue';
+import { ref } from "vue";
+import BaseInput from "@/components/Form/Inputs/BaseInput.vue";
+import BaseTextarea from "@/components/Form/Inputs/BaseTextarea.vue";
+import BaseCheckbox from "@/components/Form/Inputs/BaseCheckbox.vue";
+import BaseRadio from "@/components/Form/Inputs/BaseRadio.vue";
+import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
+import BaseCard from "@/components/Form/Inputs/BaseCard.vue";
 
 const rememberMe = ref(false);
 const rememberMe2 = ref(false);
-const radioOption = ref('option1');
-</script> 
+const radioOption = ref("option1");
+</script>

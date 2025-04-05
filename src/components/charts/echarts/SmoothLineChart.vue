@@ -33,16 +33,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed, PropType } from 'vue';
-import * as echarts from 'echarts/core';
-import { GridComponent, GridComponentOption } from 'echarts/components';
-import { LineChart, LineSeriesOption } from 'echarts/charts';
-import { UniversalTransition } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
+import { ref, onMounted, onUnmounted, watch, computed, PropType } from "vue";
+import * as echarts from "echarts/core";
+import { GridComponent, GridComponentOption } from "echarts/components";
+import { LineChart, LineSeriesOption } from "echarts/charts";
+import { UniversalTransition } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([GridComponent, LineChart, CanvasRenderer, UniversalTransition]);
 
-type EChartsOption = echarts.ComposeOption<GridComponentOption | LineSeriesOption>;
+type EChartsOption = echarts.ComposeOption<
+  GridComponentOption | LineSeriesOption
+>;
 
 // Define OrdinalRawValue type to match ECharts expectations
 type OrdinalRawValue = string | number;
@@ -52,68 +54,68 @@ const props = defineProps({
   // 图表ID，用于唯一标识图表容器
   chartId: {
     type: String,
-    default: () => `smooth-line-chart-${Date.now()}`
+    default: () => `smooth-line-chart-${Date.now()}`,
   },
   // 图表宽度
   width: {
     type: String,
-    default: '100%'
+    default: "100%",
   },
   // 图表高度
   height: {
     type: String,
-    default: '400px'
+    default: "400px",
   },
   // 自定义CSS类名
   customClass: {
     type: String,
-    default: ''
+    default: "",
   },
   // X轴数据
   xAxisData: {
     type: Array as PropType<OrdinalRawValue[]>,
-    default: () => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    default: () => ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   },
   // Y轴数据
   seriesData: {
     type: Array as PropType<(number | { value: number; [key: string]: any })[]>,
-    default: () => [820, 932, 901, 934, 1290, 1330, 1320]
+    default: () => [820, 932, 901, 934, 1290, 1330, 1320],
   },
   // 主题色
   themeColor: {
     type: String,
-    default: '#5470c6'
+    default: "#5470c6",
   },
   // 是否启用暗色模式
   darkMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 字体大小
   fontSize: {
     type: Number,
-    default: 12
+    default: 12,
   },
   // 字体颜色
   fontColor: {
     type: String,
-    default: '#fff'
+    default: "#fff",
   },
   // 标题
   title: {
     type: String,
-    default: ''
+    default: "",
   },
   // 图例
   legendData: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   // 自定义配置
   customOptions: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // 图表实例
@@ -123,76 +125,81 @@ let chartInstance: echarts.ECharts | null = null;
 const chartOptions = computed((): EChartsOption => {
   // 基础配置
   const baseOptions: EChartsOption = {
-    backgroundColor: props.darkMode ? '#333' : '#fff',
+    backgroundColor: props.darkMode ? "#333" : "#fff",
     textStyle: {
       color: props.fontColor,
-      fontSize: props.fontSize
+      fontSize: props.fontSize,
     },
-    title: props.title ? {
-      text: props.title,
-      left: 'center',
-      textStyle: {
-        color: props.fontColor,
-        fontSize: props.fontSize + 4
-      }
-    } : undefined,
-    legend: props.legendData.length > 0 ? {
-      data: props.legendData,
-      textStyle: {
-        color: props.fontColor,
-        fontSize: props.fontSize
-      }
-    } : undefined,
+    title: props.title
+      ? {
+          text: props.title,
+          left: "center",
+          textStyle: {
+            color: props.fontColor,
+            fontSize: props.fontSize + 4,
+          },
+        }
+      : undefined,
+    legend:
+      props.legendData.length > 0
+        ? {
+            data: props.legendData,
+            textStyle: {
+              color: props.fontColor,
+              fontSize: props.fontSize,
+            },
+          }
+        : undefined,
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       data: props.xAxisData,
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
-      }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
+      },
     },
     yAxis: {
-      type: 'value',
+      type: "value",
       axisLabel: {
         color: props.fontColor,
-        fontSize: props.fontSize
+        fontSize: props.fontSize,
       },
       axisLine: {
         lineStyle: {
-          color: props.darkMode ? '#555' : '#ccc'
-        }
+          color: props.darkMode ? "#555" : "#ccc",
+        },
       },
       splitLine: {
         lineStyle: {
-          color: props.darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-        }
-      }
+          color: props.darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+        },
+      },
     },
     series: [
       {
         data: props.seriesData,
-        type: 'line',
+        type: "line",
         smooth: true,
         lineStyle: {
           color: props.themeColor,
-          width: 3
+          width: 3,
         },
         itemStyle: {
-          color: props.themeColor
-        }
-      }
-    ]
+          color: props.themeColor,
+        },
+      },
+    ],
   };
 
   // 合并自定义配置
@@ -204,7 +211,7 @@ const initChart = () => {
   const chartDom = document.getElementById(props.chartId);
   if (!chartDom) return;
 
-  chartInstance = echarts.init(chartDom, props.darkMode ? 'dark' : 'light');
+  chartInstance = echarts.init(chartDom, props.darkMode ? "dark" : "light");
   updateChart();
 };
 
@@ -222,13 +229,13 @@ const handleResize = () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   initChart();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 // 组件卸载时销毁图表
 onUnmounted(() => {
   chartInstance?.dispose();
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 // 监听数据变化，更新图表
@@ -241,7 +248,7 @@ watch(
     props.fontSize,
     props.fontColor,
     props.title,
-    props.customOptions
+    props.customOptions,
   ],
   () => updateChart(),
   { deep: true }
@@ -252,6 +259,6 @@ defineExpose({
   getChartInstance: () => chartInstance,
   updateOptions: (options: any) => {
     chartInstance?.setOption(options);
-  }
+  },
 });
-</script> 
+</script>

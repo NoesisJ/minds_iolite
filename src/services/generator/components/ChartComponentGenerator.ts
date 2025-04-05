@@ -1,21 +1,24 @@
-import { ComponentInstance } from '@/types/designer';
-import { ComponentGeneratorInterface } from '../ComponentGeneratorInterface';
+import { ComponentInstance } from "@/types/designer";
+import { ComponentGeneratorInterface } from "../ComponentGeneratorInterface";
 
 export class ChartComponentGenerator implements ComponentGeneratorInterface {
   supportsComponent(componentId: string): boolean {
-    return componentId.startsWith('echarts-') || componentId.startsWith('highcharts-');
+    return (
+      componentId.startsWith("echarts-") ||
+      componentId.startsWith("highcharts-")
+    );
   }
-  
+
   getComponentTypeName(): string {
-    return 'ChartComponent';
+    return "ChartComponent";
   }
-  
+
   generateCode(component: ComponentInstance): string {
-    const chartType = component.props.chartType || 'basic-pie';
-    const title = component.props.title || '图表';
-    const height = component.props.height || '400px';
-    const customClass = component.props.customClass || '';
-    
+    const chartType = component.props.chartType || "basic-pie";
+    const title = component.props.title || "图表";
+    const height = component.props.height || "400px";
+    const customClass = component.props.customClass || "";
+
     // 简化的图表组件代码生成，实际中可能需要更复杂的逻辑
     return `<template>
   <div class="chart-container ${customClass}" style="height: ${height}">
@@ -76,14 +79,14 @@ export default {
 }
 </style>`;
   }
-  
+
   renderInPage(component: ComponentInstance): string {
     return `<ChartComponent 
-  chartType="${component.props.chartType || 'basic-pie'}"
-  title="${(component.props.title || '图表').replace(/"/g, '\\"')}"
-  height="${component.props.height || '400px'}"
-  customClass="${component.props.customClass || ''}"
+  chartType="${component.props.chartType || "basic-pie"}"
+  title="${(component.props.title || "图表").replace(/"/g, '\\"')}"
+  height="${component.props.height || "400px"}"
+  customClass="${component.props.customClass || ""}"
   :styles="${JSON.stringify(component.styles || {}).replace(/"/g, '\\"')}"
 />`;
   }
-} 
+}

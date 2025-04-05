@@ -3,15 +3,24 @@
     class="h-full w-full flex flex-col items-center justify-center py-4 gap-4"
   >
     <div class="pieCharts w-full h-1/2 flex justify-around">
-      <div class="w-[60%] flex items-center justify-center" ref="subjectChartRef"></div>
+      <div
+        class="w-[60%] flex items-center justify-center"
+        ref="subjectChartRef"
+      ></div>
       <div
         class="w-[40%] flex items-center justify-center"
         ref="campusChartRef"
       ></div>
     </div>
     <div class="barCharts w-full h-1/2 flex justify-around gap-4">
-      <div class="w-[50%] flex items-center justify-center" ref="groupChartRef"></div>
-      <div class="w-[50%] flex items-center justify-center" ref="divisionChartRef"></div>
+      <div
+        class="w-[50%] flex items-center justify-center"
+        ref="groupChartRef"
+      ></div>
+      <div
+        class="w-[50%] flex items-center justify-center"
+        ref="divisionChartRef"
+      ></div>
     </div>
   </div>
 </template>
@@ -100,7 +109,11 @@ const axisLabelStyle = {
 };
 
 // 生成饼图配置
-const getPieOption = (title: string, data: ChartDataItem[], center: string[]): EChartsOption => {
+const getPieOption = (
+  title: string,
+  data: ChartDataItem[],
+  center: string[]
+): EChartsOption => {
   const series: PieSeriesOption[] = [
     {
       name: title,
@@ -351,12 +364,16 @@ const initCharts = async () => {
 
     // 设置图表数据
     if (charts.subject) {
-      charts.subject.setOption(getPieOption("专业分布", data.subjectData, ["30%", "55%"]));
+      charts.subject.setOption(
+        getPieOption("专业分布", data.subjectData, ["30%", "55%"])
+      );
       chartInstances.value["subject"] = charts.subject;
     }
 
     if (charts.campus) {
-      charts.campus.setOption(getPieOption("校区分布", data.campusData, ["42%", "55%"]));
+      charts.campus.setOption(
+        getPieOption("校区分布", data.campusData, ["42%", "55%"])
+      );
       chartInstances.value["campus"] = charts.campus;
     }
 
