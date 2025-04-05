@@ -9,6 +9,18 @@ export class WindowManager {
     this.window = getCurrentWebviewWindow();
   }
 
+  public async listenMaximizeState(
+    callback: (maximized: boolean) => void
+  ): Promise<() => void> {
+    if (!this.window) return () => {};
+
+    callback(await this.window.isMaximized());
+    return this.window.onResized(async () => {
+      if (!this.window) return;
+      callback(await this.window.isMaximized());
+    });
+  }
+
   public async handleClose(): Promise<void> {
     await this.window?.close();
   }
