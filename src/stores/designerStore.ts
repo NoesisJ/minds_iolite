@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentInstance, Page, Region, LayoutTemplate } from '../types/designer';
-import { createComponentInstance } from '@/data/componentLibrary';
+import { createComponentInstance, getComponentDefinition } from '@/data/componentLibrary';
 import { nextTick } from 'vue';
 import { baseComponents } from '@/data/componentLibrary';
 import { watch } from 'vue';
@@ -171,36 +171,35 @@ export const useDesignerStore = defineStore('designer', {
     
     // 添加组件到区域
     addComponentToRegion(componentId: string, regionId: string) {
-      const pageIndex = this.pages.findIndex(p => p.id === this.currentPageId);
-      if (pageIndex === -1) {
-        console.warn('无法添加组件：当前页面不存在');
+      // 获取当前页面
+      const page = this.pages.find(p => p.id === this.currentPageId);
+      if (!page) {
+        console.error('无法添加组件：当前页面不存在');
         return;
       }
       
-      const regionIndex = this.pages[pageIndex].regions.findIndex(r => r.id === regionId);
-      if (regionIndex === -1) {
-        console.warn('无法添加组件：目标区域不存在', regionId);
+      // 获取目标区域
+      const region = page.regions.find(r => r.id === regionId);
+      if (!region) {
+        console.error('无法添加组件：区域不存在', regionId);
         return;
       }
       
-      // 获取组件定义
-      const componentDef = baseComponents.find(c => c.id === componentId);
+      // 获取组件定义 - 这里应该从所有组件中查找，而不仅是基础组件
+      const componentDef = getComponentDefinition(componentId);
       if (!componentDef) {
-        console.warn('无法添加组件：组件不存在', componentId);
+        console.error('无法添加组件：组件不存在', componentId);
         return;
       }
       
       // 创建组件实例
-      const componentInstance = createComponentInstance(componentDef);
+      const instance = createComponentInstance(componentDef);
       
       // 添加到区域
-      this.pages[pageIndex].regions[regionIndex].components.push(componentInstance);
+      region.components.push(instance);
       
-      // 选中新添加的组件
-      this.selectedComponentId = componentInstance.id;
-      this.selectedRegionId = null;
-      
-      console.log('组件已添加到区域', componentInstance);
+      // 自动选中新添加的组件
+      this.selectedComponentId = instance.id;
     },
     
     // 移动组件

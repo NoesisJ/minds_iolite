@@ -134,38 +134,97 @@ export const dataComponents: ComponentDefinition[] = [
   }
 ];
 
-// 添加这个图表组件分类
-export const chartComponents: ComponentDefinition[] = [
+// ECharts 图表组件
+export const echartsComponents: ComponentDefinition[] = [
   {
-    id: 'echarts-area',
+    id: 'echarts-line',
     type: 'chart',
-    name: '面积图',
+    name: '折线图',
     icon: 'pi pi-chart-line',
-    category: 'chart',
+    category: 'echarts',
     defaultProps: {
-      chartType: 'area-line',
-      title: '大数据面积图',
-      height: '400px',
-      customClass: 'rounded-lg shadow-md'
+      chartType: 'line',
+      title: '折线图示例',
+      subtitle: '数据分析趋势',
+      height: '350px',
+      xAxisType: 'category',
+      yAxisTitle: '数值',
+      smooth: true,
+      showLegend: true,
+      data: []
     },
     defaultStyles: {
-      marginBottom: '20px'
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
     }
   },
   {
-    id: 'echarts-pie',
+    id: 'echarts-bar',
+    type: 'chart',
+    name: '柱状图',
+    icon: 'pi pi-chart-bar',
+    category: 'echarts',
+    defaultProps: {
+      chartType: 'bar',
+      title: '柱状图示例',
+      subtitle: '数据对比分析',
+      height: '350px',
+      xAxisType: 'category',
+      yAxisTitle: '数值',
+      showLegend: true,
+      data: []
+    },
+    defaultStyles: {
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
+    }
+  }
+];
+
+// Highcharts 图表组件
+export const highchartsComponents: ComponentDefinition[] = [
+  {
+    id: 'highcharts-pie',
     type: 'chart',
     name: '饼图',
     icon: 'pi pi-chart-pie',
-    category: 'chart',
+    category: 'highcharts',
     defaultProps: {
-      chartType: 'basic-pie',
-      title: '数据分布',
+      chartType: 'pie',
+      title: '饼图示例',
+      subtitle: '数据占比分析',
       height: '350px',
-      customClass: 'rounded-lg shadow-md'
+      showLegend: true,
+      enableDataLabels: true,
+      data: []
     },
     defaultStyles: {
-      marginBottom: '20px'
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
+    }
+  },
+  {
+    id: 'highcharts-area',
+    type: 'chart',
+    name: '面积图',
+    icon: 'pi pi-chart-line',
+    category: 'highcharts',
+    defaultProps: {
+      chartType: 'area',
+      title: '面积图示例',
+      subtitle: '累积数据分析',
+      height: '350px',
+      fillOpacity: 0.5,
+      showLegend: true,
+      data: []
+    },
+    defaultStyles: {
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
     }
   }
 ];
@@ -175,7 +234,8 @@ export const allComponents = [
   ...baseComponents,
   ...formComponents,
   ...dataComponents,
-  ...chartComponents
+  ...echartsComponents,
+  ...highchartsComponents
 ];
 
 // 根据类型获取组件定义
@@ -200,5 +260,6 @@ export const componentCategories = [
   { id: 'basic', name: '基础组件' },
   { id: 'form', name: '表单组件' },
   { id: 'data', name: '数据组件' },
-  { id: 'chart', name: '图表组件' }
+  { id: 'echarts', name: 'ECharts图表' },
+  { id: 'highcharts', name: 'Highcharts图表' }
 ]; 

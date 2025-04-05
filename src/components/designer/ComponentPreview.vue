@@ -86,37 +86,51 @@
     <!-- 图表组件 -->
     <template v-else-if="componentType === 'chart'">
       <div class="chart-preview" :style="componentStyles">
-        <div class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600" :style="{height: componentProps.height || '300px'}">
+        <div v-if="chartLoaded" class="chart-container" style="width: 100%; height: 100%;">
+          <!-- 实际图表容器，动态加载图表组件 -->
+          <component :is="getChartComponent(componentProps.chartType)" v-bind="componentProps" />
+        </div>
+        <div v-else class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600" :style="{height: componentProps.height || '300px'}">
           <div class="text-3xl mb-2">
             <i :class="getChartIcon(componentProps.chartType)"></i>
           </div>
-          <div class="text-lg font-medium">{{ componentProps.title || '图表组件' }}</div>
-          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ getChartDescription(componentProps.chartType) }}</div>
+          <div class="text-gray-500 dark:text-gray-400 text-center">
+            <div class="font-medium">{{ getChartName(componentProps.chartType) }}</div>
+            <div class="text-sm mt-1">{{ getChartDescription(componentProps.chartType) }}</div>
+          </div>
         </div>
       </div>
     </template>
     
-    <!-- 未知组件 -->
+    <!-- 未知组件类型 -->
     <template v-else>
-      <div class="unknown-component p-2 bg-gray-100 dark:bg-gray-800 text-center text-sm">
-        未知组件类型：{{ componentType }}
+      <div class="unknown-component p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600">
+        <div class="text-center text-gray-500 dark:text-gray-400">
+          <i class="pi pi-question-circle text-2xl mb-2"></i>
+          <div>未知组件类型: {{ componentType }}</div>
+        </div>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, defineProps } from 'vue';
 import { getComponentDefinition } from '@/data/componentLibrary';
 import { getImageUrl } from '@/assets/imageImports';
+// 导入图表组件
+import EchartsLineWidget from '@/components/widgets/charts/EchartsLineWidget.vue';
+import HighchartsPieWidget from '@/components/widgets/charts/HighchartsPieWidget.vue';
 
-// 组件实例属性
 const props = defineProps({
   component: {
     type: Object,
     required: true
   }
 });
+
+// 图表加载状态
+const chartLoaded = ref(false);
 
 // 组件类型
 const componentType = computed(() => {
@@ -131,6 +145,11 @@ const componentProps = computed(() => {
 
 // 组件样式
 const styles = computed(() => {
+  return props.component.styles || {};
+});
+
+// 组件样式 - 添加这个计算属性
+const componentStyles = computed(() => {
   return props.component.styles || {};
 });
 
@@ -170,29 +189,52 @@ const handleImageError = (e: Event) => {
   }
 };
 
-function getChartIcon(chartType) {
+// 获取图表组件
+function getChartComponent(chartType: string) {
+  if (!chartType) return null;
+  
+  // 根据图表类型返回对应的组件
   switch(chartType) {
-    case 'area-line': return 'pi pi-chart-line';
-    case 'basic-pie': return 'pi pi-chart-pie';
-    case 'interactive-pie-line': return 'pi pi-chart-bar';
-    case 'mix-bar-line': return 'pi pi-chart-bar';
-    case 'radar': return 'pi pi-chart-line';
-    case 'smooth-line': return 'pi pi-chart-line';
-    case 'time-series': return 'pi pi-chart-line';
+    case 'line':
+      return EchartsLineWidget;
+    case 'pie':
+      return HighchartsPieWidget;
+    // 添加更多图表类型...
+    default:
+      return null;
+  }
+}
+
+// 获取图表图标
+function getChartIcon(chartType: string): string {
+  switch(chartType) {
+    case 'line': return 'pi pi-chart-line';
+    case 'bar': return 'pi pi-chart-bar';
+    case 'pie': return 'pi pi-chart-pie';
+    case 'area': return 'pi pi-chart-line';
     default: return 'pi pi-chart-bar';
   }
 }
 
-function getChartDescription(chartType) {
+// 获取图表名称
+function getChartName(chartType: string): string {
   switch(chartType) {
-    case 'area-line': return '大数据面积图';
-    case 'basic-pie': return '基础饼图';
-    case 'interactive-pie-line': return '联动折线饼图';
-    case 'mix-bar-line': return '混合折柱图';
-    case 'radar': return '雷达图';
-    case 'smooth-line': return '平滑折线图';
-    case 'time-series': return '时间轴折线图';
-    default: return '图表组件';
+    case 'line': return '折线图';
+    case 'bar': return '柱状图';
+    case 'pie': return '饼图';
+    case 'area': return '面积图';
+    default: return '图表';
+  }
+}
+
+// 获取图表描述
+function getChartDescription(chartType: string): string {
+  switch(chartType) {
+    case 'line': return '用于展示数据变化趋势';
+    case 'bar': return '用于展示分类数据对比';
+    case 'pie': return '用于展示数据占比分布';
+    case 'area': return '用于展示累积数据趋势';
+    default: return '各类数据可视化图表';
   }
 }
 </script>
@@ -236,5 +278,10 @@ function getChartDescription(chartType) {
 .image-preview img {
   max-width: 100%;
   transition: all 0.3s;
+}
+
+.chart-preview {
+  width: 100%;
+  min-height: 200px;
 }
 </style> 

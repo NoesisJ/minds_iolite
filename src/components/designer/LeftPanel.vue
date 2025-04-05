@@ -96,7 +96,7 @@
               @keydown.enter="savePageTitle(page.id)"
               @blur="savePageTitle(page.id)"
               @click.stop
-              :ref="el => { if (el) inputElement = el }"
+              :ref="el => { if (el) inputElement = el as HTMLInputElement }"
               class="w-full bg-white dark:bg-gray-700 border border-blue-400 dark:border-blue-500 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             
@@ -137,7 +137,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
 import { useDesignerStore } from '@/stores/designerStore';
-import { componentCategories, baseComponents } from '@/data/componentLibrary';
+import { allComponents, componentCategories } from '@/data/componentLibrary';
 import BaseButton from '@/components/Form/Buttons/BaseButton.vue';
 
 const designerStore = useDesignerStore();
@@ -149,21 +149,23 @@ const activeCategory = ref('basic'); // 默认显示基础组件
 // 页面编辑相关状态
 const editingPageId = ref('');
 const editingTitle = ref('');
-let inputElement: HTMLInputElement | null = null;
+const inputElement = ref<HTMLInputElement | null>(null);
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
 
 const filteredComponents = computed(() => {
-  return baseComponents.filter(component => component.category === activeCategory.value);
+  return allComponents.filter(comp => comp.category === activeCategory.value);
 });
 
 // 方法
-const onDragStart = (event, component) => {
+const onDragStart = (event: DragEvent, component: any) => {
   console.log('开始拖拽组件:', component.id);
   // 设置拖动数据
-  event.dataTransfer.setData('componentId', component.id);
-  event.dataTransfer.effectAllowed = 'copy';
+  if (event.dataTransfer) {
+    event.dataTransfer.setData('componentId', component.id);
+    event.dataTransfer.effectAllowed = 'copy';
+  }
 };
 
 const selectPage = (pageId: string) => {
@@ -193,9 +195,9 @@ const startEditingPage = (page: any) => {
   
   // 在下一个更新周期聚焦到输入框
   nextTick(() => {
-    if (inputElement) {
-      inputElement.focus();
-      inputElement.select();
+    if (inputElement.value) {
+      inputElement.value.focus();
+      inputElement.value.select();
     }
   });
 };
@@ -208,7 +210,7 @@ const savePageTitle = (pageId: string) => {
   editingPageId.value = '';
 };
 
-const deletePage = (pageId) => {
+const deletePage = (pageId: string) => {
   if (confirm('确定要删除此页面吗?')) {
     designerStore.deletePage(pageId);
   }
