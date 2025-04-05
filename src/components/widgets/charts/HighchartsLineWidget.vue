@@ -1,5 +1,5 @@
 <template>
-  <div class="highcharts-area-widget">
+  <div class="highcharts-line-widget">
     <div v-if="title" class="chart-title">{{ title }}</div>
     <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div ref="chartRef" :style="{ height: height || '350px' }" class="chart-container"></div>
@@ -14,7 +14,7 @@ const props = defineProps({
   // 图表标题
   title: {
     type: String,
-    default: '面积图示例'
+    default: '折线图示例'
   },
   // 图表副标题
   subtitle: {
@@ -31,10 +31,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  // 面积填充透明度
-  fillOpacity: {
-    type: Number,
-    default: 0.5
+  // Y轴标题
+  yAxisTitle: {
+    type: String,
+    default: '数值'
   },
   // 图表数据
   data: {
@@ -45,6 +45,16 @@ const props = defineProps({
   xAxisData: {
     type: Array,
     default: () => []
+  },
+  // 起始点 - 用于数字X轴
+  pointStart: {
+    type: Number,
+    default: 2010
+  },
+  // 颜色
+  colorPalette: {
+    type: Array,
+    default: () => ['#4E9BFF', '#FF7B92', '#FFC233', '#38BFFF', '#4DE6A8']
   }
 });
 
@@ -85,24 +95,23 @@ const categories = computed(() => {
       // 限制X轴标签数量
       return props.xAxisData.slice(0, 500);
     }
-    return defaultData.categories;
+    return null; // 返回null将使用pointStart
   } catch (error) {
     console.error('X轴数据处理错误:', error);
-    return defaultData.categories;
+    return null;
   }
 });
 
 // 示例数据 - 如果未传入数据则使用
 const defaultData = {
-  categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
   series: [
     {
-      name: '产品A',
-      data: [5, 7, 10, 13, 15, 18, 20, 23, 18, 15, 10, 7]
+      name: '安装与开发',
+      data: [43934, 48656, 65165, 81827, 112143, 142383, 171533]
     },
     {
-      name: '产品B',
-      data: [3, 4, 6, 8, 13, 15, 17, 18, 15, 12, 9, 6]
+      name: '制造业',
+      data: [24916, 37941, 29742, 29851, 32490, 30282, 38121]
     }
   ]
 };
@@ -124,67 +133,99 @@ function initChart() {
 
 // 获取图表配置
 function getChartOptions() {
+  // 暗模式检测
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  const backgroundColor = isDarkMode ? 'transparent' : 'transparent';
+  const textColor = isDarkMode ? '#e5e7eb' : '#333';
+  const gridColor = isDarkMode ? '#4b5563' : '#e5e7eb';
+
   return {
     chart: {
-      type: 'area',
-      backgroundColor: 'transparent',
-      animation: false, // 禁用动画可以提高性能
+      type: 'line',
+      backgroundColor: backgroundColor,
+      animation: false, // 禁用动画提高性能
       zoomType: 'x',    // 允许用户放大查看细节
-      panning: true,    // 启用平移
-      panKey: 'shift'   // 按下shift键时可以平移
+      style: {
+        fontFamily: 'Arial, sans-serif',
+        color: textColor
+      }
     },
+    colors: props.colorPalette,
     title: {
       text: props.title,
+      align: 'left',
       style: {
-        fontSize: '16px'
+        color: textColor,
+        fontWeight: 'bold'
       }
     },
     subtitle: {
       text: props.subtitle,
+      align: 'left',
       style: {
-        fontSize: '14px'
-      }
-    },
-    xAxis: {
-      categories: categories.value,
-      crosshair: true,
-      labels: {
-        // 如果有很多标签，只显示部分
-        step: Math.max(1, Math.floor(categories.value.length / 20))
+        color: textColor
       }
     },
     yAxis: {
       title: {
-        text: '数值'
-      }
-    },
-    tooltip: {
-      shared: true,
-      valueSuffix: ' 单位'
-    },
-    plotOptions: {
-      area: {
-        fillOpacity: props.fillOpacity,
-        marker: {
-          radius: 4,
-          lineWidth: 1,
-          // 大数据集时，只在鼠标悬停时显示点标记
-          enabled: processedData.value[0]?.data.length < 30
-        },
-        // 优化大数据集的性能
-        threshold: null
+        text: props.yAxisTitle,
+        style: {
+          color: textColor
+        }
       },
-      series: {
-        turboThreshold: 2000 // 增加阈值，但不要太大
+      labels: {
+        style: {
+          color: textColor
+        }
+      },
+      gridLineColor: gridColor
+    },
+    xAxis: {
+      categories: categories.value,
+      labels: {
+        style: {
+          color: textColor
+        },
+        // 如果有很多标签，只显示部分
+        step: categories.value ? Math.max(1, Math.floor(categories.value.length / 20)) : 1
       }
     },
     legend: {
       enabled: props.showLegend,
       layout: 'horizontal',
       align: 'center',
-      verticalAlign: 'bottom'
+      verticalAlign: 'bottom',
+      itemStyle: {
+        color: textColor
+      }
+    },
+    plotOptions: {
+      series: {
+        label: {
+          connectorAllowed: false
+        },
+        pointStart: props.pointStart,
+        marker: {
+          // 大数据集时，只在鼠标悬停时显示点标记
+          enabled: processedData.value[0]?.data.length < 30
+        }
+      }
     },
     series: processedData.value,
+    responsive: {
+      rules: [{
+        condition: {
+          maxWidth: 500
+        },
+        chartOptions: {
+          legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'bottom'
+          }
+        }
+      }]
+    },
     credits: {
       enabled: false
     },
@@ -237,7 +278,8 @@ watch(
     props.title,
     props.subtitle,
     props.showLegend,
-    props.fillOpacity
+    props.yAxisTitle,
+    props.colorPalette
   ],
   () => {
     try {
@@ -274,7 +316,7 @@ watch(
 </script>
 
 <style scoped>
-.highcharts-area-widget {
+.highcharts-line-widget {
   width: 100%;
 }
 

@@ -23,6 +23,8 @@ import EchartsMixBarLineWidget from './charts/EchartsMixBarLineWidget.vue';
 import EchartsInteractivePieLineWidget from './charts/EchartsInteractivePieLineWidget.vue';
 import HighchartsPieWidget from './charts/HighchartsPieWidget.vue';
 import HighchartsAreaWidget from './charts/HighchartsAreaWidget.vue';
+import HighchartsLineWidget from './charts/HighchartsLineWidget.vue';
+import HighchartsColumnWidget from './charts/HighchartsColumnWidget.vue';
 
 const props = defineProps({
   // 图表类型: line, bar, pie, area 等
@@ -118,6 +120,10 @@ function getChartComponent(chartType: string) {
       return EchartsMixBarLineWidget;
     case 'interactivePieLine':
       return EchartsInteractivePieLineWidget;
+    case 'highchartsLine':
+      return HighchartsLineWidget;
+    case 'highchartsColumn':
+      return HighchartsColumnWidget;
     case 'highchartsPie':
       return HighchartsPieWidget;
     case 'area':

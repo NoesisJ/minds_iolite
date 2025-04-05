@@ -410,6 +410,70 @@ export const highchartsComponents: ComponentDefinition[] = [
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
       borderRadius: '4px'
     }
+  },
+  {
+    id: 'highcharts-line',
+    type: 'chart',
+    name: '聚点折线图',
+    icon: 'pi pi-chart-line',
+    category: 'highcharts',
+    defaultProps: {
+      chartType: 'highchartsLine',
+      title: '聚点折线图示例',
+      subtitle: '趋势变化分析',
+      height: '350px',
+      showLegend: true,
+      yAxisTitle: '数值',
+      pointStart: 2015,
+      data: [
+        {
+          name: '安装与开发',
+          data: [43934, 48656, 65165, 81827, 112143, 142383, 171533]
+        },
+        {
+          name: '制造业',
+          data: [24916, 37941, 29742, 29851, 32490, 30282, 38121]
+        }
+      ]
+    },
+    defaultStyles: {
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
+    }
+  },
+  {
+    id: 'highcharts-column',
+    type: 'chart',
+    name: '条形图',
+    icon: 'pi pi-chart-bar',
+    category: 'highcharts',
+    defaultProps: {
+      chartType: 'highchartsColumn',
+      title: '条形图示例',
+      subtitle: '分类数据对比',
+      height: '350px',
+      showLegend: false,
+      yAxisTitle: '数值',
+      seriesName: '数据',
+      colorByPoint: true,
+      dataLabelsEnabled: true,
+      dataLabelsRotation: -90,
+      tooltipFormat: '数值: <b>{point.y:.1f}</b>',
+      labelsSuffix: '',
+      data: [
+        ['东京', 37.33],
+        ['德里', 31.18],
+        ['上海', 27.79],
+        ['圣保罗', 22.23],
+        ['墨西哥城', 21.91]
+      ]
+    },
+    defaultStyles: {
+      margin: '10px 0',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      borderRadius: '4px'
+    }
   }
 ];
 

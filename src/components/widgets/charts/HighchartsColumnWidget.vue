@@ -1,5 +1,5 @@
 <template>
-  <div class="highcharts-area-widget">
+  <div class="highcharts-column-widget">
     <div v-if="title" class="chart-title">{{ title }}</div>
     <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div ref="chartRef" :style="{ height: height || '350px' }" class="chart-container"></div>
@@ -14,7 +14,7 @@ const props = defineProps({
   // 图表标题
   title: {
     type: String,
-    default: '面积图示例'
+    default: '条形图示例'
   },
   // 图表副标题
   subtitle: {
@@ -29,22 +29,57 @@ const props = defineProps({
   // 是否显示图例
   showLegend: {
     type: Boolean,
-    default: true
+    default: false
   },
-  // 面积填充透明度
-  fillOpacity: {
-    type: Number,
-    default: 0.5
+  // Y轴标题
+  yAxisTitle: {
+    type: String,
+    default: '数值'
   },
-  // 图表数据
+  // 系列名称
+  seriesName: {
+    type: String,
+    default: '数据'
+  },
+  // 图表数据 - 格式为[['名称', 数值], ['名称', 数值], ...]
   data: {
     type: Array,
     default: () => []
   },
-  // X轴数据
-  xAxisData: {
+  // 是否按点着色
+  colorByPoint: {
+    type: Boolean,
+    default: true
+  },
+  // 数据标签是否启用
+  dataLabelsEnabled: {
+    type: Boolean,
+    default: true
+  },
+  // 数据标签旋转角度
+  dataLabelsRotation: {
+    type: Number,
+    default: -90
+  },
+  // 颜色
+  colorPalette: {
     type: Array,
-    default: () => []
+    default: () => [
+      '#9b20d9', '#9215ac', '#861ec9', '#7a17e6', '#7010f9', '#691af3',
+      '#6225ed', '#5b30e7', '#533be1', '#4c46db', '#4551d5', '#3e5ccf',
+      '#3667c9', '#2f72c3', '#277dbd', '#1f88b7', '#1693b1', '#0a9eaa',
+      '#03c69b', '#00f194'
+    ]
+  },
+  // 提示框格式
+  tooltipFormat: {
+    type: String,
+    default: '{point.y:.1f}'
+  },
+  // 标签后缀
+  labelsSuffix: {
+    type: String,
+    default: ''
   }
 });
 
@@ -57,55 +92,33 @@ let chartInstance = null;
 const processedData = computed(() => {
   try {
     if (!props.data || !Array.isArray(props.data) || props.data.length === 0) {
-      return defaultData.series;
+      return defaultData;
     }
     
     // 检查数据格式，防止格式错误导致页面卡死
-    return props.data.map(series => {
-      // 确保data是数组
-      const seriesData = Array.isArray(series.data) ? series.data : [];
-      // 限制数据点数量，防止过多数据点导致卡顿
-      const limitedData = seriesData.slice(0, 500);
-      
-      return {
-        name: series.name || '未命名系列',
-        data: limitedData
-      };
-    });
+    const result = [];
+    for (let i = 0; i < Math.min(props.data.length, 50); i++) { // 限制最多50个柱子
+      const item = props.data[i];
+      if (Array.isArray(item) && item.length >= 2) {
+        result.push([String(item[0]), Number(item[1]) || 0]);
+      }
+    }
+    
+    return result.length > 0 ? result : defaultData;
   } catch (error) {
     console.error('图表数据处理错误:', error);
-    return defaultData.series;
-  }
-});
-
-// 处理X轴数据
-const categories = computed(() => {
-  try {
-    if (props.xAxisData && Array.isArray(props.xAxisData) && props.xAxisData.length > 0) {
-      // 限制X轴标签数量
-      return props.xAxisData.slice(0, 500);
-    }
-    return defaultData.categories;
-  } catch (error) {
-    console.error('X轴数据处理错误:', error);
-    return defaultData.categories;
+    return defaultData;
   }
 });
 
 // 示例数据 - 如果未传入数据则使用
-const defaultData = {
-  categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-  series: [
-    {
-      name: '产品A',
-      data: [5, 7, 10, 13, 15, 18, 20, 23, 18, 15, 10, 7]
-    },
-    {
-      name: '产品B',
-      data: [3, 4, 6, 8, 13, 15, 17, 18, 15, 12, 9, 6]
-    }
-  ]
-};
+const defaultData = [
+  ['东京', 37.33],
+  ['德里', 31.18],
+  ['上海', 27.79],
+  ['圣保罗', 22.23],
+  ['墨西哥城', 21.91]
+];
 
 // 初始化图表，使用try-catch防止错误
 function initChart() {
@@ -124,67 +137,104 @@ function initChart() {
 
 // 获取图表配置
 function getChartOptions() {
+  // 暗模式检测
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  const backgroundColor = isDarkMode ? 'transparent' : 'transparent';
+  const textColor = isDarkMode ? '#e5e7eb' : '#333';
+  const gridColor = isDarkMode ? '#4b5563' : '#e5e7eb';
+  
   return {
     chart: {
-      type: 'area',
-      backgroundColor: 'transparent',
-      animation: false, // 禁用动画可以提高性能
-      zoomType: 'x',    // 允许用户放大查看细节
-      panning: true,    // 启用平移
-      panKey: 'shift'   // 按下shift键时可以平移
+      type: 'column',
+      backgroundColor: backgroundColor,
+      animation: false, // 禁用动画提高性能
+      style: {
+        fontFamily: 'Arial, sans-serif',
+        color: textColor
+      }
     },
     title: {
       text: props.title,
       style: {
-        fontSize: '16px'
+        color: textColor,
+        fontWeight: 'bold'
       }
     },
     subtitle: {
       text: props.subtitle,
       style: {
-        fontSize: '14px'
+        color: textColor
       }
     },
     xAxis: {
-      categories: categories.value,
-      crosshair: true,
+      type: 'category',
       labels: {
-        // 如果有很多标签，只显示部分
-        step: Math.max(1, Math.floor(categories.value.length / 20))
+        autoRotation: [-45, -90],
+        style: {
+          fontSize: '13px',
+          fontFamily: 'Verdana, sans-serif',
+          color: textColor
+        }
       }
     },
     yAxis: {
+      min: 0,
       title: {
-        text: '数值'
+        text: props.yAxisTitle,
+        style: {
+          color: textColor
+        }
+      },
+      labels: {
+        style: {
+          color: textColor
+        }
+      },
+      gridLineColor: gridColor
+    },
+    legend: {
+      enabled: props.showLegend,
+      itemStyle: {
+        color: textColor
       }
     },
     tooltip: {
-      shared: true,
-      valueSuffix: ' 单位'
+      pointFormat: props.tooltipFormat,
+      backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+      style: {
+        color: textColor
+      }
     },
     plotOptions: {
-      area: {
-        fillOpacity: props.fillOpacity,
-        marker: {
-          radius: 4,
-          lineWidth: 1,
-          // 大数据集时，只在鼠标悬停时显示点标记
-          enabled: processedData.value[0]?.data.length < 30
-        },
-        // 优化大数据集的性能
-        threshold: null
+      column: {
+        borderRadius: 3,
+        pointPadding: 0.2,
+        groupPadding: 0.1
       },
       series: {
         turboThreshold: 2000 // 增加阈值，但不要太大
       }
     },
-    legend: {
-      enabled: props.showLegend,
-      layout: 'horizontal',
-      align: 'center',
-      verticalAlign: 'bottom'
-    },
-    series: processedData.value,
+    series: [{
+      name: props.seriesName,
+      colors: props.colorPalette,
+      colorByPoint: props.colorByPoint,
+      data: processedData.value,
+      dataLabels: {
+        enabled: props.dataLabelsEnabled,
+        rotation: props.dataLabelsRotation,
+        color: isDarkMode ? '#e5e7eb' : '#333',
+        inside: true,
+        verticalAlign: 'top',
+        format: `{point.y:.1f}${props.labelsSuffix}`, // 格式化，带后缀
+        y: 10, // 从顶部向下10像素
+        style: {
+          fontSize: '13px',
+          fontFamily: 'Verdana, sans-serif',
+          textOutline: '1px contrast' // 提高文字可见度
+        }
+      }
+    }],
     credits: {
       enabled: false
     },
@@ -237,7 +287,13 @@ watch(
     props.title,
     props.subtitle,
     props.showLegend,
-    props.fillOpacity
+    props.yAxisTitle,
+    props.colorByPoint,
+    props.dataLabelsEnabled,
+    props.dataLabelsRotation,
+    props.labelsSuffix,
+    props.tooltipFormat,
+    props.seriesName
   ],
   () => {
     try {
@@ -253,7 +309,7 @@ watch(
 // 单独监听数据变化，使用防抖处理
 let updateTimeout = null;
 watch(
-  () => [props.data, props.xAxisData],
+  () => props.data,
   () => {
     if (updateTimeout) {
       clearTimeout(updateTimeout);
@@ -274,7 +330,7 @@ watch(
 </script>
 
 <style scoped>
-.highcharts-area-widget {
+.highcharts-column-widget {
   width: 100%;
 }
 
