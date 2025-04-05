@@ -115,12 +115,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from 'vue';
+import { ref, computed, defineProps, onMounted } from 'vue';
 import { getComponentDefinition } from '@/data/componentLibrary';
 import { getImageUrl } from '@/assets/imageImports';
 // 导入图表组件
 import EchartsLineWidget from '@/components/widgets/charts/EchartsLineWidget.vue';
+import EchartsBarWidget from '@/components/widgets/charts/EchartsBarWidget.vue';
+import EchartsPieWidget from '@/components/widgets/charts/EchartsPieWidget.vue';
+import EchartsRadarWidget from '@/components/widgets/charts/EchartsRadarWidget.vue';
+import EchartsSmoothLineWidget from '@/components/widgets/charts/EchartsSmoothLineWidget.vue';
+import EchartsMixBarLineWidget from '@/components/widgets/charts/EchartsMixBarLineWidget.vue';
+import EchartsInteractivePieLineWidget from '@/components/widgets/charts/EchartsInteractivePieLineWidget.vue';
 import HighchartsPieWidget from '@/components/widgets/charts/HighchartsPieWidget.vue';
+import HighchartsAreaWidget from '@/components/widgets/charts/HighchartsAreaWidget.vue';
 
 const props = defineProps({
   component: {
@@ -130,7 +137,7 @@ const props = defineProps({
 });
 
 // 图表加载状态
-const chartLoaded = ref(false);
+const chartLoaded = ref(true);
 
 // 组件类型
 const componentType = computed(() => {
@@ -197,9 +204,22 @@ function getChartComponent(chartType: string) {
   switch(chartType) {
     case 'line':
       return EchartsLineWidget;
+    case 'bar':
+      return EchartsBarWidget;
     case 'pie':
+      return EchartsPieWidget;
+    case 'radar':
+      return EchartsRadarWidget;
+    case 'smoothLine':
+      return EchartsSmoothLineWidget;
+    case 'mixBarLine':
+      return EchartsMixBarLineWidget;
+    case 'interactivePieLine':
+      return EchartsInteractivePieLineWidget;
+    case 'highchartsPie':
       return HighchartsPieWidget;
-    // 添加更多图表类型...
+    case 'area':
+      return HighchartsAreaWidget;
     default:
       return null;
   }
@@ -211,7 +231,11 @@ function getChartIcon(chartType: string): string {
     case 'line': return 'pi pi-chart-line';
     case 'bar': return 'pi pi-chart-bar';
     case 'pie': return 'pi pi-chart-pie';
+    case 'radar': return 'pi pi-chart-pie';
+    case 'smoothLine': return 'pi pi-chart-line';
     case 'area': return 'pi pi-chart-line';
+    case 'mixBarLine': return 'pi pi-chart-bar';
+    case 'interactivePieLine': return 'pi pi-chart-pie';
     default: return 'pi pi-chart-bar';
   }
 }
@@ -222,7 +246,11 @@ function getChartName(chartType: string): string {
     case 'line': return '折线图';
     case 'bar': return '柱状图';
     case 'pie': return '饼图';
+    case 'radar': return '雷达图';
+    case 'smoothLine': return '平滑折线图';
     case 'area': return '面积图';
+    case 'mixBarLine': return '柱状折线混合图';
+    case 'interactivePieLine': return '交互式饼图折线图';
     default: return '图表';
   }
 }
@@ -233,7 +261,11 @@ function getChartDescription(chartType: string): string {
     case 'line': return '用于展示数据变化趋势';
     case 'bar': return '用于展示分类数据对比';
     case 'pie': return '用于展示数据占比分布';
-    case 'area': return '用于展示累积数据趋势';
+    case 'radar': return '用于多维数据比较分析';
+    case 'smoothLine': return '用于平滑展示数据趋势变化';
+    case 'area': return '用于展示数据范围及趋势';
+    case 'mixBarLine': return '用于展示对比数据及趋势';
+    case 'interactivePieLine': return '用于展示关联数据的交互分析';
     default: return '各类数据可视化图表';
   }
 }
