@@ -69,6 +69,9 @@ export function loadPublishedPages() {
         path: page.route,
         name: `published-${page.id}`,
         component: () => import('@/views/PublishedPageRenderer.vue'),
+        props: (route) => ({ 
+          pageId: page.id 
+        }),
         meta: {
           pageId: page.id,
           isPublished: true,
@@ -82,7 +85,7 @@ export function loadPublishedPages() {
           router.removeRoute(`published-${page.id}`);
         }
         router.addRoute(route);
-        console.log(`动态添加路由成功: ${page.route}`);
+        console.log(`动态添加路由成功: ${page.route} (ID: ${page.id})`);
       } catch (err) {
         console.error(`添加路由失败: ${page.route}`, err);
       }

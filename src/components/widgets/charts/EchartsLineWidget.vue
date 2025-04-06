@@ -113,9 +113,41 @@ function initChart() {
 function updateChartOption() {
   if (!chartInstance) return;
 
-  // 使用传入的数据或默认数据
-  const chartData =
-    props.data && props.data.length > 0 ? props.data : defaultData;
+  let chartData;
+
+  // 检查数据格式并进行适配
+  if (props.data && props.data.length > 0) {
+    // 检查数据格式：如果是简单数组，转换为需要的格式
+    if (Array.isArray(props.data) && typeof props.data[0] !== 'object') {
+      // 简单数组格式 [1, 2, 3, 4, 5]
+      chartData = {
+        xAxisData: Array.from({ length: props.data.length }, (_, i) => `项目${i+1}`),
+        series: [{
+          name: '数值',
+          data: props.data
+        }]
+      };
+    } 
+    // 检查是否是series数组格式 [{name:'系列1',data:[...]}, {name:'系列2',data:[...]}]
+    else if (Array.isArray(props.data) && props.data[0] && 'data' in props.data[0]) {
+      chartData = {
+        xAxisData: Array.from({ length: props.data[0].data.length }, (_, i) => `项目${i+1}`),
+        series: props.data
+      };
+    }
+    // 标准格式 {xAxisData: [...], series: [...]}
+    else if (props.data.xAxisData || props.data.series) {
+      chartData = props.data;
+    }
+    // 无法识别的格式，使用默认数据
+    else {
+      console.warn('无法识别的数据格式，使用默认数据', props.data);
+      chartData = defaultData;
+    }
+  } else {
+    // 没有数据，使用默认数据
+    chartData = defaultData;
+  }
 
   // 确保chartData.series存在
   if (!chartData.series || !Array.isArray(chartData.series)) {
