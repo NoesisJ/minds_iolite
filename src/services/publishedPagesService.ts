@@ -62,34 +62,16 @@ export function loadPublishedPages() {
     // 清空现有动态菜单
     menuStore.clearMenuItems();
     
-    // 首先移除所有已注册的动态路由
-    try {
-      const routes = router.getRoutes();
-      routes.forEach(route => {
-        if (route.name && String(route.name).startsWith('published-')) {
-          router.removeRoute(route.name);
-        }
-      });
-    } catch (err) {
-      console.error('移除现有路由失败:', err);
-    }
-    
     // 遍历所有已发布页面
     publishedPages.forEach((page: PublishedPage) => {
-      // 只注册数据结构完整的页面
-      if (!page.pageData || !page.pageData.regions) {
-        console.warn('页面数据结构不完整，跳过注册:', page.id, page.title);
-        return;
-      }
-      
       // 1. 动态注册路由
       const route: RouteRecordRaw = {
         path: page.route,
         name: `published-${page.id}`,
         component: () => import('@/views/PublishedPageRenderer.vue'),
-        props: { 
+        props: (route) => ({ 
           pageId: page.id 
-        },
+        }),
         meta: {
           pageId: page.id,
           isPublished: true,
@@ -97,8 +79,11 @@ export function loadPublishedPages() {
         }
       };
       
-      // 添加路由
+      // 避免路由重复添加
       try {
+        if (router.hasRoute(`published-${page.id}`)) {
+          router.removeRoute(`published-${page.id}`);
+        }
         router.addRoute(route);
         console.log(`动态添加路由成功: ${page.route} (ID: ${page.id})`);
       } catch (err) {
