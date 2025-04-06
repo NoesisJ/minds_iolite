@@ -108,53 +108,94 @@ function initChart() {
 function updateChartOption() {
   if (!chartInstance) return;
 
-  // 使用传入的数据或默认数据
-  const chartData =
-    props.data && props.data.length > 0 ? props.data : defaultData;
+  try {
+    let processedData = { xAxisData: [], series: [] };
 
-  // 图表配置
-  const option = {
-    title: {
-      text: props.title,
-      subtext: props.subtitle,
-      left: "center",
-    },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "shadow",
+    // 处理不同格式的数据
+    if (props.data && props.data.length > 0) {
+      // 检查数据格式
+      if (Array.isArray(props.data[0]) || typeof props.data[0] === 'number') {
+        // 简单数组格式 [1, 2, 3, 4, 5]
+        processedData = {
+          xAxisData: Array.from({ length: props.data.length }, (_, i) => `项目${i+1}`),
+          series: [{
+            name: '数值',
+            data: props.data
+          }]
+        };
+      } else if (props.data[0] && typeof props.data[0] === 'object' && 'name' in props.data[0] && 'data' in props.data[0]) {
+        // 系列数组格式 [{name: '系列1', data: [...]}, {name: '系列2', data: [...]}]
+        const firstSeriesLength = props.data[0].data.length;
+        processedData = {
+          xAxisData: Array.from({ length: firstSeriesLength }, (_, i) => `项目${i+1}`),
+          series: props.data
+        };
+      } else if (props.data.xAxisData && props.data.series) {
+        // 标准对象格式 {xAxisData: [...], series: [...]}
+        processedData = props.data;
+      } else {
+        console.warn('无法识别的数据格式，使用默认数据');
+        processedData = defaultData;
+      }
+    } else {
+      processedData = defaultData;
+    }
+
+    // 确保 xAxisData 和 series 都存在
+    if (!processedData.xAxisData) {
+      processedData.xAxisData = [];
+    }
+
+    if (!Array.isArray(processedData.series)) {
+      processedData.series = [];
+    }
+
+    // 图表配置
+    const option = {
+      title: {
+        text: props.title,
+        subtext: props.subtitle,
+        left: "center",
       },
-    },
-    legend: {
-      show: props.showLegend,
-      top: "bottom",
-      data: chartData.series.map((item) => item.name),
-    },
-    grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "15%",
-      top: props.subtitle ? "15%" : "10%",
-      containLabel: true,
-    },
-    xAxis: {
-      type: props.xAxisType,
-      data: chartData.xAxisData,
-    },
-    yAxis: {
-      type: "value",
-      name: props.yAxisTitle,
-    },
-    series: chartData.series.map((item) => ({
-      name: item.name,
-      type: "bar",
-      barWidth: "40%",
-      data: item.data,
-    })),
-  };
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      legend: {
+        show: props.showLegend,
+        top: "bottom",
+        data: processedData.series.map((item) => item.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "15%",
+        top: props.subtitle ? "15%" : "10%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: props.xAxisType,
+        data: processedData.xAxisData,
+      },
+      yAxis: {
+        type: "value",
+        name: props.yAxisTitle,
+      },
+      series: processedData.series.map((item) => ({
+        name: item.name,
+        type: "bar",
+        barWidth: "40%",
+        data: item.data,
+      })),
+    };
 
-  // 设置图表配置
-  chartInstance.setOption(option);
+    // 设置图表配置
+    chartInstance.setOption(option);
+  } catch (error) {
+    console.error('更新图表配置时出错:', error);
+  }
 }
 
 // 调整图表大小
