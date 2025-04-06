@@ -1,6 +1,12 @@
 <template>
   <div class="published-page-container">
-    <div v-if="pageData" class="page-content">
+    <div v-if="isLoading" class="loading-state">
+      <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+        <i class="pi pi-spin pi-spinner text-5xl mb-4"></i>
+        <div class="text-xl mb-2">加载中...</div>
+      </div>
+    </div>
+    <div v-else-if="pageData && pageData.regions" class="page-content">
       <div 
         v-for="(region, index) in pageData.regions" 
         :key="index" 
@@ -12,9 +18,9 @@
           class="component-wrapper"
         >
           <component 
-            :is="getComponentType(component.type)" 
-            v-bind="component.props" 
-            :style="component.styles"
+            :is="safeGetComponentType(component.type)" 
+            v-bind="component.props || {}" 
+            :style="component.styles || {}"
           />
         </div>
       </div>
@@ -30,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { getComponentType } from '@/utils/componentUtils';
 
@@ -43,42 +49,72 @@ const props = defineProps({
 
 const route = useRoute();
 const pageData = ref(null);
+const isLoading = ref(true);
+
+// 安全获取组件类型
+function safeGetComponentType(type) {
+  try {
+    return getComponentType(type);
+  } catch (error) {
+    console.error(`获取组件类型失败: ${type}`, error);
+    return 'div'; // 使用安全的fallback
+  }
+}
 
 // 加载页面数据函数
-function loadPageData() {
-  // 从存储中获取发布的页面数据
-  const publishedPages = JSON.parse(localStorage.getItem('published_pages') || '[]');
-  
-  // 优先使用props中的pageId
-  let pageId = props.pageId;
-  
-  // 如果props中没有，则尝试从路由元数据中获取
-  if (!pageId && route.meta && route.meta.pageId) {
-    pageId = route.meta.pageId;
-  }
-  
-  let page;
-  
-  if (pageId) {
-    // 通过ID查找页面
-    page = publishedPages.find(p => p.id === pageId);
-    console.log('通过ID查找页面:', pageId, page ? '找到' : '未找到');
-  }
-  
-  // 如果没有找到，使用路径匹配（作为备用方法）
-  if (!page) {
-    page = publishedPages.find(p => p.route === route.path);
-    console.log('通过路径查找页面:', route.path, page ? '找到' : '未找到');
-  }
-  
-  if (page) {
-    console.log('加载页面:', page.title, 'ID:', page.id);
-    pageData.value = page.pageData;
-    // 设置页面标题
-    document.title = page.title || '发布页面';
-  } else {
-    console.error('未找到页面, 路径:', route.path, '页面ID:', pageId);
+async function loadPageData() {
+  try {
+    isLoading.value = true;
+    
+    // 从存储中获取发布的页面数据
+    const publishedPages = JSON.parse(localStorage.getItem('published_pages') || '[]');
+    
+    // 优先使用props中的pageId
+    let pageId = props.pageId;
+    
+    // 如果props中没有，则尝试从路由元数据中获取
+    if (!pageId && route.meta && route.meta.pageId) {
+      pageId = route.meta.pageId;
+    }
+    
+    let page;
+    
+    if (pageId) {
+      // 通过ID查找页面
+      page = publishedPages.find(p => p.id === pageId);
+      console.log('通过ID查找页面:', pageId, page ? '找到' : '未找到');
+    }
+    
+    // 如果没有找到，使用路径匹配（作为备用方法）
+    if (!page) {
+      page = publishedPages.find(p => p.route === route.path);
+      console.log('通过路径查找页面:', route.path, page ? '找到' : '未找到');
+    }
+    
+    // 等待下一个DOM更新周期
+    await nextTick();
+    
+    if (page) {
+      console.log('加载页面:', page.title, 'ID:', page.id);
+      
+      // 确保页面数据有效
+      if (!page.pageData || !page.pageData.regions) {
+        console.error('页面数据结构无效:', page);
+        pageData.value = null;
+      } else {
+        pageData.value = page.pageData;
+        // 设置页面标题
+        document.title = page.title || '发布页面';
+      }
+    } else {
+      console.error('未找到页面, 路径:', route.path, '页面ID:', pageId);
+      pageData.value = null;
+    }
+  } catch (error) {
+    console.error('加载页面数据出错:', error);
     pageData.value = null;
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -115,7 +151,7 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
-.error-message {
+.error-message, .loading-state {
   text-align: center;
   padding: 40px 0;
 }

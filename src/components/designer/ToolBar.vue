@@ -95,16 +95,6 @@
       </base-button>
 
       <base-button
-        status="info"
-        size="small"
-        @click="openManagePublishedPagesDialog"
-        class="flex items-center"
-      >
-        <i class="pi pi-list mr-1.5"></i>
-        <span class="text-white">管理已发布页面</span>
-      </base-button>
-
-      <base-button
         status="default"
         size="small"
         @click="openViewer"
@@ -164,13 +154,6 @@
     @close="showPublishToSidebarDialog = false"
     @publish-success="handlePublishToSidebarSuccess"
   />
-  
-  <!-- 管理已发布页面对话框 -->
-  <ManagePublishedPagesDialog
-    :show="showManagePublishedPagesDialog"
-    @close="showManagePublishedPagesDialog = false"
-    @unpublish-success="handleUnpublishSuccess"
-  />
 </template>
 
 <script setup lang="ts">
@@ -180,7 +163,6 @@ import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import PreviewModal from "./PreviewModal.vue";
 import PublishDialog from "./PublishDialog.vue";
 import PublishToSidebarDialog from "./PublishToSidebarDialog.vue";
-import ManagePublishedPagesDialog from "./ManagePublishedPagesDialog.vue";
 import { useRouter } from "vue-router";
 
 const designerStore = useDesignerStore();
@@ -192,7 +174,6 @@ const isDarkMode = ref(false);
 const showPreview = ref(false);
 const showPublishDialog = ref(false);
 const showPublishToSidebarDialog = ref(false);
-const showManagePublishedPagesDialog = ref(false);
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -289,18 +270,9 @@ const openPublishToSidebarDialog = () => {
   showPublishToSidebarDialog.value = true;
 };
 
-const openManagePublishedPagesDialog = () => {
-  showManagePublishedPagesDialog.value = true;
-};
-
 const handlePublishToSidebarSuccess = (publishedPage: any) => {
   console.log('页面已发布到侧边栏:', publishedPage);
   alert(`页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`);
-};
-
-const handleUnpublishSuccess = (page: any) => {
-  console.log('页面已取消发布:', page);
-  alert(`页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`);
 };
 
 // 初始化主题
