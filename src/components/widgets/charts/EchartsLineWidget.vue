@@ -117,6 +117,20 @@ function updateChartOption() {
   const chartData =
     props.data && props.data.length > 0 ? props.data : defaultData;
 
+  // 确保chartData.series存在
+  if (!chartData.series || !Array.isArray(chartData.series)) {
+    console.error("Chart data format error: series array is missing or invalid", chartData);
+    // 使用默认数据
+    chartData.series = defaultData.series;
+  }
+
+  // 确保chartData.xAxisData存在
+  if (!chartData.xAxisData || !Array.isArray(chartData.xAxisData)) {
+    console.error("Chart data format error: xAxisData array is missing or invalid", chartData);
+    // 使用默认数据
+    chartData.xAxisData = defaultData.xAxisData;
+  }
+
   // 图表配置
   const option = {
     title: {

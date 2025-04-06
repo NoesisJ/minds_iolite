@@ -84,6 +84,17 @@
       </base-button>
 
       <base-button
+        status="success"
+        size="small"
+        @click="openPublishToSidebarDialog"
+        :disabled="!currentPageId"
+        class="flex items-center"
+      >
+        <i class="pi pi-share-alt mr-1.5"></i>
+        <span class="text-white">发布到侧边栏</span>
+      </base-button>
+
+      <base-button
         status="default"
         size="small"
         @click="openViewer"
@@ -136,6 +147,13 @@
 
   <!-- 发布对话框 -->
   <PublishDialog :show="showPublishDialog" @close="closePublishDialog" />
+  
+  <!-- 发布到侧边栏对话框 -->
+  <PublishToSidebarDialog 
+    :show="showPublishToSidebarDialog" 
+    @close="showPublishToSidebarDialog = false"
+    @publish-success="handlePublishToSidebarSuccess"
+  />
 </template>
 
 <script setup lang="ts">
@@ -144,6 +162,7 @@ import { useDesignerStore } from "@/stores/designerStore";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import PreviewModal from "./PreviewModal.vue";
 import PublishDialog from "./PublishDialog.vue";
+import PublishToSidebarDialog from "./PublishToSidebarDialog.vue";
 import { useRouter } from "vue-router";
 
 const designerStore = useDesignerStore();
@@ -154,6 +173,7 @@ const showPageMenu = ref(false);
 const isDarkMode = ref(false);
 const showPreview = ref(false);
 const showPublishDialog = ref(false);
+const showPublishToSidebarDialog = ref(false);
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -246,6 +266,15 @@ const closePublishDialog = () => {
   showPublishDialog.value = false;
 };
 
+const openPublishToSidebarDialog = () => {
+  showPublishToSidebarDialog.value = true;
+};
+
+const handlePublishToSidebarSuccess = (publishedPage: any) => {
+  console.log('页面已发布到侧边栏:', publishedPage);
+  alert(`页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`);
+};
+
 // 初始化主题
 onMounted(() => {
   const savedTheme = localStorage.getItem("darkMode");
@@ -255,8 +284,9 @@ onMounted(() => {
   }
 
   // 点击外部关闭下拉菜单
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".relative") && showPageMenu.value) {
+  document.addEventListener("click", (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest(".relative") && showPageMenu.value) {
       showPageMenu.value = false;
     }
   });
