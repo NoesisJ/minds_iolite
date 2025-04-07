@@ -1,9 +1,8 @@
 <template>
-  <div class="h-full flex flex-col bg-[#404040] text-white">
+  <div class="h-full flex flex-col text-white">
     <!-- 顶部标题栏 -->
-    <header
-      class="flex justify-between items-center px-4 py-3 border-b border-gray-700"
-    >
+    <header class="flex justify-between items-center px-3 py-2">
+      <!-- 选型 -->
       <div class="flex items-center gap-4">
         <!-- 下拉历史记录按钮 -->
         <Dropdown
@@ -15,13 +14,12 @@
         >
           <template #value="{ value }">
             <div class="flex items-center">
-              <h1 class="text-md font-medium mr-2">历史记录</h1>
-              <i class="pi pi-angle-down text-gray-400"></i>
+              <span>{{ value ? value.title : "AI助手" }}</span>
             </div>
           </template>
           <template #option="slotProps">
             <div class="flex items-center py-1">
-              <i class="pi pi-comments mr-2"></i>
+              <MessageSquare class="mr-2" />
               <span>{{ slotProps.option.title }}</span>
             </div>
           </template>
@@ -36,20 +34,19 @@
         >
           <template #value="{ value }">
             <div class="flex items-center">
-              <span class="model-name">{{
-                value ? value.name : "deepseek"
-              }}</span>
-              <i class="pi pi-angle-down text-gray-400 ml-1"></i>
+              <span>{{ value ? value.name : "deepseek" }}</span>
             </div>
           </template>
           <template #option="slotProps">
             <div class="flex items-center py-1">
-              <i class="pi pi-box mr-2"></i>
+              <Puzzle class="mr-2"></Puzzle>
               <span>{{ slotProps.option.name }}</span>
             </div>
           </template>
         </Dropdown>
       </div>
+
+      <!-- 信息 -->
       <div class="flex items-center space-x-3">
         <button
           class="px-3 py-1 border border-gray-600 rounded-md text-sm hover:bg-gray-700"
@@ -102,7 +99,9 @@
 
     <!-- 底部输入区 -->
     <footer class="p-4 w-full">
-      <div class="relative max-w-3xl mx-auto bg-[#353535] rounded-xl p-3">
+      <div
+        class="relative max-w-3xl mx-auto bg-[#353535] rounded-2xl border border-[#65645f] py-3 px-6"
+      >
         <textarea
           v-model="userInput"
           placeholder="询问任何问题"
@@ -110,57 +109,50 @@
           @keydown.enter.prevent="sendMessage"
         ></textarea>
 
-        <div class="flex items-center mt-2 justify-between">
-          <!-- 功能按钮移至左侧 -->
-          <div class="flex items-center space-x-3">
-            <!-- 联网搜索按钮 -->
-            <button
-              class="flex items-center p-1.5 rounded-md transition-colors duration-200 px-2"
-              :class="
-                isSearchEnabled
-                  ? 'bg-[#2a4a6d] text-white'
-                  : 'text-gray-400 hover:text-gray-300'
-              "
-              @click="toggleSearch"
-            >
-              <i class="pi pi-globe mr-1"></i>
-              <span>联网搜索</span>
-            </button>
+        <!-- 功能开关按钮 -->
+        <div class="flex items-center mt-2 ml-[-0.6rem] space-x-3">
+          <!-- 联网搜索按钮 -->
+          <button
+            class="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-200"
+            :class="
+              isSearchEnabled
+                ? 'bg-[#c964428d] text-white'
+                : 'text-gray-400 hover:text-gray-300'
+            "
+            @click="toggleSearch"
+          >
+            <Globe class="w-5 h-5 mr-2" />
+            <span>联网搜索</span>
+          </button>
 
-            <!-- 推理按钮 -->
-            <button
-              class="flex items-center p-1.5 rounded-md transition-colors duration-200 px-2"
-              :class="
-                isReasoningEnabled
-                  ? 'bg-[#2a4a6d] text-white'
-                  : 'text-gray-400 hover:text-gray-300'
-              "
-              @click="toggleReasoning"
-            >
-              <i class="pi pi-bolt mr-1"></i>
-              <span>推理</span>
-            </button>
-          </div>
-
-          <!-- 右侧按钮 -->
-          <div class="flex items-center space-x-3">
-            <button class="text-gray-400 hover:text-gray-300 p-1.5">
-              <i class="pi pi-plus"></i>
-            </button>
-          </div>
+          <!-- 推理按钮 -->
+          <button
+            class="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-200"
+            :class="
+              isReasoningEnabled
+                ? 'bg-[#c964428d] text-white'
+                : 'text-gray-400 hover:text-gray-300'
+            "
+            @click="toggleReasoning"
+          >
+            <Zap class="w-5 h-5 mr-2" />
+            <span>推理</span>
+          </button>
         </div>
 
+        <!-- 发送按钮 -->
         <button
-          class="absolute bottom-3 right-3 text-gray-500"
-          :class="{ 'text-white': userInput.trim().length > 0 }"
+          class="absolute bottom-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-300"
+          :class="
+            userInput.trim().length > 0
+              ? 'bg-[#c96442] text-white'
+              : 'bg-[#7d4a38] text-[#989897] cursor-not-allowed'
+          "
+          :disabled="userInput.trim().length === 0"
           @click="sendMessage"
         >
-          <i class="pi pi-send"></i>
+          <Send class="w-4 h-4" />
         </button>
-      </div>
-
-      <div class="text-center text-gray-500 text-sm mt-3">
-        AI助手也可能会犯错，请检查重要信息。
       </div>
     </footer>
   </div>
@@ -169,6 +161,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import Dropdown from "primevue/dropdown";
+import { Globe, MessageSquare, Puzzle, Send, Zap } from "lucide-vue-next";
 
 interface Message {
   id: number;
@@ -311,10 +304,5 @@ watch(
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   padding: 2px 8px;
-}
-
-.model-name {
-  font-weight: 500;
-  font-size: 1.1rem;
 }
 </style>

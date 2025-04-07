@@ -118,21 +118,33 @@ function updateChartOption() {
   // 检查数据格式并进行适配
   if (props.data && props.data.length > 0) {
     // 检查数据格式：如果是简单数组，转换为需要的格式
-    if (Array.isArray(props.data) && typeof props.data[0] !== 'object') {
+    if (Array.isArray(props.data) && typeof props.data[0] !== "object") {
       // 简单数组格式 [1, 2, 3, 4, 5]
       chartData = {
-        xAxisData: Array.from({ length: props.data.length }, (_, i) => `项目${i+1}`),
-        series: [{
-          name: '数值',
-          data: props.data
-        }]
+        xAxisData: Array.from(
+          { length: props.data.length },
+          (_, i) => `项目${i + 1}`
+        ),
+        series: [
+          {
+            name: "数值",
+            data: props.data,
+          },
+        ],
       };
-    } 
+    }
     // 检查是否是series数组格式 [{name:'系列1',data:[...]}, {name:'系列2',data:[...]}]
-    else if (Array.isArray(props.data) && props.data[0] && 'data' in props.data[0]) {
+    else if (
+      Array.isArray(props.data) &&
+      props.data[0] &&
+      "data" in props.data[0]
+    ) {
       chartData = {
-        xAxisData: Array.from({ length: props.data[0].data.length }, (_, i) => `项目${i+1}`),
-        series: props.data
+        xAxisData: Array.from(
+          { length: props.data[0].data.length },
+          (_, i) => `项目${i + 1}`
+        ),
+        series: props.data,
       };
     }
     // 标准格式 {xAxisData: [...], series: [...]}
@@ -141,7 +153,7 @@ function updateChartOption() {
     }
     // 无法识别的格式，使用默认数据
     else {
-      console.warn('无法识别的数据格式，使用默认数据', props.data);
+      console.warn("无法识别的数据格式，使用默认数据", props.data);
       chartData = defaultData;
     }
   } else {
@@ -151,14 +163,20 @@ function updateChartOption() {
 
   // 确保chartData.series存在
   if (!chartData.series || !Array.isArray(chartData.series)) {
-    console.error("Chart data format error: series array is missing or invalid", chartData);
+    console.error(
+      "Chart data format error: series array is missing or invalid",
+      chartData
+    );
     // 使用默认数据
     chartData.series = defaultData.series;
   }
 
   // 确保chartData.xAxisData存在
   if (!chartData.xAxisData || !Array.isArray(chartData.xAxisData)) {
-    console.error("Chart data format error: xAxisData array is missing or invalid", chartData);
+    console.error(
+      "Chart data format error: xAxisData array is missing or invalid",
+      chartData
+    );
     // 使用默认数据
     chartData.xAxisData = defaultData.xAxisData;
   }

@@ -114,27 +114,40 @@ function updateChartOption() {
     // 处理不同格式的数据
     if (props.data && props.data.length > 0) {
       // 检查数据格式
-      if (Array.isArray(props.data[0]) || typeof props.data[0] === 'number') {
+      if (Array.isArray(props.data[0]) || typeof props.data[0] === "number") {
         // 简单数组格式 [1, 2, 3, 4, 5]
         processedData = {
-          xAxisData: Array.from({ length: props.data.length }, (_, i) => `项目${i+1}`),
-          series: [{
-            name: '数值',
-            data: props.data
-          }]
+          xAxisData: Array.from(
+            { length: props.data.length },
+            (_, i) => `项目${i + 1}`
+          ),
+          series: [
+            {
+              name: "数值",
+              data: props.data,
+            },
+          ],
         };
-      } else if (props.data[0] && typeof props.data[0] === 'object' && 'name' in props.data[0] && 'data' in props.data[0]) {
+      } else if (
+        props.data[0] &&
+        typeof props.data[0] === "object" &&
+        "name" in props.data[0] &&
+        "data" in props.data[0]
+      ) {
         // 系列数组格式 [{name: '系列1', data: [...]}, {name: '系列2', data: [...]}]
         const firstSeriesLength = props.data[0].data.length;
         processedData = {
-          xAxisData: Array.from({ length: firstSeriesLength }, (_, i) => `项目${i+1}`),
-          series: props.data
+          xAxisData: Array.from(
+            { length: firstSeriesLength },
+            (_, i) => `项目${i + 1}`
+          ),
+          series: props.data,
         };
       } else if (props.data.xAxisData && props.data.series) {
         // 标准对象格式 {xAxisData: [...], series: [...]}
         processedData = props.data;
       } else {
-        console.warn('无法识别的数据格式，使用默认数据');
+        console.warn("无法识别的数据格式，使用默认数据");
         processedData = defaultData;
       }
     } else {
@@ -194,7 +207,7 @@ function updateChartOption() {
     // 设置图表配置
     chartInstance.setOption(option);
   } catch (error) {
-    console.error('更新图表配置时出错:', error);
+    console.error("更新图表配置时出错:", error);
   }
 }
 

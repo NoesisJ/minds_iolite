@@ -158,43 +158,48 @@ const navMenus: NavItem[] = [
 const combinedNavMenus = computed(() => {
   // 创建深拷贝以避免修改原始菜单
   const menusCopy: NavItem[] = JSON.parse(JSON.stringify(navMenus));
-  
+
   // 处理已发布页面的父菜单映射
-  const publishedPages: PublishedPage[] = JSON.parse(localStorage.getItem('published_pages') || '[]');
-  
+  const publishedPages: PublishedPage[] = JSON.parse(
+    localStorage.getItem("published_pages") || "[]"
+  );
+
   // 将已发布页面添加到父菜单
   publishedPages.forEach((page: PublishedPage) => {
     if (page.parentMenu) {
       // 查找父菜单
-      const parentMenu: NavItem | undefined = menusCopy.find((menu: NavItem) => menu.label === page.parentMenu);
+      const parentMenu: NavItem | undefined = menusCopy.find(
+        (menu: NavItem) => menu.label === page.parentMenu
+      );
       if (parentMenu) {
         if (!parentMenu.items) parentMenu.items = [];
-        
+
         // 检查是否已存在
-        const exists = parentMenu.items.some((item: NavItem) => item.route === page.route);
+        const exists = parentMenu.items.some(
+          (item: NavItem) => item.route === page.route
+        );
         if (!exists) {
           parentMenu.items.push({
             label: page.title,
             icon: page.icon,
-            route: page.route
+            route: page.route,
           });
         }
       }
     }
   });
-  
+
   // 合并顶级菜单
-  return [
-    ...menusCopy,
-    ...publishedMenuStore.dynamicMenuItems
-  ];
+  return [...menusCopy, ...publishedMenuStore.dynamicMenuItems];
 });
 
 const isItemActive = (item: NavItem): boolean => {
   if (item.route) return router.currentRoute.value.path === item.route;
-  return item.items?.some(
-    (subItem: NavItem) => router.currentRoute.value.path === subItem.route
-  ) || false;
+  return (
+    item.items?.some(
+      (subItem: NavItem) => router.currentRoute.value.path === subItem.route
+    ) || false
+  );
 };
 
 const isSubItemActive = (subItem: NavItem): boolean => {
@@ -202,9 +207,11 @@ const isSubItemActive = (subItem: NavItem): boolean => {
 };
 
 const shouldExpand = (item: NavItem): boolean => {
-  return item.items?.some(
-    (subItem: NavItem) => router.currentRoute.value.path === subItem.route
-  ) || false;
+  return (
+    item.items?.some(
+      (subItem: NavItem) => router.currentRoute.value.path === subItem.route
+    ) || false
+  );
 };
 
 const navigateTo = (path: string): void => {

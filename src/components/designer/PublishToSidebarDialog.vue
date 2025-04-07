@@ -2,39 +2,53 @@
   <div v-if="show" class="publish-dialog-overlay" @click="onClose">
     <div class="publish-dialog-container" @click.stop>
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-gray-800 dark:text-white">发布到侧边栏</h2>
-        <button @click="onClose" class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <h2 class="text-xl font-medium text-gray-800 dark:text-white">
+          发布到侧边栏
+        </h2>
+        <button
+          @click="onClose"
+          class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
           <i class="pi pi-times"></i>
         </button>
       </div>
-      
+
       <div class="dialog-content">
         <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">选择页面</label>
-          <select 
-            v-model="selectedPageId" 
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >选择页面</label
+          >
+          <select
+            v-model="selectedPageId"
             class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
           >
             <option value="">选择要发布的页面</option>
             <option v-for="page in pages" :key="page.id" :value="page.id">
-              {{ page.title || '未命名页面' }}
+              {{ page.title || "未命名页面" }}
             </option>
           </select>
         </div>
-        
+
         <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">菜单标题</label>
-          <input 
-            v-model="menuTitle" 
-            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2" 
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >菜单标题</label
+          >
+          <input
+            v-model="menuTitle"
+            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
             placeholder="侧边栏显示的名称"
           />
         </div>
-        
+
         <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">菜单图标</label>
-          <select 
-            v-model="menuIcon" 
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >菜单图标</label
+          >
+          <select
+            v-model="menuIcon"
             class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
           >
             <option value="pi pi-file">文档图标</option>
@@ -49,21 +63,29 @@
             <option value="pi pi-eye">查看图标</option>
           </select>
         </div>
-        
+
         <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">路由路径</label>
-          <input 
-            v-model="routePath" 
-            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2" 
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >路由路径</label
+          >
+          <input
+            v-model="routePath"
+            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
             placeholder="/my-page"
           />
-          <div class="form-hint text-xs text-gray-500 dark:text-gray-400 mt-1">路径必须以'/'开头，例如: /dashboard/analytics</div>
+          <div class="form-hint text-xs text-gray-500 dark:text-gray-400 mt-1">
+            路径必须以'/'开头，例如: /dashboard/analytics
+          </div>
         </div>
-        
+
         <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">父菜单</label>
-          <select 
-            v-model="parentMenu" 
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >父菜单</label
+          >
+          <select
+            v-model="parentMenu"
             class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
           >
             <option value="">无 (顶级菜单)</option>
@@ -74,16 +96,16 @@
           </select>
         </div>
       </div>
-      
+
       <div class="dialog-footer">
-        <button 
-          class="btn-cancel px-4 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2" 
+        <button
+          class="btn-cancel px-4 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2"
           @click="onClose"
         >
           取消
         </button>
-        <button 
-          class="btn-publish px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed" 
+        <button
+          class="btn-publish px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="publishToSidebar"
           :disabled="!isFormValid"
         >
@@ -95,29 +117,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { useDesignerStore } from '@/stores/designerStore';
-import { useRouter } from 'vue-router';
-import { publishPage } from '@/services/publishedPagesService';
+import { ref, computed, watch } from "vue";
+import { useDesignerStore } from "@/stores/designerStore";
+import { useRouter } from "vue-router";
+import { publishPage } from "@/services/publishedPagesService";
 
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-const emit = defineEmits(['close', 'publish-success']);
+const emit = defineEmits(["close", "publish-success"]);
 
 const designerStore = useDesignerStore();
 const router = useRouter();
 
 // 表单数据
-const selectedPageId = ref('');
-const menuTitle = ref('');
-const menuIcon = ref('pi pi-file');
-const routePath = ref('');
-const parentMenu = ref('');
+const selectedPageId = ref("");
+const menuTitle = ref("");
+const menuIcon = ref("pi pi-file");
+const routePath = ref("");
+const parentMenu = ref("");
 
 // 获取设计器中的页面
 const pages = computed(() => designerStore.pages);
@@ -125,62 +147,71 @@ const pages = computed(() => designerStore.pages);
 // 表单验证
 const isFormValid = computed(() => {
   return (
-    selectedPageId.value && 
-    menuTitle.value && 
-    routePath.value && 
-    routePath.value.startsWith('/')
+    selectedPageId.value &&
+    menuTitle.value &&
+    routePath.value &&
+    routePath.value.startsWith("/")
   );
 });
 
 // 当显示对话框时，默认选中当前页面
-watch(() => props.show, (newVal) => {
-  if (newVal && designerStore.currentPageId) {
-    selectedPageId.value = designerStore.currentPageId;
-    
-    // 设置默认值
-    const currentPage = designerStore.pages.find(p => p.id === designerStore.currentPageId);
-    if (currentPage) {
-      menuTitle.value = currentPage.title || '';
-      // 生成默认路由路径，移除特殊字符并转为小写
-      const pageName = (currentPage.name || currentPage.title || '').toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-');
-      routePath.value = '/' + pageName;
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal && designerStore.currentPageId) {
+      selectedPageId.value = designerStore.currentPageId;
+
+      // 设置默认值
+      const currentPage = designerStore.pages.find(
+        (p) => p.id === designerStore.currentPageId
+      );
+      if (currentPage) {
+        menuTitle.value = currentPage.title || "";
+        // 生成默认路由路径，移除特殊字符并转为小写
+        const pageName = (currentPage.name || currentPage.title || "")
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/[\s_-]+/g, "-");
+        routePath.value = "/" + pageName;
+      }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 
 // 关闭对话框
 function onClose() {
-  emit('close');
+  emit("close");
 }
 
 // 发布到侧边栏
 async function publishToSidebar() {
   if (!isFormValid.value) return;
-  
+
   try {
     // 1. 获取选中的页面数据
-    const selectedPage = designerStore.pages.find(p => p.id === selectedPageId.value);
+    const selectedPage = designerStore.pages.find(
+      (p) => p.id === selectedPageId.value
+    );
     if (!selectedPage) {
-      throw new Error('未找到选中的页面');
+      throw new Error("未找到选中的页面");
     }
-    
+
     // 2. 发布页面
     const publishedPage = await publishPage(selectedPage, {
       title: menuTitle.value,
       icon: menuIcon.value,
       route: routePath.value,
-      parentMenu: parentMenu.value
+      parentMenu: parentMenu.value,
     });
-    
+
     // 3. 通知成功
-    emit('publish-success', publishedPage);
-    
+    emit("publish-success", publishedPage);
+
     // 4. 关闭对话框
     onClose();
   } catch (error: any) {
-    alert(error.message || '发布失败，请检查配置');
+    alert(error.message || "发布失败，请检查配置");
   }
 }
 </script>
@@ -262,4 +293,4 @@ async function publishToSidebar() {
 :global(.dark) .dialog-footer {
   border-top-color: #374151;
 }
-</style> 
+</style>

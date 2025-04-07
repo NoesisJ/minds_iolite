@@ -1,26 +1,28 @@
 <template>
   <div class="published-page-container">
     <div v-if="pageData" class="page-content">
-      <div 
-        v-for="(region, index) in pageData.regions" 
-        :key="index" 
+      <div
+        v-for="(region, index) in pageData.regions"
+        :key="index"
         class="region-wrapper"
       >
-        <div 
-          v-for="component in region.components" 
-          :key="component.id" 
+        <div
+          v-for="component in region.components"
+          :key="component.id"
           class="component-wrapper"
         >
-          <component 
-            :is="getComponentType(component.type)" 
-            v-bind="component.props" 
+          <component
+            :is="getComponentType(component.type)"
+            v-bind="component.props"
             :style="component.styles"
           />
         </div>
       </div>
     </div>
     <div v-else class="error-message">
-      <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+      <div
+        class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400"
+      >
         <i class="pi pi-exclamation-circle text-5xl mb-4"></i>
         <div class="text-xl mb-2">页面不存在或已被删除</div>
         <p class="mb-4">请检查页面是否已发布或联系管理员</p>
@@ -30,15 +32,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { getComponentType } from '@/utils/componentUtils';
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { getComponentType } from "@/utils/componentUtils";
 
 const props = defineProps({
   pageId: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
 });
 
 const route = useRoute();
@@ -47,37 +49,39 @@ const pageData = ref(null);
 // 加载页面数据函数
 function loadPageData() {
   // 从存储中获取发布的页面数据
-  const publishedPages = JSON.parse(localStorage.getItem('published_pages') || '[]');
-  
+  const publishedPages = JSON.parse(
+    localStorage.getItem("published_pages") || "[]"
+  );
+
   // 优先使用props中的pageId
   let pageId = props.pageId;
-  
+
   // 如果props中没有，则尝试从路由元数据中获取
   if (!pageId && route.meta && route.meta.pageId) {
     pageId = route.meta.pageId;
   }
-  
+
   let page;
-  
+
   if (pageId) {
     // 通过ID查找页面
-    page = publishedPages.find(p => p.id === pageId);
-    console.log('通过ID查找页面:', pageId, page ? '找到' : '未找到');
+    page = publishedPages.find((p) => p.id === pageId);
+    console.log("通过ID查找页面:", pageId, page ? "找到" : "未找到");
   }
-  
+
   // 如果没有找到，使用路径匹配（作为备用方法）
   if (!page) {
-    page = publishedPages.find(p => p.route === route.path);
-    console.log('通过路径查找页面:', route.path, page ? '找到' : '未找到');
+    page = publishedPages.find((p) => p.route === route.path);
+    console.log("通过路径查找页面:", route.path, page ? "找到" : "未找到");
   }
-  
+
   if (page) {
-    console.log('加载页面:', page.title, 'ID:', page.id);
+    console.log("加载页面:", page.title, "ID:", page.id);
     pageData.value = page.pageData;
     // 设置页面标题
-    document.title = page.title || '发布页面';
+    document.title = page.title || "发布页面";
   } else {
-    console.error('未找到页面, 路径:', route.path, '页面ID:', pageId);
+    console.error("未找到页面, 路径:", route.path, "页面ID:", pageId);
     pageData.value = null;
   }
 }
@@ -129,4 +133,4 @@ onMounted(() => {
   background-color: #1f2937;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
-</style> 
+</style>

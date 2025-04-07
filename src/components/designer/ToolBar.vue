@@ -157,14 +157,14 @@
 
   <!-- 发布对话框 -->
   <PublishDialog :show="showPublishDialog" @close="closePublishDialog" />
-  
+
   <!-- 发布到侧边栏对话框 -->
-  <PublishToSidebarDialog 
-    :show="showPublishToSidebarDialog" 
+  <PublishToSidebarDialog
+    :show="showPublishToSidebarDialog"
     @close="showPublishToSidebarDialog = false"
     @publish-success="handlePublishToSidebarSuccess"
   />
-  
+
   <!-- 管理已发布页面对话框 -->
   <ManagePublishedPagesDialog
     :show="showManagePublishedPagesDialog"
@@ -294,12 +294,14 @@ const openManagePublishedPagesDialog = () => {
 };
 
 const handlePublishToSidebarSuccess = (publishedPage: any) => {
-  console.log('页面已发布到侧边栏:', publishedPage);
-  alert(`页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`);
+  console.log("页面已发布到侧边栏:", publishedPage);
+  alert(
+    `页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`
+  );
 };
 
 const handleUnpublishSuccess = (page: any) => {
-  console.log('页面已取消发布:', page);
+  console.log("页面已取消发布:", page);
   alert(`页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`);
 };
 

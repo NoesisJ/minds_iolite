@@ -2,12 +2,17 @@
   <div v-if="show" class="manage-dialog-overlay" @click="onClose">
     <div class="manage-dialog-container" @click.stop>
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-gray-800 dark:text-white">管理已发布页面</h2>
-        <button @click="onClose" class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <h2 class="text-xl font-medium text-gray-800 dark:text-white">
+          管理已发布页面
+        </h2>
+        <button
+          @click="onClose"
+          class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
           <i class="pi pi-times"></i>
         </button>
       </div>
-      
+
       <div class="dialog-content">
         <div v-if="publishedPages.length === 0" class="empty-state">
           <i class="pi pi-info-circle text-3xl mb-3 text-gray-400"></i>
@@ -16,9 +21,13 @@
             使用"发布到侧边栏"功能将设计器页面发布到侧边栏
           </div>
         </div>
-        
+
         <div v-else class="published-pages-list">
-          <div v-for="page in publishedPages" :key="page.id" class="published-page-item">
+          <div
+            v-for="page in publishedPages"
+            :key="page.id"
+            class="published-page-item"
+          >
             <div class="page-info">
               <div class="flex items-center">
                 <i :class="[page.icon, 'page-icon']"></i>
@@ -26,19 +35,21 @@
               </div>
               <div class="page-meta">
                 <div class="page-route">路径: {{ page.route }}</div>
-                <div class="page-date">发布时间: {{ formatDate(page.createdAt) }}</div>
+                <div class="page-date">
+                  发布时间: {{ formatDate(page.createdAt) }}
+                </div>
               </div>
             </div>
             <div class="page-actions">
-              <button 
-                @click="openPage(page)" 
+              <button
+                @click="openPage(page)"
                 class="action-btn view-btn"
                 title="查看页面"
               >
                 <i class="pi pi-eye"></i>
               </button>
-              <button 
-                @click="confirmDelete(page)" 
+              <button
+                @click="confirmDelete(page)"
                 class="action-btn delete-btn"
                 title="取消发布"
               >
@@ -48,37 +59,40 @@
           </div>
         </div>
       </div>
-      
+
       <div class="dialog-footer">
-        <button 
-          class="btn-close px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600" 
+        <button
+          class="btn-close px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           @click="onClose"
         >
           关闭
         </button>
       </div>
     </div>
-    
+
     <!-- 确认删除对话框 -->
     <div v-if="showConfirmDelete" class="confirm-dialog-overlay" @click.stop>
       <div class="confirm-dialog-container">
         <div class="confirm-dialog-header">
-          <h3 class="text-lg font-medium text-gray-800 dark:text-white">确认取消发布</h3>
+          <h3 class="text-lg font-medium text-gray-800 dark:text-white">
+            确认取消发布
+          </h3>
         </div>
         <div class="confirm-dialog-content">
           <p class="text-gray-600 dark:text-gray-300">
-            确定要取消发布页面 "{{ pageToDelete?.title }}" 吗？此操作将从侧边栏中移除该页面。
+            确定要取消发布页面 "{{ pageToDelete?.title }}"
+            吗？此操作将从侧边栏中移除该页面。
           </p>
         </div>
         <div class="confirm-dialog-footer">
-          <button 
-            class="btn-cancel px-3 py-1 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" 
+          <button
+            class="btn-cancel px-3 py-1 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="showConfirmDelete = false"
           >
             取消
           </button>
-          <button 
-            class="btn-delete px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2" 
+          <button
+            class="btn-delete px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 ml-2"
             @click="deletePage"
           >
             确定取消发布
@@ -90,19 +104,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { unpublishPage } from '@/services/publishedPagesService';
-import { PublishedPage } from '@/services/publishedPagesService';
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { unpublishPage } from "@/services/publishedPagesService";
+import { PublishedPage } from "@/services/publishedPagesService";
 
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-const emit = defineEmits(['close', 'unpublish-success']);
+const emit = defineEmits(["close", "unpublish-success"]);
 
 const router = useRouter();
 const publishedPages = ref<PublishedPage[]>([]);
@@ -112,24 +126,24 @@ const pageToDelete = ref<PublishedPage | null>(null);
 // 加载已发布页面
 function loadPublishedPages() {
   try {
-    const pages = JSON.parse(localStorage.getItem('published_pages') || '[]');
+    const pages = JSON.parse(localStorage.getItem("published_pages") || "[]");
     publishedPages.value = pages;
   } catch (error) {
-    console.error('加载已发布页面失败:', error);
+    console.error("加载已发布页面失败:", error);
     publishedPages.value = [];
   }
 }
 
 // 格式化日期
 function formatDate(timestamp: number): string {
-  if (!timestamp) return '未知';
+  if (!timestamp) return "未知";
   const date = new Date(timestamp);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -148,28 +162,31 @@ function confirmDelete(page: PublishedPage) {
 // 删除页面
 async function deletePage() {
   if (!pageToDelete.value) return;
-  
+
   try {
     await unpublishPage(pageToDelete.value.id);
-    emit('unpublish-success', pageToDelete.value);
+    emit("unpublish-success", pageToDelete.value);
     showConfirmDelete.value = false;
     loadPublishedPages(); // 重新加载列表
   } catch (error: any) {
-    alert(error.message || '取消发布失败');
+    alert(error.message || "取消发布失败");
   }
 }
 
 // 关闭对话框
 function onClose() {
-  emit('close');
+  emit("close");
 }
 
 // 组件挂载时加载页面
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    loadPublishedPages();
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      loadPublishedPages();
+    }
   }
-});
+);
 
 onMounted(() => {
   if (props.show) {
@@ -398,4 +415,4 @@ onMounted(() => {
 :global(.dark) .page-icon {
   color: #d1d5db;
 }
-</style> 
+</style>
