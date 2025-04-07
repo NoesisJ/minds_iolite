@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col text-white">
     <!-- 顶部标题栏 -->
-    <header class="flex justify-between items-center px-3 py-2">
+    <header class="flex justify-between items-center px-6 py-5">
       <!-- 选型 -->
       <div class="flex items-center gap-4">
         <!-- 下拉历史记录按钮 -->
@@ -97,20 +97,6 @@
             <Globe class="w-5 h-5 mr-2" />
             <span>联网搜索</span>
           </button>
-
-          <!-- 推理按钮 -->
-          <button
-            class="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-200"
-            :class="
-              isReasoningEnabled
-                ? 'bg-[#c964428d] text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            "
-            @click="toggleReasoning"
-          >
-            <Zap class="w-5 h-5 mr-2" />
-            <span>推理</span>
-          </button>
         </div>
 
         <!-- 发送按钮 -->
@@ -134,7 +120,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted } from "vue";
 import DropdownMenu from "@/components/ui/DropDown.vue";
-import { Globe, Send, Zap } from "lucide-vue-next";
+import { Globe, Send} from "lucide-vue-next";
 
 interface Message {
   id: number;
@@ -179,11 +165,6 @@ const isReasoningEnabled = ref(false);
 // 切换联网搜索状态
 const toggleSearch = () => {
   isSearchEnabled.value = !isSearchEnabled.value;
-};
-
-// 切换推理状态
-const toggleReasoning = () => {
-  isReasoningEnabled.value = !isReasoningEnabled.value;
 };
 
 // 状态管理

@@ -115,19 +115,6 @@
   color: var(--designer-text-primary);
 }
 
-/* 覆盖Naive UI在设计器中的样式 */
-.designer-view .n-button {
-  font-family: inherit;
-}
-
-.designer-view .n-tabs-tab {
-  color: var(--designer-text-secondary);
-}
-
-.designer-view .n-tabs-tab.n-tabs-tab--active {
-  color: var(--designer-accent-color);
-}
-
 /* 增强页面列表和下拉菜单中的文字对比度 */
 .designer-view .page-item .text-gray-800,
 .dropdown-menu .text-gray-800 {

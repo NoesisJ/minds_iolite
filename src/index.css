@@ -18,6 +18,10 @@ body,
   --p-inputtext-background: #f3f4f6;
 
   --material-red: #e91d63;
+  --material-red-dark: #b00020;
+  --material-green: #60af20;
+  --material-blue: #0495ee;
+  --material-yellow: #ff9f05;
   --material-bg-dark: #1f1f1f;
   --material-bg-light: #303030;
   --material-item-header: #404040;
@@ -25,8 +29,10 @@ body,
   --material-item-bg-hover: #282828;
   --material-item-bg-selected: #171717;
   --material-item-bg-selected-hover: #282828;
+  --material-item-border: #41413e;
 
   --col-sat-1: hsl(216, 50%, 45%);
+
 }
 
 body {

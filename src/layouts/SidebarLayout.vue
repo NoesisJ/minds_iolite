@@ -11,7 +11,7 @@
     >
       <template #header>
         <span :class="item.icon" />
-        <span class="menu-label">{{ item.label }}</span>
+        <span class="ml-2">{{ item.label }}</span>
       </template>
 
       <template v-if="item.items" #content>
@@ -24,7 +24,7 @@
         >
           <template #header>
             <span :class="subItem.icon" />
-            <span class="menu-label">{{ subItem.label }}</span>
+            <span class="ml-2">{{ subItem.label }}</span>
           </template>
         </TogglePanel>
       </template>

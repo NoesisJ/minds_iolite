@@ -1,18 +1,16 @@
 <template>
-  <div class="designer-view h-full w-full bg-white dark:bg-gray-800">
+  <div class="designer-view h-full w-full overflow-hidden">
     <!-- 顶部工具栏 -->
-    <ToolBar class="border-b border-gray-200 dark:border-gray-700" />
-
-    <!-- 主体内容区 - 确保占满所有可用空间 -->
-    <div class="designer-main flex h-[calc(100%-56px)] overflow-hidden">
+    <ToolBar class="h-[var(--designer-header-height)]" />
+    <div class="flex h-[calc(100%-var(--designer-header-height))] overflow-hidden">
       <!-- 左侧面板：页面/布局选择 -->
-      <LeftPanel class="w-64 border-r border-gray-200 dark:border-gray-700" />
+      <LeftPanel class="w-64" />
 
-      <!-- 中间画布区域 -->
-      <DesignCanvas class="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900" />
+      <!-- 中间画布 -->
+      <DesignCanvas class="flex-1 overflow-auto" />
 
       <!-- 右侧面板：属性配置 -->
-      <RightPanel class="w-64 border-l border-gray-200 dark:border-gray-700" />
+      <RightPanel class="w-64" />
     </div>
   </div>
 </template>
@@ -40,34 +38,6 @@ onMounted(() => {
 
 <style scoped>
 .designer-view {
-  color: #333;
-  position: relative;
-}
-
-/* 假设工具栏高度为56px，调整主内容区域高度 */
-.designer-main {
-  height: calc(100% - 56px);
-}
-
-/* 使用:deep覆盖Naive UI组件样式 */
-:deep(.n-button) {
-  margin: 0 2px;
-}
-
-:deep(.n-tabs-tab) {
-  color: #555;
-}
-
-:deep(.n-tabs-tab.n-tabs-tab--active) {
-  color: #2563eb;
-}
-
-:deep(.n-input) {
-  background-color: white;
-}
-
-.dark :deep(.n-input) {
-  background-color: #333;
-  color: #eee;
+  --designer-header-height: 4rem; /* 顶部工具栏高度 */
 }
 </style>

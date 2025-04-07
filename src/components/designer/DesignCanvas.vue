@@ -1,6 +1,6 @@
 <template>
   <div
-    class="design-canvas h-full w-full bg-gray-100 dark:bg-gray-900 overflow-auto"
+    class="bg-[var(--material-bg-light)] overflow-auto"
   >
     <!-- 选择布局提示 -->
     <div
@@ -215,9 +215,3 @@ onMounted(() => {
   console.log("设计画布已挂载");
 });
 </script>
-
-<style scoped>
-.design-canvas {
-  height: calc(100vh - var(--designer-header-height, 56px));
-}
-</style>

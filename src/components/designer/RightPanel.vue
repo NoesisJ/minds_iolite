@@ -1,6 +1,6 @@
 <template>
   <div
-    class="right-panel h-full overflow-auto p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+    class="bg-[var(--material-item-bg)] overflow-auto p-3 text-gray-800 dark:text-gray-200 border-l border-[var(--material-item-border)]"
   >
     <!-- 调试信息 - 临时启用以查看问题 -->
     <!-- <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded border">

@@ -58,15 +58,15 @@ function getStatusClasses() {
   if (props.hero) {
     switch (props.status) {
       case "primary":
-        return "bg-purple-600 hover:bg-purple-700 text-white shadow-lg";
+        return "bg-[var(--material-red)] hover:bg-[#0384d1] text-white shadow-lg";
       case "info":
-        return "bg-blue-500 hover:bg-blue-600 text-white shadow-lg";
+        return "bg-[var(--material-blue)] hover:bg-[#0384d1] text-white shadow-lg";
       case "success":
-        return "bg-green-500 hover:bg-green-600 text-white shadow-lg";
+        return "bg-[var(--material-green)] hover:bg-[#559c1a] text-white shadow-lg";
       case "warning":
-        return "bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg";
+        return "bg-[var(--material-yellow)] hover:bg-[#e68f04] text-white shadow-lg";
       case "danger":
-        return "bg-red-500 hover:bg-red-600 text-white shadow-lg";
+        return "bg-[var(--material-red-dark)] hover:bg-[var(--material-red-dark)] text-white shadow-lg";
       default:
         return "bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-lg";
     }
@@ -76,17 +76,17 @@ function getStatusClasses() {
   if (props.outline) {
     switch (props.status) {
       case "primary":
-        return "border-2 border-purple-500 text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20";
+        return "border-2 border-[var(--material-red)] text-[var(--material-red)] hover:bg-[#0495ee20]";
       case "info":
-        return "border-2 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20";
+        return "border-2 border-[var(--material-blue)] text-[var(--material-blue)] hover:bg-[#0495ee20]";
       case "success":
-        return "border-2 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20";
+        return "border-2 border-[var(--material-green)] text-[var(--material-green)] hover:bg-[#60af2020]";
       case "warning":
-        return "border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20";
+        return "border-2 border-[var(--material-yellow)] text-[var(--material-yellow)] hover:bg-[#ff9f0520]";
       case "danger":
-        return "border-2 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20";
+        return "border-2 border-[var(--material-red-dark)] text-[var(--material-red-dark)] hover:bg-[#e91d6320]";
       default:
-        return "border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800";
+        return "border-2 border-[var(--material-red)] text-[var(--material-blue)] hover:bg-[#0495ee20]";
     }
   }
 
@@ -94,34 +94,34 @@ function getStatusClasses() {
   if (props.ghost) {
     switch (props.status) {
       case "primary":
-        return "text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20";
+        return "text-[var(--material-red)] hover:bg-[#0495ee20]";
       case "info":
-        return "text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20";
+        return "text-[var(--material-blue)] hover:bg-[#0495ee20]";
       case "success":
-        return "text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20";
+        return "text-[var(--material-green)] hover:bg-[#60af2020]";
       case "warning":
-        return "text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20";
+        return "text-[var(--material-yellow)] hover:bg-[#ff9f0520]";
       case "danger":
-        return "text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20";
+        return "text-[var(--material-red-dark)] hover:bg-[#e91d6320]";
       default:
-        return "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800";
+        return "text-[var(--material-red)] hover:bg-[#0495ee20]";
     }
   }
 
   // 默认按钮
   switch (props.status) {
     case "primary":
-      return "bg-purple-500 hover:bg-purple-600 text-white";
+      return "bg-[var(--material-red)] hover:bg-[#e91d63] text-white";
     case "info":
-      return "bg-blue-500 hover:bg-blue-600 text-white";
+      return "bg-[var(--material-blue)] hover:bg-[#0384d1] text-white";
     case "success":
-      return "bg-green-500 hover:bg-green-600 text-white";
+      return "bg-[var(--material-green)] hover:bg-[#559c1a] text-white";
     case "warning":
-      return "bg-yellow-500 hover:bg-yellow-600 text-white";
+      return "bg-[var(--material-yellow)] hover:bg-[#e68f04] text-white";
     case "danger":
-      return "bg-red-500 hover:bg-red-600 text-white";
+      return "bg-[var(--material-red-dark)] hover:bg-[#cf3341] text-white";
     default:
-      return "bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white";
+      return "bg-[var(--material-red)] hover:bg-[#e91d63] text-white";
   }
 }
 

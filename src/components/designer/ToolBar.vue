@@ -1,26 +1,20 @@
 <template>
   <div
-    class="toolbar p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
+    class="px-3 bg-[#262624] border-b border-[var(--material-item-border)] flex items-center justify-between"
   >
     <div class="left-section flex items-center space-x-4">
-      <h1 class="text-xl font-semibold text-gray-800 dark:text-white">
-        页面设计器
-      </h1>
-
-      <base-button
+      <BaseButton
         status="primary"
-        size="small"
         @click="createNewPage"
         class="flex items-center"
       >
         <i class="pi pi-plus mr-1.5"></i>
         新页面
-      </base-button>
+      </BaseButton>
 
       <div class="relative">
-        <base-button
-          status="default"
-          size="small"
+        <BaseButton
+          status="primary"
           @click="togglePageMenu"
           class="flex items-center min-w-[120px]"
         >
@@ -30,7 +24,7 @@
           <i
             class="pi pi-chevron-down ml-1.5 text-gray-500 dark:text-gray-400"
           ></i>
-        </base-button>
+        </BaseButton>
 
         <div
           v-show="showPageMenu"
@@ -59,72 +53,66 @@
         </div>
       </div>
 
-      <base-button
-        status="default"
-        size="small"
+      <BaseButton
+        status="primary"
         @click="openPageSettings"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-cog mr-1.5"></i>
         <span class="text-gray-700 dark:text-gray-200">页面设置</span>
-      </base-button>
+      </BaseButton>
     </div>
 
     <div class="right-section flex items-center space-x-4">
-      <base-button
+      <BaseButton
         status="success"
-        size="small"
         @click="openPublishToSidebarDialog"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-share-alt mr-1.5"></i>
         <span class="text-white">发布到侧边栏</span>
-      </base-button>
+      </BaseButton>
 
-      <base-button
+      <BaseButton
         status="info"
-        size="small"
         @click="openManagePublishedPagesDialog"
         class="flex items-center"
       >
         <i class="pi pi-list mr-1.5"></i>
         <span class="text-white">管理已发布页面</span>
-      </base-button>
+      </BaseButton>
 
-      <base-button
-        status="default"
-        size="small"
+      <BaseButton
+        status="primary"
         @click="openViewer"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-desktop mr-1.5"></i>
         <span class="text-gray-700 dark:text-gray-200">阅览</span>
-      </base-button>
+      </BaseButton>
 
-      <base-button
+      <BaseButton
         status="info"
-        size="small"
         @click="previewPage"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-eye mr-1.5"></i>
         <span class="text-white">预览</span>
-      </base-button>
+      </BaseButton>
 
-      <base-button
+      <BaseButton
         status="success"
-        size="small"
         @click="savePage"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-save mr-1.5"></i>
         <span class="text-white">保存</span>
-      </base-button>
+      </BaseButton>
 
       <div class="theme-toggle cursor-pointer p-2" @click="toggleTheme">
         <i
@@ -135,28 +123,28 @@
         ></i>
       </div>
     </div>
+
+    <!-- 预览模态框 -->
+    <PreviewModal
+      :show="showPreview"
+      :page="designerStore.currentPage"
+      @close="showPreview = false"
+    />
+
+    <!-- 发布到侧边栏对话框 -->
+    <PublishToSidebarDialog
+      :show="showPublishToSidebarDialog"
+      @close="showPublishToSidebarDialog = false"
+      @publish-success="handlePublishToSidebarSuccess"
+    />
+
+    <!-- 管理已发布页面对话框 -->
+    <ManagePublishedPagesDialog
+      :show="showManagePublishedPagesDialog"
+      @close="showManagePublishedPagesDialog = false"
+      @unpublish-success="handleUnpublishSuccess"
+    />
   </div>
-
-  <!-- 预览模态框 -->
-  <PreviewModal
-    :show="showPreview"
-    :page="designerStore.currentPage"
-    @close="showPreview = false"
-  />
-
-  <!-- 发布到侧边栏对话框 -->
-  <PublishToSidebarDialog
-    :show="showPublishToSidebarDialog"
-    @close="showPublishToSidebarDialog = false"
-    @publish-success="handlePublishToSidebarSuccess"
-  />
-
-  <!-- 管理已发布页面对话框 -->
-  <ManagePublishedPagesDialog
-    :show="showManagePublishedPagesDialog"
-    @close="showManagePublishedPagesDialog = false"
-    @unpublish-success="handleUnpublishSuccess"
-  />
 </template>
 
 <script setup lang="ts">
@@ -186,7 +174,6 @@ const currentPageName = computed(() => {
   );
   return currentPage ? currentPage.title : "";
 });
-const hasPages = computed(() => designerStore.pages.length > 0);
 
 // 方法
 const createNewPage = () => {
@@ -298,17 +285,3 @@ onMounted(() => {
   });
 });
 </script>
-
-<style scoped>
-.toolbar {
-  height: 56px;
-}
-
-:deep(.n-button) {
-  font-weight: 500;
-}
-
-.dark :deep(.n-button) {
-  border-color: #4b5563;
-}
-</style>

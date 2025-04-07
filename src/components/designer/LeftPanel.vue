@@ -1,9 +1,9 @@
 <template>
   <div
-    class="left-panel h-full overflow-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+    class="bg-[var(--material-item-bg)] border-r border-[var(--material-item-border)] overflow-auto"
   >
     <!-- 标签页替换 -->
-    <div class="tabs border-b border-gray-200 dark:border-gray-700">
+    <div class="tabs border-b border-[var(--material-item-border)]">
       <div class="flex">
         <button
           @click="activeTab = 'components'"
@@ -246,10 +246,6 @@ const deletePage = (pageId: string) => {
 </script>
 
 <style scoped>
-.left-panel {
-  width: var(--designer-panel-width, 260px);
-}
-
 .component-item {
   transition: transform 0.2s;
 }
