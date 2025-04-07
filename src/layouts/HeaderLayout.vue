@@ -50,8 +50,8 @@
         @click="appStore.toggleMaximizeWindow"
       >
         <template #icon>
-          <Minimize2 v-if="isMaximized" />
-          <Maximize2 v-else />
+          <Minimize2 v-if="isMaximized" class="w-5 h-5" />
+          <Maximize2 v-else class="w-5 h-5" />
         </template>
       </HeaderButton>
       <HeaderButton aria-label="Close" @click="appStore.closeWindow">
@@ -76,7 +76,7 @@ import {
   Maximize2,
   Menu,
 } from "lucide-vue-next";
-import HeaderButton from "@/components/headerButton.vue";
+import HeaderButton from "@/components/HeaderButton.vue";
 import Divider from "primevue/divider";
 import { useApp } from "@/hooks/useApp";
 
