@@ -5,45 +5,28 @@
       <!-- 选型 -->
       <div class="flex items-center gap-4">
         <!-- 下拉历史记录按钮 -->
-        <Dropdown
-          v-model="selectedChat"
-          :options="chatHistory"
-          optionLabel="title"
-          placeholder="AI助手"
+        <DropdownMenu
+          :items="
+            chatHistory.map((item) => ({ label: item.title, value: item }))
+          "
+          :callback="(item) => (selectedChat = item.value)"
           class="history-selector"
         >
-          <template #value="{ value }">
-            <div class="flex items-center">
-              <span>{{ value ? value.title : "AI助手" }}</span>
-            </div>
-          </template>
-          <template #option="slotProps">
-            <div class="flex items-center py-1">
-              <MessageSquare class="mr-2" />
-              <span>{{ slotProps.option.title }}</span>
-            </div>
-          </template>
-        </Dropdown>
+          <div class="flex items-center">
+            <span>{{ selectedChat ? selectedChat.title : "AI助手" }}</span>
+          </div>
+        </DropdownMenu>
 
         <!-- 模型选择下拉菜单 -->
-        <Dropdown
-          v-model="selectedModel"
-          :options="models"
-          optionLabel="name"
+        <DropdownMenu
+          :items="models.map((model) => ({ label: model.name, value: model }))"
+          :callback="(item) => (selectedModel = item.value)"
           class="model-selector"
         >
-          <template #value="{ value }">
-            <div class="flex items-center">
-              <span>{{ value ? value.name : "deepseek" }}</span>
-            </div>
-          </template>
-          <template #option="slotProps">
-            <div class="flex items-center py-1">
-              <Puzzle class="mr-2"></Puzzle>
-              <span>{{ slotProps.option.name }}</span>
-            </div>
-          </template>
-        </Dropdown>
+          <div class="flex items-center">
+            <span>{{ selectedModel ? selectedModel.name : "deepseek" }}</span>
+          </div>
+        </DropdownMenu>
       </div>
 
       <!-- 信息 -->
@@ -160,8 +143,8 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
-import Dropdown from "primevue/dropdown";
-import { Globe, MessageSquare, Puzzle, Send, Zap } from "lucide-vue-next";
+import DropdownMenu from "@/components/ui/DropDown.vue";
+import { Globe, Send, Zap } from "lucide-vue-next";
 
 interface Message {
   id: number;
@@ -272,37 +255,3 @@ watch(
   { deep: true }
 );
 </script>
-
-<style scoped>
-:deep(.p-dropdown) {
-  background: transparent;
-  border: none;
-  color: white;
-}
-
-:deep(.p-dropdown-panel) {
-  background-color: #353535;
-  border: 1px solid #4b5563;
-  color: white;
-}
-
-:deep(.p-dropdown-item) {
-  color: white;
-}
-
-:deep(.p-dropdown-item:hover) {
-  background-color: #404040;
-}
-
-:deep(.p-dropdown-trigger) {
-  display: none;
-}
-
-.history-selector,
-.model-selector {
-  font-size: 0.9rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 2px 8px;
-}
-</style>
