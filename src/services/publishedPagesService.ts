@@ -71,9 +71,6 @@ export function loadPublishedPages() {
         path: page.route,
         name: `published-${page.id}`,
         component: () => import("@/views/PublishedPageRenderer.vue"),
-        props: (route) => ({
-          pageId: page.id,
-        }),
         meta: {
           pageId: page.id,
           isPublished: true,

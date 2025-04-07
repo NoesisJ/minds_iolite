@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import PreviewModal from "./PreviewModal.vue";

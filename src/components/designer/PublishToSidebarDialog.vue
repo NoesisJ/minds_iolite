@@ -119,7 +119,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
-import { useRouter } from "vue-router";
 import { publishPage } from "@/services/publishedPagesService";
 
 const props = defineProps({
@@ -132,7 +131,6 @@ const props = defineProps({
 const emit = defineEmits(["close", "publish-success"]);
 
 const designerStore = useDesignerStore();
-const router = useRouter();
 
 // 表单数据
 const selectedPageId = ref("");

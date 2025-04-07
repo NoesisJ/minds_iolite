@@ -14,7 +14,6 @@ export class ChartComponentGenerator implements ComponentGeneratorInterface {
   }
 
   generateCode(component: ComponentInstance): string {
-    const chartType = component.props.chartType || "basic-pie";
     const title = component.props.title || "图表";
     const height = component.props.height || "400px";
     const customClass = component.props.customClass || "";

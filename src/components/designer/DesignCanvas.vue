@@ -41,7 +41,7 @@
                 : 'border-gray-300 dark:border-gray-600',
             ]"
             @click="selectRegion(region.id)"
-            @dragover.prevent="onDragOver($event, region.id)"
+            @dragover.prevent="onDragOver($event)"
             @drop="onDrop($event, region.id)"
           >
             <div class="region-header mb-2 flex justify-between items-center">
@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentType } from "@/utils/componentUtils";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
@@ -158,11 +158,6 @@ const selectRegion = (regionId: string) => {
   designerStore.selectedComponentId = "";
 };
 
-const selectComponent = (componentId: string) => {
-  designerStore.selectedComponentId = componentId;
-  designerStore.selectedRegionId = "";
-};
-
 const openComponentSettings = (componentId: string) => {
   designerStore.selectedComponentId = componentId;
   // 可以在此处添加打开右侧面板的逻辑
@@ -180,7 +175,7 @@ const openLayoutSelector = () => {
 };
 
 // 处理拖拽事件
-const onDragOver = (event: DragEvent, regionId: string) => {
+const onDragOver = (event: DragEvent) => {
   event.preventDefault();
   // 可以添加视觉反馈
   const target = event.currentTarget as HTMLElement;

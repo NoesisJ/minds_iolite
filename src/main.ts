@@ -37,3 +37,12 @@ if (appStore.isTauri) {
 }
 
 app.mount("#app");
+
+declare global {
+  interface Window {
+    testFinanceApi: {
+      checkConnection: () => Promise<boolean>;
+      testCreate: () => Promise<any>;
+    };
+  }
+}

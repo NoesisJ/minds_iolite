@@ -135,32 +135,6 @@ const standardizeResponse = (response: any) => {
   };
 };
 
-// 标准化处理错误
-const handleError = (error: unknown) => {
-  console.error("API Error:", error);
-
-  let errorMessage;
-  if (error instanceof Error) {
-    errorMessage = error.message;
-  } else if (
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error
-  ) {
-    // @ts-ignore
-    errorMessage = error.message;
-  } else {
-    errorMessage = "未知错误";
-  }
-
-  // 返回一个更友好的错误对象
-  return {
-    success: false,
-    error: errorMessage,
-    data: null,
-  };
-};
-
 export const financeApi = {
   // 获取财务数据列表
   getList: async () => {

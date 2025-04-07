@@ -34,11 +34,11 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import TogglePanel from "@/components/ui/TogglePanel.vue";
 import { loadPublishedPages } from "@/services/publishedPagesService";
 import { usePublishedMenuStore } from "@/services/publishedPagesService";
-import { MenuItem, PublishedPage } from "@/services/publishedPagesService";
+import { PublishedPage } from "@/services/publishedPagesService";
 
 const router = useRouter();
 const publishedMenuStore = usePublishedMenuStore();

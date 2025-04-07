@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed, PropType } from "vue";
+import { onMounted, onUnmounted, watch, computed, PropType } from "vue";
 import * as echarts from "echarts/core";
 import {
   ToolboxComponent,

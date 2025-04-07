@@ -1,5 +1,4 @@
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
 import { Page, ComponentInstance } from "@/types/designer";
 import { componentGeneratorRegistry } from "./index";
 

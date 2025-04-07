@@ -679,19 +679,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import {
   ProjectGenerator,
   ProjectSettings,
   BuildConfig,
-  GenerationCallbacks,
 } from "@/services/ProjectGenerator";
-import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Page } from "@/types/designer";
 
-const props = defineProps({
+defineProps({
   show: Boolean,
 });
 
@@ -847,18 +845,6 @@ const formattedProjectSize = computed(() => {
   }
 });
 
-// 格式化日期为字符串 (YYYYMMDD_HHMMSS)
-const formatDate = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-
-  return `${year}${month}${day}_${hours}${minutes}${seconds}`;
-};
-
 // 开始生成项目
 const startGeneration = async () => {
   generationStarted.value = true;
@@ -922,58 +908,6 @@ const startGeneration = async () => {
 // 添加一个引用来存储生成器实例
 const currentGenerator = ref<ProjectGenerator | null>(null);
 
-// 生成项目方法
-const generateProject = async () => {
-  if (isGenerating.value) return;
-
-  isGenerating.value = true;
-  error.value = "";
-  projectSize.value = 0;
-
-  try {
-    // 创建项目生成器
-    const generator = new ProjectGenerator(
-      selectedPages.value
-        .map((id) => designerStore.pages.find((p) => p.id === id))
-        .filter(Boolean) as Page[],
-      projectSettings.value as unknown as ProjectSettings,
-      buildConfig.value as unknown as BuildConfig,
-      {
-        onStart: () => {
-          generationLogs.value.push({
-            time: new Date().toLocaleString(),
-            message: "开始生成项目",
-            type: "info",
-          });
-        },
-        onProgress: (progress, status) => {
-          generationProgress.value = progress;
-          generationStatus.value = status;
-        },
-        onLog: (message, type) => {
-          addLog(message, type);
-        },
-        onComplete: (size) => {
-          projectSize.value = size;
-          generationComplete.value = true;
-        },
-        onError: (error) => {
-          generationFailed.value = true;
-          addLog(`生成失败: ${error}`, "error");
-        },
-      }
-    );
-
-    // 生成项目
-    await generator.generateProject();
-  } catch (e) {
-    console.error("项目生成失败:", e);
-    error.value = e instanceof Error ? e.message : String(e);
-  } finally {
-    isGenerating.value = false;
-  }
-};
-
 // 下载项目方法
 const downloadProject = () => {
   console.log("点击下载按钮");
@@ -987,42 +921,6 @@ const downloadProject = () => {
 
   // 使用之前已生成的项目进行下载
   generateAndDownload(filename);
-};
-
-// 查找并点击下载按钮
-const findAndClickDownloadButton = () => {
-  // 等待DOM更新
-  nextTick(() => {
-    console.log("查找下载按钮...");
-
-    // 使用更通用的查询方式
-    const downloadButton =
-      document.querySelector(".download-button") ||
-      document.querySelector(".force-download-button") ||
-      document.getElementById("download-project-button");
-
-    console.log("找到下载按钮数量:", downloadButton ? 1 : 0);
-    console.log("可见的按钮元素:", document.querySelectorAll("button").length);
-
-    // 检查所有可能的原因
-    console.log("projectSize =", projectSize.value);
-    console.log("currentStep =", currentStep.value);
-    console.log("STEPS.BUILD_CONFIG =", STEPS.BUILD_CONFIG);
-    console.log("isGenerating =", isGenerating.value);
-
-    if (downloadButton) {
-      console.log("自动点击下载按钮");
-      (downloadButton as HTMLElement).click();
-    } else {
-      console.warn("未找到下载按钮，使用强制下载");
-      forceDownload();
-    }
-  });
-};
-
-// 重试生成
-const retryGeneration = () => {
-  startGeneration();
 };
 
 // 切换日志展开/收起状态
@@ -1070,23 +968,6 @@ const addLog = (
   });
 };
 
-// 添加测试下载功能
-const testDownload = () => {
-  try {
-    console.log("测试简单文件下载");
-    const testContent = `# ${projectSettings.value.name} 测试文件\n\n这是一个测试下载文件。如果您看到此文件，说明下载功能正常工作。`;
-    const blob = new Blob([testContent], { type: "text/plain" });
-    const filename = `${projectSettings.value.name}_test.txt`;
-
-    console.log("开始下载测试文件", filename);
-    saveAs(blob, filename);
-    console.log("测试文件下载请求已发送");
-  } catch (error) {
-    console.error("测试下载出错:", error);
-    alert("测试下载失败: " + error);
-  }
-};
-
 // 监听生成完成状态自动触发下载
 watch(
   () => generationComplete.value,
@@ -1100,26 +981,6 @@ watch(
     }
   }
 );
-
-// 添加手动下载方法
-const manualDownload = () => {
-  if (!currentGenerator.value) {
-    addLog("项目生成器不可用", "error");
-    return;
-  }
-
-  try {
-    // 创建时间戳防止缓存
-    const timestamp = new Date().getTime();
-    const filename = `${projectSettings.value.name}_${formatDate(new Date())}_${timestamp}.zip`;
-
-    addLog("尝试手动下载方法...", "info");
-    currentGenerator.value.downloadProject(filename);
-  } catch (error) {
-    console.error("手动下载失败:", error);
-    addLog(`手动下载失败: ${error}`, "error");
-  }
-};
 
 // 添加一个直接测试生成项目大小的函数
 const testGenerator = async () => {
@@ -1212,8 +1073,6 @@ const forceDownload = async () => {
 // 生成并下载项目
 const generateAndDownload = async (filename: string) => {
   try {
-    const zip = new JSZip();
-
     // 创建项目生成器
     const generator = new ProjectGenerator(
       selectedPages.value
@@ -1222,7 +1081,7 @@ const generateAndDownload = async (filename: string) => {
       projectSettings.value as unknown as ProjectSettings,
       buildConfig.value as unknown as BuildConfig,
       {
-        onProgress: (progress) => {
+        onProgress: () => {
           // 不更新UI避免状态混乱
         },
         onLog: (message, type) => {
@@ -1272,7 +1131,6 @@ const generateAndDownload = async (filename: string) => {
 // 在script setup区域，添加以下状态变量
 const isGenerating = ref(false);
 const error = ref("");
-const currentStatus = ref("");
 </script>
 
 <style scoped>
@@ -1701,7 +1559,6 @@ const currentStatus = ref("");
 .form-textarea:focus {
   outline: none;
   border-color: #3b82f6;
-  ring: 1px #3b82f6;
 }
 
 .form-textarea {

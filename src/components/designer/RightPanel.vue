@@ -325,12 +325,10 @@
 import { computed, ref, watch } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentDefinition } from "@/data/componentLibrary";
-import { availableImages, getImageUrl } from "@/assets/imageImports";
 import BaseInput from "@/components/Form/Inputs/BaseInput.vue";
 import BaseSelect from "@/components/Form/Inputs/BaseSelect.vue";
 
 // 调试模式开关
-const debug = false;
 
 const designerStore = useDesignerStore();
 
@@ -352,10 +350,6 @@ const componentId = ref("");
 const componentType = ref("");
 const props = ref<any>({});
 const styles = ref<any>({});
-const componentDefinition = computed(() => {
-  if (!selectedComponent.value) return null;
-  return getComponentDefinition(selectedComponent.value.componentId);
-});
 
 // 区域属性
 const regionName = ref("");
@@ -368,13 +362,6 @@ const layoutOptions = computed(() => {
     value: layout.id,
   }));
 });
-
-// 图片组件属性
-const imageSourceType = ref("local");
-const localImageName = ref("");
-
-// 强制渲染页面属性面板
-const forceShowPageProperties = false;
 
 // 是否显示页面属性面板 - 修改逻辑
 const showPageProperties = computed(() => {
@@ -497,76 +484,6 @@ const updateLayoutType = (value: string) => {
   } else {
     console.warn("无法更新布局: 未选中页面");
   }
-};
-
-// 更新组件属性
-const updateProp = (key: string, value: any) => {
-  if (!selectedComponentId.value) return;
-
-  const updatedProps = {
-    [key]: value,
-  };
-
-  designerStore.updateComponentProps(selectedComponentId.value, updatedProps);
-};
-
-// 更新组件样式
-const updateStyle = (key: string, value: any) => {
-  if (!selectedComponentId.value) return;
-
-  const updatedStyles = {
-    [key]: value,
-  };
-
-  designerStore.updateComponentStyles(selectedComponentId.value, updatedStyles);
-};
-
-// 更新图片源类型
-const updateImageSourceType = (value: string) => {
-  imageSourceType.value = value;
-};
-
-// 更新本地图片名称
-const updateLocalImageName = (value: string) => {
-  localImageName.value = value;
-};
-
-// 获取本地图片源 - 使用Vite的资源导入
-const getLocalImageSrc = (name: string) => {
-  if (!name) return "";
-  return getImageUrl(name);
-};
-
-// 应用本地图片 - 实现真正的功能
-const applyLocalImage = () => {
-  if (!localImageName.value) {
-    return;
-  }
-
-  // 更新组件的src属性
-  updateProp("src", localImageName.value);
-
-  // 可选：显示成功提示
-  console.log("已应用图片: " + localImageName.value);
-};
-
-// 处理图片加载错误 - 实现真正的功能
-const handleImageError = (e: Event) => {
-  const target = e.target as HTMLImageElement;
-
-  // 在控制台显示错误
-  console.error("图片加载失败:", target.src);
-
-  // 显示友好的错误信息
-  target.alt = "图片加载失败";
-
-  // 可以替换为默认错误图片
-  // target.src = '/imgs/error.png';
-};
-
-// 增加选择示例图片的功能
-const selectImage = (imageName: string) => {
-  localImageName.value = imageName;
 };
 
 // 添加调试信息

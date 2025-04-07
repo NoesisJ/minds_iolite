@@ -1,17 +1,11 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import {
-  ComponentInstance,
-  Page,
-  Region,
-  LayoutTemplate,
-} from "../types/designer";
+import { Page, Region, LayoutTemplate } from "../types/designer";
 import {
   createComponentInstance,
   getComponentDefinition,
 } from "@/data/componentLibrary";
 import { nextTick } from "vue";
-import { baseComponents } from "@/data/componentLibrary";
 import { watch } from "vue";
 
 // 本地存储键名

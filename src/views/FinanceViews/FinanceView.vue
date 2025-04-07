@@ -1026,7 +1026,6 @@ const validateItem = () => {
   }
 
   // 计算总价
-  const oldTotal = item.value.totalPrice;
   item.value.totalPrice =
     item.value.unitPrice * item.value.quantity + item.value.shippingCost;
   console.log(
@@ -1145,23 +1144,6 @@ const formatInputDate = (dateString: string) => {
   }
 
   return cleaned;
-};
-
-// 添加API错误处理函数
-const handleApiError = (error: unknown) => {
-  let errorMessage = "操作失败";
-
-  if (error instanceof Error) {
-    errorMessage = error.message;
-  } else if (typeof error === "object" && error !== null) {
-    // @ts-ignore
-    errorMessage = error.error || error.message || "未知错误";
-  }
-
-  console.error("API错误:", error);
-  showToast(errorMessage, "error", "错误");
-
-  return errorMessage;
 };
 
 // 添加日期输入处理

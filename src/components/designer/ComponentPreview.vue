@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, onMounted } from "vue";
+import { ref, computed, defineProps } from "vue";
 import { getComponentDefinition } from "@/data/componentLibrary";
 import { getImageUrl } from "@/assets/imageImports";
 // 导入图表组件

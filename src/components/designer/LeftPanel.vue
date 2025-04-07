@@ -167,7 +167,6 @@
 import { ref, computed, nextTick } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { allComponents, componentCategories } from "@/data/componentLibrary";
-import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 
 const designerStore = useDesignerStore();
 
