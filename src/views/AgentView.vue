@@ -28,20 +28,6 @@
           </div>
         </DropdownMenu>
       </div>
-
-      <!-- 信息 -->
-      <div class="flex items-center space-x-3">
-        <button
-          class="px-3 py-1 border border-gray-600 rounded-md text-sm hover:bg-gray-700"
-        >
-          临时
-        </button>
-        <div
-          class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs"
-        >
-          NO
-        </div>
-      </div>
     </header>
 
     <!-- 消息展示区 -->
@@ -85,12 +71,16 @@
       <div
         class="relative max-w-3xl mx-auto bg-[#353535] rounded-2xl border border-[#65645f] py-3 px-6"
       >
+        <!-- 输入框 -->
         <textarea
+          ref="textareaRef"
           v-model="userInput"
           placeholder="询问任何问题"
-          class="w-full min-h-[40px] max-h-[200px] bg-transparent border-0 text-white resize-none focus:outline-none pr-10 py-2"
-          @keydown.enter.prevent="sendMessage"
-        ></textarea>
+          class="w-full min-h-[40px] max-h-[400px] border-0 text-white pr-10 py-2 outline-none custom-scrollbar resize-none"
+          @keydown.enter.exact.prevent="sendMessage"
+          @input="adjustTextareaHeight"
+          style="overflow-y: hidden"
+        />
 
         <!-- 功能开关按钮 -->
         <div class="flex items-center mt-2 ml-[-0.6rem] space-x-3">
@@ -142,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted } from "vue";
 import DropdownMenu from "@/components/ui/DropDown.vue";
 import { Globe, Send, Zap } from "lucide-vue-next";
 
@@ -164,14 +154,16 @@ interface Model {
   name: string;
 }
 
-// 聊天历史记录
+// 示例聊天历史记录
+// TODO: 接入实际聊天记录
 const chatHistory = ref<ChatSession[]>([
   { id: 1, title: "关于项目架构的讨论", date: new Date() },
   { id: 2, title: "如何优化代码性能", date: new Date() },
   { id: 3, title: "Bug修复建议", date: new Date() },
 ]);
 
-// 可选模型
+// 示例可选模型
+// TODO: 接入实际模型
 const models = ref<Model[]>([
   { id: "deepseek", name: "deepseek" },
   { id: "gpt", name: "gpt" },
@@ -198,6 +190,32 @@ const toggleReasoning = () => {
 const userInput = ref<string>("");
 const messages = ref<Message[]>([]);
 const messagesContainer = ref<HTMLElement | null>(null);
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+
+// 自动调整输入框高度
+const adjustTextareaHeight = () => {
+  if (!textareaRef.value) return;
+
+  textareaRef.value.style.height = "auto"; // 重置高度为自动，以便计算正确的高度
+
+  // 计算新的高度（不超过最大高度）
+  const newHeight = Math.min(
+    textareaRef.value.scrollHeight,
+    400 // 最大高度（px）
+  );
+
+  textareaRef.value.style.height = `${newHeight}px`; // 应用
+  textareaRef.value.style.overflowY = newHeight >= 400 ? "auto" : "hidden"; // 溢出则显示滚动条
+};
+
+// 在组件挂载时和内容变化时调整高度
+onMounted(() => {
+  adjustTextareaHeight();
+});
+
+watch(userInput, () => {
+  nextTick(adjustTextareaHeight);
+});
 
 // 发送消息方法
 const sendMessage = async () => {
@@ -214,11 +232,11 @@ const sendMessage = async () => {
   messages.value.push(userMessage);
   userInput.value = "";
 
-  // 滚动到底部
-  await nextTick();
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-  }
+  nextTick(() => {
+    if (textareaRef.value) {
+      textareaRef.value.style.height = "40px"; // 重置为最小高度
+    }
+  });
 
   // 模拟AI响应
   setTimeout(() => {
@@ -230,14 +248,6 @@ const sendMessage = async () => {
     };
 
     messages.value.push(aiMessage);
-
-    // 再次滚动到底部
-    nextTick(() => {
-      if (messagesContainer.value) {
-        messagesContainer.value.scrollTop =
-          messagesContainer.value.scrollHeight;
-      }
-    });
   }, 1000);
 };
 
