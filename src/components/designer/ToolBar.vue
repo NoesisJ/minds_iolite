@@ -73,17 +73,6 @@
 
     <div class="right-section flex items-center space-x-4">
       <base-button
-        status="warning"
-        size="small"
-        @click="openPublishDialog"
-        :disabled="!hasPages"
-        class="flex items-center"
-      >
-        <i class="pi pi-upload mr-1.5"></i>
-        <span class="text-white">发布</span>
-      </base-button>
-
-      <base-button
         status="success"
         size="small"
         @click="openPublishToSidebarDialog"
@@ -155,9 +144,6 @@
     @close="showPreview = false"
   />
 
-  <!-- 发布对话框 -->
-  <PublishDialog :show="showPublishDialog" @close="closePublishDialog" />
-
   <!-- 发布到侧边栏对话框 -->
   <PublishToSidebarDialog
     :show="showPublishToSidebarDialog"
@@ -178,7 +164,6 @@ import { ref, computed, onMounted } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import PreviewModal from "./PreviewModal.vue";
-import PublishDialog from "./PublishDialog.vue";
 import PublishToSidebarDialog from "./PublishToSidebarDialog.vue";
 import ManagePublishedPagesDialog from "./ManagePublishedPagesDialog.vue";
 import { useRouter } from "vue-router";
@@ -190,7 +175,6 @@ const router = useRouter();
 const showPageMenu = ref(false);
 const isDarkMode = ref(false);
 const showPreview = ref(false);
-const showPublishDialog = ref(false);
 const showPublishToSidebarDialog = ref(false);
 const showManagePublishedPagesDialog = ref(false);
 
@@ -277,14 +261,6 @@ const openViewer = () => {
 };
 
 // 发布相关方法
-const openPublishDialog = () => {
-  showPublishDialog.value = true;
-};
-
-const closePublishDialog = () => {
-  showPublishDialog.value = false;
-};
-
 const openPublishToSidebarDialog = () => {
   showPublishToSidebarDialog.value = true;
 };

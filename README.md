@@ -23,17 +23,12 @@ Minds-Iolite 是一个基于 Vue 3 和 TypeScript 构建的低代码平台，允
   - 实时查看设计效果
 - ✅ 本地存储
   - 页面设计自动保存
-- ✅ 发布对话框基础功能
-  - 多步骤向导界面
-  - 页面选择功能
-  - 项目设置配置
-  - 生成配置选项
+- ✅ 发布到侧边栏功能
+  - 将设计的页面发布到应用侧边栏
+  - 管理已发布页面
 
 ## 计划中的功能
 
-- 🚧 发布功能完整实现
-  - 代码生成引擎
-  - 项目打包下载
 - 🚧 更多组件类型
   - 图表组件
   - 高级表单组件
@@ -91,7 +86,7 @@ npm run build
 2. 从组件库中拖拽组件到设计区域
 3. 配置组件属性和布局
 4. 使用预览功能查看设计效果
-5. 通过发布功能生成可部署的项目代码
+5. 通过"发布到侧边栏"功能将页面添加到应用导航中
 
 ## 许可证
 
@@ -103,15 +98,15 @@ Minds Iolite是一个现代化的低代码平台，允许用户通过可视化�
 
 ## 项目开发路线图
 
-### 阶段1: 组件代码生成器 (当前重点)
-- [x] 实现文本组件代码生成器
-- [ ] 实现按钮组件代码生成器
-- [ ] 实现图片组件代码生成器
-- [ ] 实现表单组件代码生成器 (输入框、选择框等)
-- [ ] 实现数据展示组件代码生成器 (表格、列表等)
+### 阶段1: 组件系统 (当前重点)
+- [x] 实现文本组件编辑器
+- [ ] 实现按钮组件编辑器
+- [ ] 实现图片组件编辑器
+- [ ] 实现表单组件编辑器 (输入框、选择框等)
+- [ ] 实现数据展示组件编辑器 (表格、列表等)
 - [ ] 完成页面视图组装逻辑
 - [ ] 实现页面路由生成
-- [ ] 生成功能性项目结构 (可运行的Vue应用)
+- [ ] 实现组件拖拽与布局系统
 
 ### 阶段2: 数据集成和表单功能
 - [ ] 创建数据源管理界面
@@ -159,113 +154,19 @@ Minds Iolite是一个现代化的低代码平台，允许用户通过可视化�
 - [ ] 实现评论和反馈功能
 
 ### 阶段7: 发布和部署
-- [ ] 增强发布对话框功能
-- [ ] 添加静态网站发布选项
-- [ ] 实现服务器部署流程
-- [ ] 添加容器化部署支持
-- [ ] 开发CI/CD集成
-- [ ] 实现发布版本管理
+- [ ] 增强发布到侧边栏功能
+- [ ] 添加模板与组件库
+- [ ] 实现多页面导航系统
+- [ ] 添加用户权限控制
+- [ ] 开发主题切换系统
+- [ ] 实现设计导出导入
 - [ ] 添加发布前预检和优化
-
-## 阶段1详细实施计划
-
-### 组件代码生成器实现步骤
-
-1. **修改 ProjectGenerator.ts 文件**:
-   - 完善 `generatePageComponents()` 方法
-   - 添加各类型组件的代码生成方法
-   - 实现页面组装逻辑
-
-2. **文本组件代码生成**:
-   ```typescript
-   private generateTextComponentCode(component: ComponentInstance): string {
-     // 根据组件属性生成Vue组件代码
-     return `<template>
-       <div class="text-component" :style="styles">
-         {{ content }}
-       </div>
-     </template>
-     
-     <script>
-     export default {
-       props: {
-         content: {
-           type: String,
-           default: '${component.props.content || "文本内容"}'
-         },
-         styles: {
-           type: Object,
-           default: () => ({
-             fontSize: '${component.styles.fontSize || "16px"}',
-             color: '${component.styles.color || "#333"}',
-             // 其他样式...
-           })
-         }
-       }
-     }
-     </script>`;
-   }
-   ```
-
-3. **页面组装逻辑**:
-   ```typescript
-   private generatePageViewContent(page: Page): string {
-     // 生成页面组件，包含所有区域和子组件
-     let imports = '';
-     let components = '{';
-     let template = '<div class="page-container">\n';
-     
-     // 处理每个区域...
-     
-     template += '</div>';
-     
-     return `<template>
-       ${template}
-     </template>
-     
-     <script>
-     ${imports}
-     
-     export default {
-       components: ${components}
-     }
-     </script>`;
-   }
-   ```
-
-4. **路由生成**:
-   ```typescript
-   private generateRoutes(): string {
-     // 生成Vue Router配置
-     let routes = '';
-     this.pages.forEach(page => {
-       routes += `  {
-         path: '/${page.name.toLowerCase()}',
-         name: '${page.name}',
-         component: () => import('../views/${page.name}.vue')
-       },\n`;
-     });
-     
-     return `import { createRouter, createWebHistory } from 'vue-router'
-
-     const routes = [
-       ${routes}
-     ]
-     
-     const router = createRouter({
-       history: createWebHistory('${this.settings.routeMode === 'history' ? '/' : '#/'}'),
-       routes
-     })
-     
-     export default router`;
-   }
-   ```
 
 ## 系统架构
 
-### 组件库系统与代码生成
+### 组件库系统
 
-设计器的核心包含三个主要系统，使其能够从可视化设计到代码生成：
+设计器的核心包含两个主要系统：
 
 #### 1. 组件定义和注册系统
 
@@ -292,18 +193,3 @@ Minds Iolite是一个现代化的低代码平台，允许用户通过可视化�
 2. `DesignCanvas.vue` 中的事件处理函数捕获放置事件
 3. 通过 `designerStore` 创建组件实例并添加到页面区域
 4. `ComponentPreview.vue` 负责根据组件类型渲染预览
-
-#### 3. 代码生成系统
-
-代码生成系统位于 `src/services/generator` 目录，主要包含：
-
-- `ComponentGeneratorInterface` - 定义组件生成器接口
-- 各种组件生成器实现（文本、按钮、图片等）
-- 组件生成器注册表 - 管理所有生成器
-- `ProjectGenerator` - 整合所有组件代码，生成完整项目
-
-当用户发布项目时，系统会：
-1. 收集所有页面和组件
-2. 为每个组件调用对应生成器生成Vue组件代码
-3. 生成路由配置和项目结构
-4. 打包成一个完整可运行的Vue项目
