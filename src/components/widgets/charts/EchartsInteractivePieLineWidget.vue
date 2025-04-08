@@ -4,7 +4,6 @@
     <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
-      :style="{ height: height || '450px' }"
       class="chart-container"
     ></div>
   </div>
@@ -40,19 +39,15 @@ echarts.use([
 
 const props = defineProps({
   // 图表标题
-  title: {
-    type: String,
-    default: "饼图折线联动",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+  // title: {
+  //   type: String,
+  //   default: "饼图折线联动",
+  // },
+
   // 图表高度
   height: {
     type: String,
-    default: "450px",
+    default: "600px",
   },
   // 联动数据，需要是二维数组格式，如:
   // [['产品', '2020', '2021', '2022', '2023'],
@@ -61,14 +56,6 @@ const props = defineProps({
   chartData: {
     type: Array,
     default: () => [],
-  },
-  // 饼图配置
-  pieConfig: {
-    type: Object,
-    default: () => ({
-      radius: "30%",
-      center: ["50%", "25%"],
-    }),
   },
   // 颜色调色板
   colorPalette: {
@@ -141,9 +128,25 @@ function updateChartOption() {
       text: props.title,
       subtext: props.subtitle,
       left: "center",
+      top: 10,
+      textStyle: {
+        color: '#ffffff'
+      },
+      subtextStyle: {
+        color: '#e1e1e1'
+      }
     },
     color: props.colorPalette,
-    legend: {},
+    legend: {
+      top: '42%',
+      left: 'center',
+      textStyle: {
+        color: '#ffffff'
+      },
+      show: true,
+      orient: 'horizontal',
+      data: data.slice(1).map(item => item[0]) // 从数据中提取图例项
+    },
     tooltip: {
       trigger: "axis",
       showContent: false,
@@ -151,9 +154,33 @@ function updateChartOption() {
     dataset: {
       source: data,
     },
-    xAxis: { type: "category" },
-    yAxis: { gridIndex: 0 },
-    grid: { top: "55%" },
+    xAxis: { 
+      type: "category",
+      gridIndex: 0,
+      axisLabel: {
+        color: '#ffffff'
+      }
+    },
+    yAxis: { 
+      gridIndex: 0,
+      axisLabel: {
+        color: '#ffffff'
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          color: 'rgba(255, 255, 255, 0.2)'
+        }
+      }
+    },
+    grid: { 
+      left: '5%',
+      right: '5%',
+      bottom: '5%',
+      top: '55%',
+      containLabel: true
+    },
     series: [
       // 这里需要根据数据源动态创建折线系列
       ...Array(data.length - 1)
@@ -167,18 +194,28 @@ function updateChartOption() {
       {
         type: "pie",
         id: "pie",
-        radius: props.pieConfig.radius,
-        center: props.pieConfig.center,
+        radius: '28%',
+        center: ['50%', '25%'],
         emphasis: {
           focus: "self",
         },
         label: {
-          formatter: "{b}: {@2018} ({d}%)",
+          formatter: "{b}: {c} ({d}%)",
+          color: '#ffffff',
+          show: true,
+          position: 'outside',
+          distanceToLabelLine: 5
+        },
+        labelLine: {
+          show: true,
+          length: 10,
+          length2: 10,
+          smooth: false
         },
         encode: {
-          itemName: "product",
-          value: "2018",
-          tooltip: "2018",
+          itemName: data[0][0],    // 使用数据中的第一列名称
+          value: data[0][1],       // 默认使用第二列作为初始值
+          tooltip: data[0][1]
         },
       },
     ],
@@ -228,6 +265,10 @@ watch(
 <style scoped>
 .echarts-interactive-pie-line-widget {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 防止内容溢出 */
 }
 
 .chart-title {
@@ -247,6 +288,9 @@ watch(
 
 .chart-container {
   width: 100%;
+  flex: 1;
+  min-height: 350px; /* 减小最小高度 */
+  position: relative; /* 确保内容不会溢出 */
 }
 
 /* 暗色模式适配 */

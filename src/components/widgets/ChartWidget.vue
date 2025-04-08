@@ -45,7 +45,7 @@ const props = defineProps({
   // 图表高度
   height: {
     type: String,
-    default: "350px",
+    default: "600px",
   },
   // 图表数据
   data: {
