@@ -1,7 +1,5 @@
 <template>
   <div class="echarts-interactive-pie-line-widget">
-    <div v-if="title" class="chart-title">{{ title }}</div>
-    <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
       class="chart-container"
@@ -38,11 +36,6 @@ echarts.use([
 ]);
 
 const props = defineProps({
-  // 图表标题
-  // title: {
-  //   type: String,
-  //   default: "饼图折线联动",
-  // },
 
   // 图表高度
   height: {
@@ -124,18 +117,6 @@ function updateChartOption() {
 
   // 图表配置
   const option = {
-    title: {
-      text: props.title,
-      subtext: props.subtitle,
-      left: "center",
-      top: 10,
-      textStyle: {
-        color: '#ffffff'
-      },
-      subtextStyle: {
-        color: '#e1e1e1'
-      }
-    },
     color: props.colorPalette,
     legend: {
       top: '42%',
@@ -249,10 +230,7 @@ onUnmounted(() => {
 // 监听属性变化，更新图表
 watch(
   () => [
-    props.title,
-    props.subtitle,
     props.chartData,
-    props.pieConfig,
     props.colorPalette,
   ],
   () => {
@@ -269,21 +247,6 @@ watch(
   display: flex;
   flex-direction: column;
   overflow: hidden; /* 防止内容溢出 */
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.chart-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 8px;
 }
 
 .chart-container {

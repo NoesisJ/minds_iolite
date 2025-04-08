@@ -1,7 +1,5 @@
 <template>
   <div class="highcharts-pie-widget">
-    <div v-if="title" class="chart-title">{{ title }}</div>
-    <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
       :style="{ height: height || '350px' }"
@@ -15,16 +13,7 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import Highcharts from "highcharts";
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "饼图示例",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+
   // 图表高度
   height: {
     type: String,
@@ -49,6 +38,11 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => [],
+  },
+  // 背景颜色
+  backgroundColor: {
+    type: String,
+    default: null,
   },
 });
 
@@ -85,19 +79,7 @@ function getChartOptions() {
   return {
     chart: {
       type: "pie",
-      backgroundColor: "transparent",
-    },
-    title: {
-      text: props.title,
-      style: {
-        fontSize: "16px",
-      },
-    },
-    subtitle: {
-      text: props.subtitle,
-      style: {
-        fontSize: "14px",
-      },
+      backgroundColor: props.backgroundColor || null,
     },
     tooltip: {
       pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
@@ -161,12 +143,11 @@ onUnmounted(() => {
 // 监听属性变化，更新图表
 watch(
   () => [
-    props.title,
-    props.subtitle,
     props.showLegend,
     props.enableDataLabels,
     props.seriesName,
     props.data,
+    props.backgroundColor,
   ],
   () => {
     if (chartInstance) {
@@ -180,21 +161,6 @@ watch(
 <style scoped>
 .highcharts-pie-widget {
   width: 100%;
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.chart-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 8px;
 }
 
 .chart-container {

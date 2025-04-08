@@ -1,7 +1,5 @@
 <template>
   <div class="echarts-line-widget">
-    <div v-if="title" class="chart-title">{{ title }}</div>
-    <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
       :style="{ height: height || '350px' }"
@@ -33,16 +31,7 @@ echarts.use([
 ]);
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "折线图示例",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+
   // 图表高度
   height: {
     type: String,
@@ -183,11 +172,6 @@ function updateChartOption() {
 
   // 图表配置
   const option = {
-    title: {
-      text: props.title,
-      subtext: props.subtitle,
-      left: "center",
-    },
     tooltip: {
       trigger: "axis",
     },
@@ -200,7 +184,7 @@ function updateChartOption() {
       left: "3%",
       right: "4%",
       bottom: "15%",
-      top: props.subtitle ? "15%" : "10%",
+      top: "10%",
       containLabel: true,
     },
     xAxis: {
@@ -268,31 +252,7 @@ watch(
   width: 100%;
 }
 
-.chart-title {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.chart-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
 .chart-container {
   width: 100%;
-}
-
-/* 暗色模式适配 */
-:deep(.dark) .chart-title {
-  color: #e5e7eb;
-}
-
-:deep(.dark) .chart-subtitle {
-  color: #9ca3af;
 }
 </style>

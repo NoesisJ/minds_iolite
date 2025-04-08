@@ -89,15 +89,13 @@
       <h3 class="text-lg font-medium mb-3">区域属性</h3>
 
       <div class="form-group mb-3">
-        <n-form-item label="区域名称">
-          <n-input v-model:value="regionName" disabled />
-        </n-form-item>
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">区域名称</label>
+        <base-input v-model="regionName" disabled class="w-full" />
       </div>
 
       <div class="form-group mb-3">
-        <n-form-item label="组件数量">
-          <n-input v-model:value="componentCount" disabled />
-        </n-form-item>
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件数量</label>
+        <base-input v-model="componentCount" disabled class="w-full" />
       </div>
     </div>
 
@@ -494,28 +492,10 @@ console.log("当前组件数据:", currentComponent.value);
 
 <style scoped>
 /* 确保表单项独占一行 */
-:deep(.n-form-item) {
+.form-group {
   margin-bottom: 12px;
   width: 100%;
   display: block;
-}
-
-:deep(.n-form-item-label) {
-  font-size: 14px;
-  padding-bottom: 4px;
-  color: #555;
-  font-weight: 500;
-  display: block;
-  width: 100%;
-}
-
-:deep(.n-form-item-blank) {
-  width: 100%;
-  display: block;
-}
-
-.dark :deep(.n-form-item-label) {
-  color: #ccc;
 }
 
 h4.font-medium {
@@ -525,30 +505,6 @@ h4.font-medium {
 
 .dark h4.font-medium {
   color: #ccc;
-}
-
-:deep(.n-input) {
-  background-color: #f5f5f5;
-  color: #222;
-}
-
-.dark :deep(.n-input) {
-  background-color: #282828;
-  color: #f0f0f0;
-}
-
-:deep(.n-input--disabled) {
-  opacity: 0.75;
-}
-
-:deep(.n-form-item) {
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-:deep(.n-input:focus) {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 .specific-props,

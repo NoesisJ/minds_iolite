@@ -1,7 +1,5 @@
 <template>
   <div class="echarts-pie-widget">
-    <div v-if="title" class="chart-title">{{ title }}</div>
-    <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
       :style="{ height: height || '350px' }"
@@ -33,16 +31,7 @@ echarts.use([
 ]);
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "饼图示例",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+
   // 图表高度
   height: {
     type: String,
@@ -67,6 +56,11 @@ const props = defineProps({
   colorPalette: {
     type: Array,
     default: () => ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de"],
+  },
+  // 是否显示图例
+  showLegend: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -106,26 +100,16 @@ function updateChartOption() {
   const chartData =
     props.data && props.data.length > 0 ? props.data : defaultData;
 
-  // 确定图例方向
-  const legendOrient =
-    props.legendPosition === "left" || props.legendPosition === "right"
-      ? "vertical"
-      : "horizontal";
-
   // 图表配置
   const option = {
-    title: {
-      text: props.title,
-      subtext: props.subtitle,
-      left: "center",
-    },
     tooltip: {
       trigger: "item",
-      formatter: "{a} <br/>{b}: {c} ({d}%)",
+      formatter: "{b}: {c} ({d}%)",
     },
     legend: {
-      orient: legendOrient,
-      [props.legendPosition]: 10,
+      show: props.showLegend,
+      orient: "horizontal",
+      top: "bottom",
       data: chartData.map((item) => item.name),
     },
     color: props.colorPalette,
@@ -180,6 +164,7 @@ watch(
     props.legendPosition,
     props.data,
     props.colorPalette,
+    props.showLegend,
   ],
   () => {
     updateChartOption();
@@ -191,21 +176,6 @@ watch(
 <style scoped>
 .echarts-pie-widget {
   width: 100%;
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.chart-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 8px;
 }
 
 .chart-container {

@@ -37,16 +37,6 @@ echarts.use([
 ]);
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "面积图",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
   // 图表高度
   height: {
     type: String,

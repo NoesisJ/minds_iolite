@@ -109,18 +109,53 @@ export function loadPublishedPages() {
 }
 
 // 发布页面
-export function publishPage(page: any, settings: PublishSettings) {
+export async function publishPage(page: any, settings: PublishSettings) {
   try {
     const publishedPages = JSON.parse(
       localStorage.getItem("published_pages") || "[]"
     );
 
     // 检查路径是否已存在
-    if (publishedPages.some((p: PublishedPage) => p.route === settings.route)) {
-      throw new Error("该路由路径已被使用，请更换");
+    const existingPageIndex = publishedPages.findIndex(
+      (p: PublishedPage) => p.route === settings.route
+    );
+    
+    // 如果路径已存在
+    if (existingPageIndex !== -1) {
+      // 返回一个特殊状态，让调用者知道需要确认覆盖
+      return {
+        needsOverwriteConfirmation: true,
+        existingPage: publishedPages[existingPageIndex],
+        // 提供一个确认覆盖的函数
+        confirmOverwrite: () => {
+          // 移除现有页面
+          publishedPages.splice(existingPageIndex, 1);
+          
+          // 创建新的发布页面记录
+          const publishedPage: PublishedPage = {
+            id: Date.now().toString(),
+            pageId: page.id,
+            title: settings.title,
+            icon: settings.icon,
+            route: settings.route,
+            parentMenu: settings.parentMenu,
+            pageData: JSON.parse(JSON.stringify(page)),
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          };
+          
+          publishedPages.push(publishedPage);
+          localStorage.setItem("published_pages", JSON.stringify(publishedPages));
+          
+          // 重新加载页面
+          loadPublishedPages();
+          
+          return publishedPage;
+        }
+      };
     }
 
-    // 创建发布页面记录
+    // 正常流程 - 路径不存在时
     const publishedPage: PublishedPage = {
       id: Date.now().toString(),
       pageId: page.id,
@@ -128,7 +163,7 @@ export function publishPage(page: any, settings: PublishSettings) {
       icon: settings.icon,
       route: settings.route,
       parentMenu: settings.parentMenu,
-      pageData: JSON.parse(JSON.stringify(page)), // 深拷贝页面数据
+      pageData: JSON.parse(JSON.stringify(page)),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };

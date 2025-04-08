@@ -15,16 +15,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import Highcharts from "highcharts";
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "折线图示例",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+
   // 图表高度
   height: {
     type: String,

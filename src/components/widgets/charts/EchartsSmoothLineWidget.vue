@@ -1,7 +1,5 @@
 <template>
   <div class="echarts-smooth-line-widget">
-    <div v-if="title" class="chart-title">{{ title }}</div>
-    <div v-if="subtitle" class="chart-subtitle">{{ subtitle }}</div>
     <div
       ref="chartRef"
       :style="{ height: height || '350px' }"
@@ -35,16 +33,7 @@ echarts.use([
 ]);
 
 const props = defineProps({
-  // 图表标题
-  title: {
-    type: String,
-    default: "平滑折线图",
-  },
-  // 图表副标题
-  subtitle: {
-    type: String,
-    default: "",
-  },
+
   // 图表高度
   height: {
     type: String,
@@ -74,6 +63,11 @@ const props = defineProps({
   areaColor: {
     type: String,
     default: "rgba(84, 112, 198, 0.2)",
+  },
+  // 是否显示图例
+  showLegend: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -119,18 +113,19 @@ function updateChartOption() {
 
   // 图表配置
   const option = {
-    title: {
-      text: props.title,
-      subtext: props.subtitle,
-      left: "center",
-    },
     tooltip: {
       trigger: "axis",
+    },
+    legend: {
+      show: props.showLegend,
+      top: "bottom",
+      data: ["Line 1"]
     },
     grid: {
       left: "3%",
       right: "4%",
-      bottom: "3%",
+      bottom: "15%",
+      top: "10%",
       containLabel: true,
     },
     xAxis: {
@@ -143,6 +138,7 @@ function updateChartOption() {
     },
     series: [
       {
+        name: "Line 1",
         data: yData,
         type: "line",
         smooth: true,
@@ -199,13 +195,12 @@ onUnmounted(() => {
 // 监听属性变化，更新图表
 watch(
   () => [
-    props.title,
-    props.subtitle,
     props.xAxisData,
     props.seriesData,
     props.themeColor,
     props.showArea,
     props.areaColor,
+    props.showLegend,
   ],
   () => {
     updateChartOption();
@@ -219,31 +214,7 @@ watch(
   width: 100%;
 }
 
-.chart-title {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: center;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.chart-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
 .chart-container {
   width: 100%;
-}
-
-/* 暗色模式适配 */
-:deep(.dark) .chart-title {
-  color: #e5e7eb;
-}
-
-:deep(.dark) .chart-subtitle {
-  color: #9ca3af;
 }
 </style>

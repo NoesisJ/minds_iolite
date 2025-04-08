@@ -196,15 +196,35 @@ async function publishToSidebar() {
     }
 
     // 2. 发布页面
-    const publishedPage = await publishPage(selectedPage, {
+    const result = await publishPage(selectedPage, {
       title: menuTitle.value,
       icon: menuIcon.value,
       route: routePath.value,
       parentMenu: parentMenu.value,
     });
 
+    // 检查是否需要确认覆盖
+    if ('needsOverwriteConfirmation' in result && result.needsOverwriteConfirmation) {
+      const confirmed = confirm(
+        `路径 "${routePath.value}" 已被页面 "${result.existingPage.title}" 使用。\n\n是否覆盖现有页面？`
+      );
+      
+      if (confirmed) {
+        // 用户确认覆盖，使用提供的确认方法
+        const publishedPage = await result.confirmOverwrite();
+        
+        // 通知成功
+        emit("publish-success", publishedPage);
+        
+        // 关闭对话框
+        onClose();
+      }
+      // 如果用户取消，对话框保持打开状态，不执行任何操作
+      return;
+    }
+
     // 3. 通知成功
-    emit("publish-success", publishedPage);
+    emit("publish-success", result);
 
     // 4. 关闭对话框
     onClose();
