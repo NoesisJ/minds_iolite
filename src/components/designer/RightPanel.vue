@@ -97,6 +97,36 @@
         <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件数量</label>
         <base-input v-model="componentCount" disabled class="w-full" />
       </div>
+      
+      <h4 class="font-medium text-base mt-4 mb-3">布局设置</h4>
+      
+      <div class="form-group mb-3">
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件排列方向</label>
+        <select 
+          v-model="regionLayoutDirection" 
+          class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-gray-700 dark:text-gray-200"
+          @change="updateRegionLayout"
+        >
+          <option value="vertical">垂直排列</option>
+          <option value="horizontal">水平排列</option>
+        </select>
+      </div>
+      
+      <div class="form-group mb-3">
+        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件间距 (px)</label>
+        <div class="flex items-center">
+          <input 
+            type="range" 
+            v-model.number="regionLayoutSpacing" 
+            min="0" 
+            max="24" 
+            step="2"
+            class="w-full mr-2"
+            @change="updateRegionLayout"
+          />
+          <span class="text-sm text-gray-700 dark:text-gray-300 w-8 text-center">{{ regionLayoutSpacing }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- 组件属性 -->
@@ -352,6 +382,8 @@ const styles = ref<any>({});
 // 区域属性
 const regionName = ref("");
 const componentCount = ref(0);
+const regionLayoutDirection = ref("vertical");
+const regionLayoutSpacing = ref(8);
 
 // 布局选项
 const layoutOptions = computed(() => {
@@ -431,6 +463,16 @@ watch(
     if (region) {
       regionName.value = region.name;
       componentCount.value = region.components.length;
+      
+      // 获取区域布局设置
+      if (region.layout) {
+        regionLayoutDirection.value = region.layout.direction || "vertical";
+        regionLayoutSpacing.value = region.layout.spacing || 8;
+      } else {
+        // 默认值
+        regionLayoutDirection.value = "vertical";
+        regionLayoutSpacing.value = 8;
+      }
     }
   },
   { immediate: true }
@@ -482,6 +524,18 @@ const updateLayoutType = (value: string) => {
   } else {
     console.warn("无法更新布局: 未选中页面");
   }
+};
+
+// 更新区域布局
+const updateRegionLayout = () => {
+  if (!selectedRegionId.value || !currentPageId.value) return;
+  
+  const layout = {
+    direction: regionLayoutDirection.value,
+    spacing: regionLayoutSpacing.value
+  };
+  
+  designerStore.updateRegionLayout(currentPageId.value, selectedRegionId.value, layout);
 };
 
 // 添加调试信息

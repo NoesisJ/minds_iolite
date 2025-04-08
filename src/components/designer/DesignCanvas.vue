@@ -45,21 +45,34 @@
             @drop="onDrop($event, region.id)"
           >
             <div class="region-header mb-2 flex justify-between items-center">
-              <span
-                class="text-sm font-medium text-gray-500 dark:text-gray-400"
-                >{{ region.name }}</span
-              >
+              <div class="flex items-center">
+                <span
+                  class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                  >{{ region.name }}</span
+                >
+                <span 
+                  v-if="region.layout?.direction" 
+                  class="ml-2 text-xs px-1.5 py-0.5 rounded-full"
+                  :class="region.layout.direction === 'horizontal' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'"
+                >
+                  {{ region.layout.direction === 'horizontal' ? '水平' : '垂直' }}
+                </span>
+              </div>
               <span class="text-xs text-gray-400 dark:text-gray-500"
                 >{{ region.components.length }}个组件</span
               >
             </div>
 
             <!-- 组件渲染 -->
-            <div class="components-container">
+            <div 
+              class="components-container" 
+              :style="getComponentsContainerStyle(region)"
+            >
               <div
                 v-for="component in region.components"
                 :key="component.id"
-                class="component-wrapper mb-2 relative group"
+                class="component-wrapper relative group"
+                :style="getComponentWrapperStyle(region)"
                 :class="{
                   'border-2 border-blue-500 rounded':
                     selectedComponentId === component.id,
@@ -110,10 +123,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, CSSProperties } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentType } from "@/utils/componentUtils";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
+import { Region } from "@/types/designer";
 
 const designerStore = useDesignerStore();
 
@@ -207,6 +221,39 @@ const handleComponentClick = (event: MouseEvent, componentId: string) => {
   event.stopPropagation(); // 阻止事件冒泡
   designerStore.selectComponent(componentId);
   console.log("组件点击:", componentId);
+};
+
+// 获取组件容器的样式
+const getComponentsContainerStyle = (region: Region): CSSProperties => {
+  // 如果没有设置布局或方向是垂直（默认）
+  if (!region.layout || region.layout.direction === 'vertical') {
+    return {};
+  }
+  
+  // 水平布局
+  if (region.layout.direction === 'horizontal') {
+    return {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: `${region.layout.spacing || 8}px`
+    };
+  }
+
+  return {};
+};
+
+// 获取组件包装器的样式
+const getComponentWrapperStyle = (region: Region): CSSProperties => {
+  // 根据布局方向设置不同的样式
+  if (!region.layout || region.layout.direction === 'vertical') {
+    // 垂直方向时，每个组件占一行，添加下margin
+    return {
+      marginBottom: `${region.layout?.spacing || 8}px`
+    };
+  }
+  
+  // 水平方向时，可以设置弹性宽度
+  return {};
 };
 
 // 初始化

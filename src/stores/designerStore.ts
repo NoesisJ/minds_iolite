@@ -324,19 +324,26 @@ export const useDesignerStore = defineStore("designer", {
     },
 
     // 更新页面属性
-    updatePageProperty(pageId: string, property: string, value: any) {
+    updatePageProperty(pageId: string, property: keyof Page, value: any) {
       const pageIndex = this.pages.findIndex((p) => p.id === pageId);
-      if (pageIndex === -1) {
-        console.warn("无法更新页面属性: 页面不存在", pageId, property);
-        return;
-      }
+      if (pageIndex === -1) return;
 
-      console.log("更新页面属性:", pageId, property, value);
-      // 使用解构和对象传播创建新对象以保持响应式
-      this.pages[pageIndex] = {
-        ...this.pages[pageIndex],
-        [property]: value,
-      };
+      // 使用类型安全的方式更新属性
+      this.pages[pageIndex][property] = value;
+    },
+
+    // 更新区域布局
+    updateRegionLayout(pageId: string, regionId: string, layout: {direction: 'horizontal' | 'vertical', spacing: number}) {
+      const pageIndex = this.pages.findIndex((p) => p.id === pageId);
+      if (pageIndex === -1) return;
+
+      const region = this.pages[pageIndex].regions.find((r) => r.id === regionId);
+      if (!region) return;
+
+      // 更新或创建区域的布局属性
+      region.layout = { ...layout };
+      
+      console.log(`区域布局已更新 - ${regionId}:`, layout);
     },
 
     // 设置页面布局
