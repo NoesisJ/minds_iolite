@@ -20,6 +20,10 @@ export function getComponentType(type: string) {
       return defineAsyncComponent(
         () => import("@/components/widgets/ChartWidget.vue")
       );
+    case "table":
+      return defineAsyncComponent(
+        () => import("@/components/widgets/TableWidget.vue")
+      );
     // 其他组件暂时使用占位符
     default:
       console.warn("未知或未实现的组件类型:", type);

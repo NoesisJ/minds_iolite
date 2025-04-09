@@ -148,6 +148,11 @@ const navMenus: NavItem[] = [
     ],
   },
   {
+    label: "表格",
+    icon: "pi pi-table",
+    route: "/table",
+  },
+  {
     label: "设计器",
     icon: "pi pi-pencil",
     route: "/designer",

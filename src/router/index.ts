@@ -124,6 +124,11 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/table",
+    name: "table",
+    component: () => import("../views/tableViews/TableExample.vue"),
+  },
+  {
     path: "/designer",
     name: "Designer",
     component: () => import("@/views/designer/DesignerView.vue"),
