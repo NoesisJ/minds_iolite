@@ -75,11 +75,20 @@
           :key="index"
           class="mb-4"
         >
-          <div v-if="region.components.length > 0" class="region-content">
+          <div 
+            v-if="region.components.length > 0" 
+            class="region-content"
+            :style="{
+              display: 'flex',
+              flexDirection: region.layout?.direction === 'horizontal' ? 'row' : 'column',
+              gap: `${region.layout?.gap || 8}px`,
+              padding: `${region.layout?.padding || 0}px`
+            }"
+          >
             <div
               v-for="component in region.components"
               :key="component.id"
-              class="component-wrapper mb-3"
+              class="component-wrapper"
             >
               <component
                 :is="getComponentType(component.type)"

@@ -7,15 +7,26 @@
         class="region-wrapper"
       >
         <div
-          v-for="component in region.components"
-          :key="component.id"
-          class="component-wrapper"
+          v-if="region.components.length > 0"
+          class="components-container"
+          :style="{
+            display: 'flex',
+            flexDirection: region.layout?.direction === 'horizontal' ? 'row' : 'column',
+            gap: `${region.layout?.gap || 8}px`,
+            padding: `${region.layout?.padding || 0}px`
+          }"
         >
-          <component
-            :is="getComponentType(component.type)"
-            v-bind="component.props"
-            :style="component.styles"
-          />
+          <div
+            v-for="component in region.components"
+            :key="component.id"
+            class="component-wrapper"
+          >
+            <component
+              :is="getComponentType(component.type)"
+              v-bind="component.props"
+              :style="component.styles"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +127,7 @@ onMounted(() => {
 }
 
 .component-wrapper {
-  margin-bottom: 12px;
+  /* 无需margin-bottom，使用flex gap代替 */
 }
 
 .error-message {

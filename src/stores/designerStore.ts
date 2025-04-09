@@ -118,7 +118,16 @@ export const useDesignerStore = defineStore("designer", {
         name: `page_${pageNumber}`,
         title: `新页面 ${pageNumber}`,
         layoutType: "",
-        regions: [],
+        regions: [{
+          id: 'content',
+          name: '内容区',
+          components: [],
+          layout: {
+            direction: 'vertical',
+            gap: 8,
+            padding: 0
+          }
+        }],
         settings: {},
       };
 
@@ -158,7 +167,26 @@ export const useDesignerStore = defineStore("designer", {
     applyLayout(layoutId: string) {
       if (!this.currentPageId) return;
 
-      this.setPageLayout(this.currentPageId, layoutId);
+      const layout = this.layoutTemplates.find((t) => t.id === layoutId);
+      if (!layout) return;
+
+      const page = this.pages.find((p) => p.id === this.currentPageId);
+      if (!page) return;
+
+      // 创建新的区域
+      page.regions = layout.regions.map((regionDef) => ({
+        id: regionDef.id,
+        name: regionDef.name,
+        components: [],
+        layout: {
+          direction: 'vertical',
+          gap: 8,
+          padding: 0
+        }
+      }));
+
+      page.layoutType = layoutId;
+      this.saveToLocalStorage();
     },
 
     // 选择组件
@@ -324,26 +352,19 @@ export const useDesignerStore = defineStore("designer", {
     },
 
     // 更新页面属性
-    updatePageProperty(pageId: string, property: keyof Page, value: any) {
+    updatePageProperty(pageId: string, property: string, value: any) {
       const pageIndex = this.pages.findIndex((p) => p.id === pageId);
-      if (pageIndex === -1) return;
+      if (pageIndex === -1) {
+        console.warn("无法更新页面属性: 页面不存在", pageId, property);
+        return;
+      }
 
-      // 使用类型安全的方式更新属性
-      this.pages[pageIndex][property] = value;
-    },
-
-    // 更新区域布局
-    updateRegionLayout(pageId: string, regionId: string, layout: {direction: 'horizontal' | 'vertical', spacing: number}) {
-      const pageIndex = this.pages.findIndex((p) => p.id === pageId);
-      if (pageIndex === -1) return;
-
-      const region = this.pages[pageIndex].regions.find((r) => r.id === regionId);
-      if (!region) return;
-
-      // 更新或创建区域的布局属性
-      region.layout = { ...layout };
-      
-      console.log(`区域布局已更新 - ${regionId}:`, layout);
+      console.log("更新页面属性:", pageId, property, value);
+      // 使用解构和对象传播创建新对象以保持响应式
+      this.pages[pageIndex] = {
+        ...this.pages[pageIndex],
+        [property]: value,
+      };
     },
 
     // 设置页面布局
@@ -362,6 +383,11 @@ export const useDesignerStore = defineStore("designer", {
         id: uuidv4(),
         name: regionDef.name,
         components: [],
+        layout: {
+          direction: 'vertical',
+          gap: 8,
+          padding: 0
+        }
       }));
 
       // 更新区域
@@ -371,6 +397,20 @@ export const useDesignerStore = defineStore("designer", {
     // 如果 updatePageTitle 方法不存在，添加它
     updatePageTitle(pageId: string, title: string) {
       this.updatePageProperty(pageId, "title", title);
+    },
+
+    // 更新区域
+    updateRegion(region: Region) {
+      if (!this.currentPageId) return;
+      
+      const page = this.pages.find(p => p.id === this.currentPageId);
+      if (!page) return;
+
+      const regionIndex = page.regions.findIndex(r => r.id === region.id);
+      if (regionIndex === -1) return;
+
+      page.regions[regionIndex] = region;
+      this.saveToLocalStorage();
     },
 
     // 创建组件实例
