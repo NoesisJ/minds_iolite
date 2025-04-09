@@ -113,6 +113,23 @@
         </button>
       </div>
     </div>
+
+    <!-- 确认覆盖对话框 -->
+    <ConfirmDialog
+      v-model:visible="showOverwriteConfirm"
+      :message="overwriteConfirmMessage"
+      title="确认覆盖"
+      type="warning"
+      @confirm="handleOverwriteConfirm"
+    />
+
+    <!-- 错误消息对话框 -->
+    <MessageDialog
+      v-model:visible="showErrorMessage"
+      :message="errorMessage"
+      title="发布失败"
+      type="error"
+    />
   </div>
 </template>
 
@@ -120,6 +137,8 @@
 import { ref, computed, watch } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { publishPage } from "@/services/publishedPagesService";
+import ConfirmDialog from "@/components/information/ConfirmDialog.vue";
+import MessageDialog from "@/components/information/MessageDialog.vue";
 
 const props = defineProps({
   show: {
@@ -177,6 +196,15 @@ watch(
   { immediate: true }
 );
 
+// 确认覆盖对话框状态
+const showOverwriteConfirm = ref(false);
+const overwriteConfirmMessage = ref("");
+const overwritePendingResult = ref<any>(null);
+
+// 错误消息对话框状态
+const showErrorMessage = ref(false);
+const errorMessage = ref("");
+
 // 关闭对话框
 function onClose() {
   emit("close");
@@ -205,21 +233,9 @@ async function publishToSidebar() {
 
     // 检查是否需要确认覆盖
     if ('needsOverwriteConfirmation' in result && result.needsOverwriteConfirmation) {
-      const confirmed = confirm(
-        `路径 "${routePath.value}" 已被页面 "${result.existingPage.title}" 使用。\n\n是否覆盖现有页面？`
-      );
-      
-      if (confirmed) {
-        // 用户确认覆盖，使用提供的确认方法
-        const publishedPage = await result.confirmOverwrite();
-        
-        // 通知成功
-        emit("publish-success", publishedPage);
-        
-        // 关闭对话框
-        onClose();
-      }
-      // 如果用户取消，对话框保持打开状态，不执行任何操作
+      overwriteConfirmMessage.value = `路径 "${routePath.value}" 已被页面 "${result.existingPage.title}" 使用。\n\n是否覆盖现有页面？`;
+      overwritePendingResult.value = result;
+      showOverwriteConfirm.value = true;
       return;
     }
 
@@ -229,7 +245,27 @@ async function publishToSidebar() {
     // 4. 关闭对话框
     onClose();
   } catch (error: any) {
-    alert(error.message || "发布失败，请检查配置");
+    errorMessage.value = error.message || "发布失败，请检查配置";
+    showErrorMessage.value = true;
+  }
+}
+
+// 处理覆盖确认
+async function handleOverwriteConfirm() {
+  try {
+    if (!overwritePendingResult.value) return;
+    
+    // 用户确认覆盖，使用提供的确认方法
+    const publishedPage = await overwritePendingResult.value.confirmOverwrite();
+    
+    // 通知成功
+    emit("publish-success", publishedPage);
+    
+    // 关闭对话框
+    onClose();
+  } catch (error: any) {
+    errorMessage.value = error.message || "覆盖页面失败，请重试";
+    showErrorMessage.value = true;
   }
 }
 </script>

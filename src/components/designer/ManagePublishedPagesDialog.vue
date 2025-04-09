@@ -71,7 +71,11 @@
     </div>
 
     <!-- 确认删除对话框 -->
-    <div v-if="showConfirmDelete" class="confirm-dialog-overlay" @click.stop>
+    <div
+      v-if="showConfirmDelete"
+      class="confirm-dialog-overlay"
+      @click.stop="showConfirmDelete = false"
+    >
       <div class="confirm-dialog-container">
         <div class="confirm-dialog-header">
           <h3 class="text-lg font-medium text-gray-800 dark:text-white">
@@ -100,14 +104,26 @@
         </div>
       </div>
     </div>
+
+    <!-- 错误消息对话框 -->
+    <MessageDialog
+      v-model:visible="showErrorMessage"
+      :message="errorMessage"
+      title="操作失败"
+      type="error"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { unpublishPage } from "@/services/publishedPagesService";
-import { PublishedPage } from "@/services/publishedPagesService";
+import {
+  loadPublishedPages as loadPages,
+  unpublishPage,
+  PublishedPage,
+} from "@/services/publishedPagesService";
+import MessageDialog from "@/components/information/MessageDialog.vue";
 
 const props = defineProps({
   show: {
@@ -122,6 +138,10 @@ const router = useRouter();
 const publishedPages = ref<PublishedPage[]>([]);
 const showConfirmDelete = ref(false);
 const pageToDelete = ref<PublishedPage | null>(null);
+
+// 错误消息对话框状态
+const showErrorMessage = ref(false);
+const errorMessage = ref("");
 
 // 加载已发布页面
 function loadPublishedPages() {
@@ -169,7 +189,8 @@ async function deletePage() {
     showConfirmDelete.value = false;
     loadPublishedPages(); // 重新加载列表
   } catch (error: any) {
-    alert(error.message || "取消发布失败");
+    errorMessage.value = error.message || "取消发布失败";
+    showErrorMessage.value = true;
   }
 }
 

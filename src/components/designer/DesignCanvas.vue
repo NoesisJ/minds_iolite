@@ -122,17 +122,48 @@
         </div>
       </div>
     </div>
+
+    <!-- 确认对话框 -->
+    <ConfirmDialog
+      v-model:visible="showConfirmDialog"
+      :message="confirmDialogMessage"
+      :title="confirmDialogTitle"
+      :type="confirmDialogType"
+      @confirm="handleConfirmDialogConfirm"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentType } from "@/utils/componentUtils";
 import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
+import ConfirmDialog from "@/components/information/ConfirmDialog.vue";
 
 const designerStore = useDesignerStore();
 const emit = defineEmits(['region-settings']);
+
+// 确认对话框
+const showConfirmDialog = ref(false);
+const confirmDialogMessage = ref('');
+const confirmDialogTitle = ref('确认');
+const confirmDialogType = ref('primary');
+const confirmDialogCallback = ref<() => void>(() => {});
+
+// 确认操作
+const showConfirm = (message: string, callback: () => void, options: any = {}) => {
+  confirmDialogMessage.value = message;
+  confirmDialogTitle.value = options.title || '确认';
+  confirmDialogType.value = options.type || 'primary';
+  confirmDialogCallback.value = callback;
+  showConfirmDialog.value = true;
+};
+
+// 处理确认对话框确认
+const handleConfirmDialogConfirm = () => {
+  confirmDialogCallback.value();
+};
 
 // 计算属性
 const currentPage = computed(() => designerStore.currentPage);
@@ -181,9 +212,13 @@ const openComponentSettings = (componentId: string) => {
 };
 
 const removeComponent = (componentId: string) => {
-  if (confirm("确定要删除此组件吗？")) {
-    designerStore.deleteComponent(componentId);
-  }
+  showConfirm(
+    "确定要删除此组件吗？", 
+    () => {
+      designerStore.deleteComponent(componentId);
+    },
+    { type: 'danger' }
+  );
 };
 
 // 打开布局选择器

@@ -144,6 +144,15 @@
       @close="showManagePublishedPagesDialog = false"
       @unpublish-success="handleUnpublishSuccess"
     />
+
+    <!-- 消息对话框 -->
+    <MessageDialog
+      v-model:visible="showMessageDialog"
+      :message="messageDialogContent.message"
+      :title="messageDialogContent.title"
+      :type="messageDialogContent.type"
+      :button-label="messageDialogContent.buttonLabel"
+    />
   </div>
 </template>
 
@@ -155,6 +164,7 @@ import PreviewModal from "./PreviewModal.vue";
 import PublishToSidebarDialog from "./PublishToSidebarDialog.vue";
 import ManagePublishedPagesDialog from "./ManagePublishedPagesDialog.vue";
 import { useRouter } from "vue-router";
+import MessageDialog from "@/components/information/MessageDialog.vue";
 
 const designerStore = useDesignerStore();
 const router = useRouter();
@@ -165,6 +175,15 @@ const isDarkMode = ref(false);
 const showPreview = ref(false);
 const showPublishToSidebarDialog = ref(false);
 const showManagePublishedPagesDialog = ref(false);
+
+// 消息对话框状态
+const showMessageDialog = ref(false);
+const messageDialogContent = ref({
+  message: "",
+  title: "消息",
+  type: "info",
+  buttonLabel: "确定"
+});
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -203,9 +222,20 @@ const openPageSettings = () => {
   console.log("打开页面设置");
 };
 
+// 显示消息对话框
+const showMessage = (message: string, options: any = {}) => {
+  messageDialogContent.value = {
+    message,
+    title: options.title || "消息",
+    type: options.type || "info",
+    buttonLabel: options.buttonLabel || "确定"
+  };
+  showMessageDialog.value = true;
+};
+
 const previewPage = () => {
   if (!designerStore.currentPage) {
-    alert("请先选择或创建页面");
+    showMessage("请先选择或创建页面", { type: "warning" });
     return;
   }
 
@@ -216,10 +246,9 @@ const savePage = () => {
   const success = designerStore.saveToLocalStorage();
 
   if (success) {
-    // 可以在这里添加保存成功的提示，比如使用一个简单的alert或自定义UI组件
-    alert("页面已保存到本地存储");
+    showMessage("页面已保存到本地存储", { type: "success" });
   } else {
-    alert("保存失败，请检查浏览器存储权限");
+    showMessage("保存失败，请检查浏览器存储权限", { type: "error" });
   }
 };
 
@@ -233,7 +262,7 @@ const toggleTheme = () => {
 const openViewer = () => {
   const currentPage = designerStore.currentPage;
   if (!currentPage) {
-    alert("请先选择或创建页面");
+    showMessage("请先选择或创建页面", { type: "warning" });
     return;
   }
 
@@ -258,14 +287,18 @@ const openManagePublishedPagesDialog = () => {
 
 const handlePublishToSidebarSuccess = (publishedPage: any) => {
   console.log("页面已发布到侧边栏:", publishedPage);
-  alert(
-    `页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`
+  showMessage(
+    `页面"${publishedPage.title}"已成功发布到侧边栏！刷新页面后即可在侧边栏中查看。`,
+    { type: "success", title: "发布成功" }
   );
 };
 
 const handleUnpublishSuccess = (page: any) => {
   console.log("页面已取消发布:", page);
-  alert(`页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`);
+  showMessage(
+    `页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`,
+    { type: "success", title: "取消发布成功" }
+  );
 };
 
 // 初始化主题

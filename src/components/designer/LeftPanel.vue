@@ -160,6 +160,13 @@
         </div>
       </div>
     </div>
+
+    <!-- 确认对话框 -->
+    <ConfirmDialog
+      v-model:visible="showConfirmDialog"
+      :message="confirmDialogMessage"
+      @confirm="confirmDialogCallback"
+    />
   </div>
 </template>
 
@@ -167,6 +174,7 @@
 import { ref, computed, nextTick } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { allComponents, componentCategories } from "@/data/componentLibrary";
+import ConfirmDialog from "@/components/information/ConfirmDialog.vue";
 
 const designerStore = useDesignerStore();
 
@@ -178,6 +186,11 @@ const activeCategory = ref("basic"); // 默认显示基础组件
 const editingPageId = ref("");
 const editingTitle = ref("");
 const inputElement = ref<HTMLInputElement | null>(null);
+
+// 确认对话框状态
+const showConfirmDialog = ref(false);
+const confirmDialogMessage = ref("");
+const confirmDialogCallback = ref(() => {});
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -238,10 +251,17 @@ const savePageTitle = (pageId: string) => {
   editingPageId.value = "";
 };
 
+// 显示确认对话框
+const showConfirm = (message: string, callback: () => void) => {
+  confirmDialogMessage.value = message;
+  confirmDialogCallback.value = callback;
+  showConfirmDialog.value = true;
+};
+
 const deletePage = (pageId: string) => {
-  if (confirm("确定要删除此页面吗?")) {
+  showConfirm("确定要删除此页面吗?", () => {
     designerStore.deletePage(pageId);
-  }
+  });
 };
 </script>
 
