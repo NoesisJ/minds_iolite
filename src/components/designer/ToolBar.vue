@@ -182,7 +182,7 @@ const messageDialogContent = ref({
   message: "",
   title: "消息",
   type: "info",
-  buttonLabel: "确定"
+  buttonLabel: "确定",
 });
 
 // 计算属性
@@ -228,7 +228,7 @@ const showMessage = (message: string, options: any = {}) => {
     message,
     title: options.title || "消息",
     type: options.type || "info",
-    buttonLabel: options.buttonLabel || "确定"
+    buttonLabel: options.buttonLabel || "确定",
   };
   showMessageDialog.value = true;
 };
@@ -295,10 +295,10 @@ const handlePublishToSidebarSuccess = (publishedPage: any) => {
 
 const handleUnpublishSuccess = (page: any) => {
   console.log("页面已取消发布:", page);
-  showMessage(
-    `页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`,
-    { type: "success", title: "取消发布成功" }
-  );
+  showMessage(`页面"${page.title}"已成功从侧边栏移除！刷新页面后生效。`, {
+    type: "success",
+    title: "取消发布成功",
+  });
 };
 
 // 初始化主题

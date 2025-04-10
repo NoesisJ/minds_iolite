@@ -89,23 +89,32 @@
       <h3 class="text-lg font-medium mb-3">区域属性</h3>
 
       <div class="form-group mb-3">
-        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">区域名称</label>
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >区域名称</label
+        >
         <base-input v-model="regionName" disabled class="w-full" />
       </div>
 
       <div class="form-group mb-3">
-        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件数量</label>
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >组件数量</label
+        >
         <base-input v-model="componentCount" disabled class="w-full" />
       </div>
 
       <!-- 布局设置 -->
       <div class="form-group mb-3">
-        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">布局方向</label>
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >布局方向</label
+        >
         <base-select
           v-model="layoutDirection"
           :options="[
             { label: '垂直排列', value: 'vertical' },
-            { label: '水平排列', value: 'horizontal' }
+            { label: '水平排列', value: 'horizontal' },
           ]"
           @update:modelValue="updateLayoutDirection"
           class="w-full"
@@ -113,7 +122,10 @@
       </div>
 
       <div class="form-group mb-3">
-        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">组件间距</label>
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >组件间距</label
+        >
         <base-input
           type="number"
           v-model="layoutGap"
@@ -124,7 +136,10 @@
       </div>
 
       <div class="form-group mb-3">
-        <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">内边距</label>
+        <label
+          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          >内边距</label
+        >
         <base-input
           type="number"
           v-model="layoutPadding"
@@ -377,7 +392,7 @@ const currentPage = computed(() => designerStore.currentPage);
 const selectedRegionId = computed(() => designerStore.selectedRegionId);
 const selectedRegion = computed(() => {
   if (!currentPage.value || !selectedRegionId.value) return null;
-  return currentPage.value.regions.find(r => r.id === selectedRegionId.value);
+  return currentPage.value.regions.find((r) => r.id === selectedRegionId.value);
 });
 const selectedComponentId = computed(() => designerStore.selectedComponentId);
 const selectedComponent = computed(() => designerStore.selectedComponent);
@@ -445,7 +460,7 @@ const currentComponent = computed(() => {
 });
 
 // 布局相关属性
-const layoutDirection = ref('vertical');
+const layoutDirection = ref("vertical");
 const layoutGap = ref(8);
 const layoutPadding = ref(0);
 
@@ -475,7 +490,7 @@ watch(
     if (region) {
       regionName.value = region.name;
       componentCount.value = region.components.length;
-      layoutDirection.value = region.layout?.direction || 'vertical';
+      layoutDirection.value = region.layout?.direction || "vertical";
       layoutGap.value = region.layout?.gap || 8;
       layoutPadding.value = region.layout?.padding || 0;
     }
@@ -537,12 +552,12 @@ const updateLayoutDirection = (value: string) => {
   const region = selectedRegion.value;
   if (!region.layout) {
     region.layout = {
-      direction: 'vertical',
+      direction: "vertical",
       gap: 8,
-      padding: 0
+      padding: 0,
     };
   }
-  region.layout.direction = value as 'vertical' | 'horizontal';
+  region.layout.direction = value as "vertical" | "horizontal";
   designerStore.updateRegion(region);
 };
 
@@ -552,9 +567,9 @@ const updateLayoutGap = (value: number) => {
   const region = selectedRegion.value;
   if (!region.layout) {
     region.layout = {
-      direction: 'vertical',
+      direction: "vertical",
       gap: 8,
-      padding: 0
+      padding: 0,
     };
   }
   region.layout.gap = value;
@@ -567,9 +582,9 @@ const updateLayoutPadding = (value: number) => {
   const region = selectedRegion.value;
   if (!region.layout) {
     region.layout = {
-      direction: 'vertical',
+      direction: "vertical",
       gap: 8,
-      padding: 0
+      padding: 0,
     };
   }
   region.layout.padding = value;

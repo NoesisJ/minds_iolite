@@ -119,7 +119,7 @@ export async function publishPage(page: any, settings: PublishSettings) {
     const existingPageIndex = publishedPages.findIndex(
       (p: PublishedPage) => p.route === settings.route
     );
-    
+
     // 如果路径已存在
     if (existingPageIndex !== -1) {
       // 返回一个特殊状态，让调用者知道需要确认覆盖
@@ -130,7 +130,7 @@ export async function publishPage(page: any, settings: PublishSettings) {
         confirmOverwrite: () => {
           // 移除现有页面
           publishedPages.splice(existingPageIndex, 1);
-          
+
           // 创建新的发布页面记录
           const publishedPage: PublishedPage = {
             id: Date.now().toString(),
@@ -143,15 +143,18 @@ export async function publishPage(page: any, settings: PublishSettings) {
             createdAt: Date.now(),
             updatedAt: Date.now(),
           };
-          
+
           publishedPages.push(publishedPage);
-          localStorage.setItem("published_pages", JSON.stringify(publishedPages));
-          
+          localStorage.setItem(
+            "published_pages",
+            JSON.stringify(publishedPages)
+          );
+
           // 重新加载页面
           loadPublishedPages();
-          
+
           return publishedPage;
-        }
+        },
       };
     }
 

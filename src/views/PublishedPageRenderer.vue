@@ -11,9 +11,10 @@
           class="components-container"
           :style="{
             display: 'flex',
-            flexDirection: region.layout?.direction === 'horizontal' ? 'row' : 'column',
+            flexDirection:
+              region.layout?.direction === 'horizontal' ? 'row' : 'column',
             gap: `${region.layout?.gap || 8}px`,
-            padding: `${region.layout?.padding || 0}px`
+            padding: `${region.layout?.padding || 0}px`,
           }"
         >
           <div

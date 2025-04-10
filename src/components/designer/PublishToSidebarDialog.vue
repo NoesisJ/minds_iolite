@@ -232,7 +232,10 @@ async function publishToSidebar() {
     });
 
     // 检查是否需要确认覆盖
-    if ('needsOverwriteConfirmation' in result && result.needsOverwriteConfirmation) {
+    if (
+      "needsOverwriteConfirmation" in result &&
+      result.needsOverwriteConfirmation
+    ) {
       overwriteConfirmMessage.value = `路径 "${routePath.value}" 已被页面 "${result.existingPage.title}" 使用。\n\n是否覆盖现有页面？`;
       overwritePendingResult.value = result;
       showOverwriteConfirm.value = true;
@@ -254,13 +257,13 @@ async function publishToSidebar() {
 async function handleOverwriteConfirm() {
   try {
     if (!overwritePendingResult.value) return;
-    
+
     // 用户确认覆盖，使用提供的确认方法
     const publishedPage = await overwritePendingResult.value.confirmOverwrite();
-    
+
     // 通知成功
     emit("publish-success", publishedPage);
-    
+
     // 关闭对话框
     onClose();
   } catch (error: any) {

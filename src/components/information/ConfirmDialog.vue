@@ -35,28 +35,28 @@ import Button from "primevue/button";
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
+    default: false,
   },
   message: {
     type: String,
-    default: ""
+    default: "",
   },
   title: {
     type: String,
-    default: "确认"
+    default: "确认",
   },
   type: {
     type: String,
-    default: "primary" // primary, danger, warning
+    default: "primary", // primary, danger, warning
   },
   confirmLabel: {
     type: String,
-    default: "确认"
+    default: "确认",
   },
   cancelLabel: {
     type: String,
-    default: "取消"
-  }
+    default: "取消",
+  },
 });
 
 const emit = defineEmits(["update:visible", "confirm", "cancel"]);
@@ -97,4 +97,4 @@ const handleCancel = () => {
   visible.value = false;
   emit("cancel");
 };
-</script> 
+</script>

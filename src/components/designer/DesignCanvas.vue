@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-[var(--material-bg-light)] overflow-auto"
-  >
+  <div class="bg-[var(--material-bg-light)] overflow-auto">
     <!-- 选择布局提示 -->
     <div
       v-if="!currentPage || !currentPage.layoutType || !currentLayout"
@@ -63,13 +61,14 @@
             </div>
 
             <!-- 组件渲染 -->
-            <div 
+            <div
               class="components-container"
               :style="{
                 display: 'flex',
-                flexDirection: region.layout?.direction === 'horizontal' ? 'row' : 'column',
+                flexDirection:
+                  region.layout?.direction === 'horizontal' ? 'row' : 'column',
                 gap: `${region.layout?.gap || 8}px`,
-                padding: `${region.layout?.padding || 0}px`
+                padding: `${region.layout?.padding || 0}px`,
               }"
             >
               <div
@@ -142,20 +141,24 @@ import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import ConfirmDialog from "@/components/information/ConfirmDialog.vue";
 
 const designerStore = useDesignerStore();
-const emit = defineEmits(['region-settings']);
+const emit = defineEmits(["region-settings"]);
 
 // 确认对话框
 const showConfirmDialog = ref(false);
-const confirmDialogMessage = ref('');
-const confirmDialogTitle = ref('确认');
-const confirmDialogType = ref('primary');
+const confirmDialogMessage = ref("");
+const confirmDialogTitle = ref("确认");
+const confirmDialogType = ref("primary");
 const confirmDialogCallback = ref<() => void>(() => {});
 
 // 确认操作
-const showConfirm = (message: string, callback: () => void, options: any = {}) => {
+const showConfirm = (
+  message: string,
+  callback: () => void,
+  options: any = {}
+) => {
   confirmDialogMessage.value = message;
-  confirmDialogTitle.value = options.title || '确认';
-  confirmDialogType.value = options.type || 'primary';
+  confirmDialogTitle.value = options.title || "确认";
+  confirmDialogType.value = options.type || "primary";
   confirmDialogCallback.value = callback;
   showConfirmDialog.value = true;
 };
@@ -213,11 +216,11 @@ const openComponentSettings = (componentId: string) => {
 
 const removeComponent = (componentId: string) => {
   showConfirm(
-    "确定要删除此组件吗？", 
+    "确定要删除此组件吗？",
     () => {
       designerStore.deleteComponent(componentId);
     },
-    { type: 'danger' }
+    { type: "danger" }
   );
 };
 
@@ -262,12 +265,12 @@ const handleComponentClick = (event: MouseEvent, componentId: string) => {
 };
 
 const openRegionSettings = (regionId: string) => {
-  const region = currentPage.value?.regions.find(r => r.id === regionId);
+  const region = currentPage.value?.regions.find((r) => r.id === regionId);
   if (region) {
     // 设置当前选中的区域
     designerStore.selectedRegionId = regionId;
     // 触发区域设置事件
-    emit('region-settings', region);
+    emit("region-settings", region);
   }
 };
 

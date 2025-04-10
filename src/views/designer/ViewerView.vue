@@ -75,14 +75,15 @@
           :key="index"
           class="mb-4"
         >
-          <div 
-            v-if="region.components.length > 0" 
+          <div
+            v-if="region.components.length > 0"
             class="region-content"
             :style="{
               display: 'flex',
-              flexDirection: region.layout?.direction === 'horizontal' ? 'row' : 'column',
+              flexDirection:
+                region.layout?.direction === 'horizontal' ? 'row' : 'column',
               gap: `${region.layout?.gap || 8}px`,
-              padding: `${region.layout?.padding || 0}px`
+              padding: `${region.layout?.padding || 0}px`,
             }"
           >
             <div

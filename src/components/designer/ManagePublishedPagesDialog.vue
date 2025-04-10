@@ -118,10 +118,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import {
-  unpublishPage,
-  PublishedPage,
-} from "@/services/publishedPagesService";
+import { unpublishPage, PublishedPage } from "@/services/publishedPagesService";
 import MessageDialog from "@/components/information/MessageDialog.vue";
 
 const props = defineProps({

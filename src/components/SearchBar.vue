@@ -15,8 +15,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, watch, computed } from 'vue';
-import AutoComplete from 'primevue/autocomplete';
+import { ref, defineProps, defineEmits, watch, computed } from "vue";
+import AutoComplete from "primevue/autocomplete";
 
 const props = defineProps({
   // 搜索字段配置
@@ -28,68 +28,72 @@ const props = defineProps({
   // 数据源
   data: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const emit = defineEmits(['search', 'update:filteredData']);
+const emit = defineEmits(["search", "update:filteredData"]);
 
 // 搜索值和建议数据
-const values = ref(Array(props.fields.length).fill(''));
+const values = ref(Array(props.fields.length).fill(""));
 const suggestions = ref(Array(props.fields.length).fill([]));
 
 // 搜索处理函数
 const searchItems = (event, index, fieldConfig) => {
   const query = event.query.toLowerCase();
   const field = fieldConfig.field;
-  
+
   // 更新建议列表
-  const uniqueValues = [...new Set(props.data.map(item => item[field]))];
-  suggestions.value[index] = uniqueValues.filter(value => 
+  const uniqueValues = [...new Set(props.data.map((item) => item[field]))];
+  suggestions.value[index] = uniqueValues.filter((value) =>
     value?.toString().toLowerCase().includes(query)
   );
-  
+
   // 触发搜索事件
-  emit('search', {
+  emit("search", {
     field: field,
     value: query,
-    index: index
+    index: index,
   });
-  
+
   // 更新过滤后的数据
   updateFilteredData();
 };
 
 // 监听搜索值变化
-watch(values, () => {
-  updateFilteredData();
-}, { deep: true });
+watch(
+  values,
+  () => {
+    updateFilteredData();
+  },
+  { deep: true }
+);
 
 // 更新过滤后的数据
 const updateFilteredData = () => {
   let filteredData = [...props.data];
-  
+
   // 应用每个搜索条件
   values.value.forEach((value, index) => {
     if (value) {
       const field = props.fields[index].field;
-      filteredData = filteredData.filter(item => 
+      filteredData = filteredData.filter((item) =>
         item[field]?.toString().toLowerCase().includes(value.toLowerCase())
       );
     }
   });
-  
+
   // 发送过滤后的数据
-  emit('update:filteredData', filteredData);
+  emit("update:filteredData", filteredData);
 };
 
 // 暴露重置方法
 const reset = () => {
-  values.value = Array(props.fields.length).fill('');
+  values.value = Array(props.fields.length).fill("");
 };
 
 defineExpose({
-  reset
+  reset,
 });
 </script>
 
@@ -125,4 +129,4 @@ defineExpose({
   border-color: #36394a;
   color: #e5e7eb;
 }
-</style> 
+</style>

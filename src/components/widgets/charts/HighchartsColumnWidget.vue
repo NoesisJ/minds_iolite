@@ -15,7 +15,6 @@ import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import Highcharts from "highcharts";
 
 const props = defineProps({
-
   // 图表高度
   height: {
     type: String,

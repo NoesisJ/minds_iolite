@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted } from "vue";
 import DropdownMenu from "@/components/ui/DropDown.vue";
-import { Globe, Send} from "lucide-vue-next";
+import { Globe, Send } from "lucide-vue-next";
 
 interface Message {
   id: number;

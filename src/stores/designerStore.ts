@@ -118,16 +118,18 @@ export const useDesignerStore = defineStore("designer", {
         name: `page_${pageNumber}`,
         title: `新页面 ${pageNumber}`,
         layoutType: "",
-        regions: [{
-          id: 'content',
-          name: '内容区',
-          components: [],
-          layout: {
-            direction: 'vertical',
-            gap: 8,
-            padding: 0
-          }
-        }],
+        regions: [
+          {
+            id: "content",
+            name: "内容区",
+            components: [],
+            layout: {
+              direction: "vertical",
+              gap: 8,
+              padding: 0,
+            },
+          },
+        ],
         settings: {},
       };
 
@@ -179,10 +181,10 @@ export const useDesignerStore = defineStore("designer", {
         name: regionDef.name,
         components: [],
         layout: {
-          direction: 'vertical',
+          direction: "vertical",
           gap: 8,
-          padding: 0
-        }
+          padding: 0,
+        },
       }));
 
       page.layoutType = layoutId;
@@ -384,10 +386,10 @@ export const useDesignerStore = defineStore("designer", {
         name: regionDef.name,
         components: [],
         layout: {
-          direction: 'vertical',
+          direction: "vertical",
           gap: 8,
-          padding: 0
-        }
+          padding: 0,
+        },
       }));
 
       // 更新区域
@@ -402,11 +404,11 @@ export const useDesignerStore = defineStore("designer", {
     // 更新区域
     updateRegion(region: Region) {
       if (!this.currentPageId) return;
-      
-      const page = this.pages.find(p => p.id === this.currentPageId);
+
+      const page = this.pages.find((p) => p.id === this.currentPageId);
       if (!page) return;
 
-      const regionIndex = page.regions.findIndex(r => r.id === region.id);
+      const regionIndex = page.regions.findIndex((r) => r.id === region.id);
       if (regionIndex === -1) return;
 
       page.regions[regionIndex] = region;

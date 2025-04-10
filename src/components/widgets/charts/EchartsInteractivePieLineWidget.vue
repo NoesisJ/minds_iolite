@@ -1,9 +1,6 @@
 <template>
   <div class="echarts-interactive-pie-line-widget">
-    <div
-      ref="chartRef"
-      class="chart-container"
-    ></div>
+    <div ref="chartRef" class="chart-container"></div>
   </div>
 </template>
 
@@ -36,7 +33,6 @@ echarts.use([
 ]);
 
 const props = defineProps({
-
   // 图表高度
   height: {
     type: String,
@@ -119,14 +115,14 @@ function updateChartOption() {
   const option = {
     color: props.colorPalette,
     legend: {
-      top: '42%',
-      left: 'center',
+      top: "42%",
+      left: "center",
       textStyle: {
-        color: '#ffffff'
+        color: "#ffffff",
       },
       show: true,
-      orient: 'horizontal',
-      data: data.slice(1).map(item => item[0]) // 从数据中提取图例项
+      orient: "horizontal",
+      data: data.slice(1).map((item) => item[0]), // 从数据中提取图例项
     },
     tooltip: {
       trigger: "axis",
@@ -135,32 +131,32 @@ function updateChartOption() {
     dataset: {
       source: data,
     },
-    xAxis: { 
+    xAxis: {
       type: "category",
       gridIndex: 0,
       axisLabel: {
-        color: '#ffffff'
-      }
+        color: "#ffffff",
+      },
     },
-    yAxis: { 
+    yAxis: {
       gridIndex: 0,
       axisLabel: {
-        color: '#ffffff'
+        color: "#ffffff",
       },
       splitLine: {
         show: true,
         lineStyle: {
-          type: 'dashed',
-          color: 'rgba(255, 255, 255, 0.2)'
-        }
-      }
+          type: "dashed",
+          color: "rgba(255, 255, 255, 0.2)",
+        },
+      },
     },
-    grid: { 
-      left: '5%',
-      right: '5%',
-      bottom: '5%',
-      top: '55%',
-      containLabel: true
+    grid: {
+      left: "5%",
+      right: "5%",
+      bottom: "5%",
+      top: "55%",
+      containLabel: true,
     },
     series: [
       // 这里需要根据数据源动态创建折线系列
@@ -175,28 +171,28 @@ function updateChartOption() {
       {
         type: "pie",
         id: "pie",
-        radius: '28%',
-        center: ['50%', '25%'],
+        radius: "28%",
+        center: ["50%", "25%"],
         emphasis: {
           focus: "self",
         },
         label: {
           formatter: "{b}: {c} ({d}%)",
-          color: '#ffffff',
+          color: "#ffffff",
           show: true,
-          position: 'outside',
-          distanceToLabelLine: 5
+          position: "outside",
+          distanceToLabelLine: 5,
         },
         labelLine: {
           show: true,
           length: 10,
           length2: 10,
-          smooth: false
+          smooth: false,
         },
         encode: {
-          itemName: data[0][0],    // 使用数据中的第一列名称
-          value: data[0][1],       // 默认使用第二列作为初始值
-          tooltip: data[0][1]
+          itemName: data[0][0], // 使用数据中的第一列名称
+          value: data[0][1], // 默认使用第二列作为初始值
+          tooltip: data[0][1],
         },
       },
     ],
@@ -229,10 +225,7 @@ onUnmounted(() => {
 
 // 监听属性变化，更新图表
 watch(
-  () => [
-    props.chartData,
-    props.colorPalette,
-  ],
+  () => [props.chartData, props.colorPalette],
   () => {
     updateChartOption();
   },

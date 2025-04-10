@@ -2,7 +2,9 @@
   <div class="designer-view h-full w-full overflow-hidden">
     <!-- 顶部工具栏 -->
     <ToolBar class="h-[var(--designer-header-height)]" />
-    <div class="flex h-[calc(100%-var(--designer-header-height))] overflow-hidden">
+    <div
+      class="flex h-[calc(100%-var(--designer-header-height))] overflow-hidden"
+    >
       <!-- 左侧面板：页面/布局选择 -->
       <LeftPanel class="w-64" />
 

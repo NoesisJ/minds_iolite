@@ -33,7 +33,6 @@ echarts.use([
 ]);
 
 const props = defineProps({
-
   // 图表高度
   height: {
     type: String,
@@ -119,7 +118,7 @@ function updateChartOption() {
     legend: {
       show: props.showLegend,
       top: "bottom",
-      data: ["Line 1"]
+      data: ["Line 1"],
     },
     grid: {
       left: "3%",

@@ -37,7 +37,6 @@ echarts.use([
 ]);
 
 const props = defineProps({
-
   // 图表高度
   height: {
     type: String,
