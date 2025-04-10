@@ -119,7 +119,6 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import {
-  loadPublishedPages as loadPages,
   unpublishPage,
   PublishedPage,
 } from "@/services/publishedPagesService";
