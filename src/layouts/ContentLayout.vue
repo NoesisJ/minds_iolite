@@ -7,7 +7,7 @@
     >
       <router-view v-slot="{ Component }">
         <transition name="slide-fade" mode="out-in">
-          <component :is="Component" />
+          <component :is="Component" class="h-full w-full" />
         </transition>
       </router-view>
     </div>

@@ -4,7 +4,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/infoCharts",
+    redirect: "/agent",
   },
   {
     path: "/information",
@@ -132,6 +132,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/designer",
     name: "Designer",
     component: () => import("@/views/designer/DesignerView.vue"),
+  },
+  {
+    path: "/import",
+    name: "Importer",
+    component: () => import("@/views/ImportView.vue"),
   },
   {
     path: "/viewer/:id?",

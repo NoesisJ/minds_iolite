@@ -157,6 +157,11 @@ const navMenus: NavItem[] = [
     icon: "pi pi-pencil",
     route: "/designer",
   },
+  {
+    label: "导入",
+    icon: "pi pi-upload",
+    route: "/import",
+  },
 ];
 
 // 合并静态和动态菜单
