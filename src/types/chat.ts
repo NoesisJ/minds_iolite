@@ -10,7 +10,6 @@ export interface Message {
 export interface ChatSession {
   id: string;
   title: string;
-  date: Date;
 }
 
 export interface ChatMessage {

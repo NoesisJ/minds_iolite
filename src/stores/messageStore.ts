@@ -28,7 +28,6 @@ export const useMessageStore = defineStore("messages", () => {
       const chatStore = getChatStore();
       if (chatStore.selectedChat) {
         chatStore.selectedChat.title = content.slice(0, 10) + "..."; // 截取前10个字符作为标题
-        chatStore.selectedChat.date = new Date(); // 更新日期
       }
     }
     return message;

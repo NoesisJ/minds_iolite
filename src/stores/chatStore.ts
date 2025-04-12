@@ -8,16 +8,40 @@ import axios from "axios";
 const API_URL = "http://localhost:8001";
 
 export const useChatStore = defineStore("chats", () => {
-  const chatHistory = ref<ChatSession[]>([
-    { id: "1", title: "关于项目架构的讨论", date: new Date() },
-    { id: "2", title: "如何优化代码性能", date: new Date() },
-    { id: "3", title: "Bug修复建议", date: new Date() },
-  ]);
+  const chatHistory = ref<ChatSession[]>([]);
+
+  // Load chat history asynchronously after the store is defined
+  (async () => {
+    await loadChatHistory();
+  })();
 
   const selectedChat = ref<ChatSession | null>(null);
 
   function getChatStore() {
     return useMessageStore();
+  }
+
+  // 从后端获取聊天记录
+  async function loadChatHistory() {
+    const response = await axios.get(`${API_URL}/api/sessions/list`);
+
+    if (response.data.code !== 200) {
+      console.error("获取聊天记录失败:", response.statusText);
+      return;
+    }
+
+    chatHistory.value = response.data.data.sessions.map((chat: any) => ({
+      id: chat.session_id,
+      title: chat.title,
+    }));
+
+    console.log("聊天记录:", chatHistory.value);
+
+    if (chatHistory.value.length > 0) {
+      setSelectedChat(chatHistory.value[0]);
+    } else {
+      createNewChat();
+    }
   }
 
   // 设置当前选中的聊天
@@ -30,7 +54,6 @@ export const useChatStore = defineStore("chats", () => {
     const newChat: ChatSession = {
       id: `chat-${Date.now()}`,
       title: "New Chat",
-      date: new Date(),
     };
 
     chatHistory.value.unshift(newChat);
@@ -57,9 +80,9 @@ export const useChatStore = defineStore("chats", () => {
       });
 
       if (response.data.code !== 200) {
-        if (response.data.code === 404 ){
-            console.error("聊天会话不存在:", chatId);
-            throw new Error("聊天会话不存在");
+        if (response.data.code === 404) {
+          console.error("聊天会话不存在:", chatId);
+          throw new Error("聊天会话不存在");
         }
         console.error("删除聊天会话失败:", response.statusText);
         throw new Error("删除聊天会话失败");
@@ -79,6 +102,7 @@ export const useChatStore = defineStore("chats", () => {
   return {
     chatHistory,
     selectedChat,
+    loadChatHistory,
     setSelectedChat,
     createNewChat,
     deleteChat,
