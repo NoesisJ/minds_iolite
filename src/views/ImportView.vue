@@ -14,7 +14,7 @@
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
-        class="bg-[var(--material-bg-light)] rounded-2xl shadow-xl w-full max-w-2xl p-6"
+        class="bg-[var(--material-bg-light)] rounded-2xl shadow-xl w-full max-w-2xl max-h-[700px] p-6 overflow-auto"
       >
         <h2 class="text-2xl font-normal mb-4">数据库连接/导入</h2>
 
@@ -117,47 +117,178 @@
           </div>
         </div>
 
-        <!-- 文件上传 (SQLite/CSV/Excel) -->
+        <!-- 文件选择 (SQLite/CSV/Excel) -->
         <div v-if="isFileType" class="mb-6">
-          <div
-            @click="triggerFileInput"
-            @dragover.prevent="handleDragOver"
-            @dragleave.prevent="dragActive = false"
-            @drop.prevent="handleDrop"
-            :class="[
-              'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer',
-              dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300',
-            ]"
-          >
-            <div v-if="!selectedFile">
-              <Upload class="mx-auto h-12 w-12 text-gray-400" />
-              <p class="mt-2 text-sm text-gray-600">
-                <span class="font-medium text-blue-600">点击上传</span>
-                或拖放文件到此处
-              </p>
-              <p class="text-xs text-gray-500 mt-1">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-3">
+              <label class="block text-sm font-medium text-gray-200">
+                文件路径
+              </label>
+              <div class="flex">
+                <input
+                  v-model="selectedFilePath"
+                  type="text"
+                  class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="选择文件路径"
+                  readonly
+                />
+                <button
+                  @click="openFileDialog"
+                  class="px-4 py-2 bg-gray-600 text-white rounded-r-md hover:bg-gray-700 transition-colors"
+                >
+                  浏览
+                </button>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">
                 支持 {{ fileAcceptTypes }} 文件
               </p>
             </div>
-            <div v-else class="flex flex-col items-center">
-              <File class="mx-auto h-12 w-12 text-green-500" />
-              <p
-                class="mt-2 text-sm font-medium text-gray-900 truncate max-w-xs"
+
+            <!-- 文件选择成功后显示 -->
+            <div
+              v-if="selectedFilePath"
+              class="flex items-center p-3 bg-gray-700 rounded-md"
+            >
+              <File class="h-6 w-6 text-green-500 mr-2" />
+              <div class="overflow-hidden">
+                <p class="text-sm font-medium text-gray-200 truncate">
+                  {{ getFileName(selectedFilePath) }}
+                </p>
+                <p class="text-xs text-gray-400">
+                  {{ selectedFilePath }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSV 特定选项 -->
+        <div v-if="selectedDbType === 'csv' && selectedFilePath" class="mb-6">
+          <h3 class="text-lg font-medium mb-3">CSV 选项</h3>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-medium text-gray-200"> 分隔符: </label>
+              <select
+                v-model="csvOptions.delimiter"
+                class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
-                {{ selectedFile.name }}
-              </p>
-              <p class="text-xs text-gray-500 mt-1">
-                {{ formatFileSize(selectedFile.size) }}
+                <option value=",">逗号 (,)</option>
+                <option value=";">分号 (;)</option>
+                <option value="\t">制表符 (Tab)</option>
+                <option value="|">竖线 (|)</option>
+                <option value=" ">空格 (Space)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-medium text-gray-200"> 编码: </label>
+              <select
+                v-model="csvOptions.encoding"
+                class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="utf-8">UTF-8</option>
+                <option value="gbk">GBK</option>
+                <option value="gb2312">GB2312</option>
+                <option value="iso-8859-1">ISO-8859-1</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="hasHeader"
+                v-model="csvOptions.hasHeader"
+                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label for="hasHeader" class="text-sm font-medium text-gray-200">
+                第一行为表头
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导入方式选择 -->
+        <div
+          v-if="
+            isFileType &&
+            selectedFilePath &&
+            (selectedDbType === 'csv' || selectedDbType === 'sqlite')
+          "
+          class="mb-6"
+        >
+          <h3 class="text-lg font-medium mb-3">选择导入方式</h3>
+          <div class="flex gap-3">
+            <div
+              @click="importMode = 'preview'"
+              :class="[
+                'flex-1 p-3 border rounded-md cursor-pointer text-center',
+                importMode === 'preview'
+                  ? 'border-[var(--material-item-border)] bg-[var(--material-bg-dark)]'
+                  : 'border-gray-400',
+              ]"
+            >
+              <p class="font-medium">预览数据</p>
+              <p class="text-xs text-gray-400 mt-1">仅处理文件并显示预览</p>
+            </div>
+            <div
+              @click="importMode = 'mongodb'"
+              :class="[
+                'flex-1 p-3 border rounded-md cursor-pointer text-center',
+                importMode === 'mongodb'
+                  ? 'border-[var(--material-item-border)] bg-[var(--material-bg-dark)]'
+                  : 'border-gray-400',
+              ]"
+            >
+              <p class="font-medium">导入 MongoDB</p>
+              <p class="text-xs text-gray-400 mt-1">
+                将数据导入到本地 MongoDB 数据库
               </p>
             </div>
           </div>
-          <input
-            ref="fileInput"
-            type="file"
-            class="hidden"
-            :accept="fileAcceptTypes"
-            @change="handleFileChange"
-          />
+        </div>
+
+        <!-- MongoDB导入选项 -->
+        <div
+          v-if="
+            isFileType &&
+            selectedFilePath &&
+            importMode === 'mongodb' &&
+            (selectedDbType === 'csv' || selectedDbType === 'sqlite')
+          "
+          class="mb-6"
+        >
+          <h3 class="text-lg font-medium mb-3">MongoDB 导入选项</h3>
+          <div class="space-y-4">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-200">
+                数据库名称 (可选)
+              </label>
+              <input
+                v-model="mongoDbOptions.dbName"
+                type="text"
+                class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                :placeholder="`默认: ${getDefaultDbName()}`"
+              />
+              <p class="text-xs text-gray-400">
+                留空将使用默认名称: {{ getDefaultDbName() }}
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-medium text-gray-200">
+                集合名称 (可选)
+              </label>
+              <input
+                v-model="mongoDbOptions.collName"
+                type="text"
+                class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                :placeholder="`默认: ${getDefaultCollName()}`"
+              />
+              <p class="text-xs text-gray-400">
+                留空将使用默认名称: {{ getDefaultCollName() }}
+              </p>
+            </div>
+          </div>
         </div>
 
         <!-- 操作按钮 -->
@@ -178,7 +309,7 @@
                 : 'bg-[var(--material-red-dark)] cursor-not-allowed',
             ]"
           >
-            连接/导入
+            {{ confirmButtonText }}
           </button>
         </div>
       </div>
@@ -201,94 +332,51 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { File, Loader } from "lucide-vue-next";
+import { open } from "@tauri-apps/plugin-dialog";
+import axios from "axios";
 import {
-  Database,
-  File,
-  Loader,
-  ServerCog,
-  Sheet,
-  Upload,
-} from "lucide-vue-next";
+  ConnectionConfig,
+  FileProcessConfig,
+  MongoImportConfig,
+  databaseTypes,
+} from "@/types/import";
 
 // 定义组件发出的事件
-const emit = defineEmits<{
-  (e: "connect", config: ConnectionConfig): void;
-  (e: "import-file", file: File, type: "sqlite" | "csv" | "excel"): void;
-}>();
-
-// 数据库类型定义
-interface DatabaseType {
-  value: string;
-  label: string;
-  icon: any;
-  isConnection: boolean;
-  fileAccept?: string;
-  defaultPort?: number;
-}
-
-const databaseTypes: DatabaseType[] = [
-  {
-    value: "mongodb",
-    label: "MongoDB",
-    icon: ServerCog,
-    isConnection: true,
-    defaultPort: 27017,
-  },
-  {
-    value: "mysql",
-    label: "MySQL",
-    icon: ServerCog,
-    isConnection: true,
-    defaultPort: 3306,
-  },
-  {
-    value: "sqlite",
-    label: "SQLite",
-    icon: Database,
-    isConnection: false,
-    fileAccept: ".db,.sqlite,.sqlite3",
-  },
-  {
-    value: "csv",
-    label: "CSV",
-    icon: Sheet,
-    isConnection: false,
-    fileAccept: ".csv,.txt",
-  },
-  {
-    value: "excel",
-    label: "Excel",
-    icon: Sheet,
-    isConnection: false,
-    fileAccept: ".xlsx,.xls",
-  },
-];
-
-// 连接配置类型
-interface ConnectionConfig {
-  host: string;
-  port: number | string;
-  username: string;
-  password: string;
-  database: string;
-  type?: string; // Add the 'type' property as optional
-}
+// const emit = defineEmits<{
+//   (e: "connect", config: ConnectionConfig): void;
+//   (e: "process-file", config: FileProcessConfig): void;
+//   (e: "import-to-mongo", config: MongoImportConfig): void;
+// }>();
 
 // 响应式状态
 const showPanel = ref(false);
 const selectedDbType = ref<string | null>(null);
 const connectionConfig = ref<ConnectionConfig>({
+  type: "",
   host: "localhost",
   port: "",
   username: "",
   password: "",
   database: "",
 });
-const fileInput = ref<HTMLInputElement | null>(null);
-const dragActive = ref(false);
-const selectedFile = ref<File | null>(null);
+const selectedFilePath = ref<string>("");
 const isLoading = ref(false);
-const isLoadingMessage = ref("正在连接数据库...");
+const isLoadingMessage = ref("正在处理...");
+const importMode = ref<"preview" | "mongodb">("preview");
+
+// CSV特定选项
+const csvOptions = ref({
+  delimiter: ",",
+  hasHeader: true,
+  encoding: "utf-8",
+});
+
+// MongoDB导入选项
+const mongoDbOptions = ref({
+  dbName: "",
+  collName: "",
+});
 
 // 计算属性
 const isConnectionType = computed(() => {
@@ -306,7 +394,7 @@ const isFileType = computed(() => {
 const fileAcceptTypes = computed(() => {
   if (!selectedDbType.value) return "";
   const dbType = databaseTypes.find((t) => t.value === selectedDbType.value);
-  return dbType?.fileAccept || "";
+  return dbType?.fileExtensions?.join(", ") || "";
 });
 
 const defaultPort = computed(() => {
@@ -324,7 +412,23 @@ const isFormValid = computed(() => {
       connectionConfig.value.database.trim() !== ""
     );
   } else {
-    return selectedFile.value !== null;
+    return selectedFilePath.value !== "";
+  }
+});
+
+const confirmButtonText = computed(() => {
+  if (!selectedDbType.value) return "确认";
+
+  if (isConnectionType.value) {
+    return "连接数据库";
+  } else {
+    if (selectedDbType.value === "excel") {
+      return "导入数据";
+    } else if (importMode.value === "preview") {
+      return "预览数据";
+    } else {
+      return "导入到MongoDB";
+    }
   }
 });
 
@@ -332,8 +436,19 @@ const isFormValid = computed(() => {
 const openPanel = () => {
   showPanel.value = true;
   selectedDbType.value = null;
-  selectedFile.value = null;
+  selectedFilePath.value = "";
+  importMode.value = "preview";
+  csvOptions.value = {
+    delimiter: ",",
+    hasHeader: true,
+    encoding: "utf-8",
+  };
+  mongoDbOptions.value = {
+    dbName: "",
+    collName: "",
+  };
   connectionConfig.value = {
+    type: "",
     host: "localhost",
     port: "",
     username: "",
@@ -344,56 +459,77 @@ const openPanel = () => {
 
 const selectDatabaseType = (type: string) => {
   selectedDbType.value = type;
+  selectedFilePath.value = "";
   const dbType = databaseTypes.find((t) => t.value === type);
   if (dbType?.isConnection && dbType.defaultPort) {
     connectionConfig.value.port = dbType.defaultPort;
+    connectionConfig.value.type = type;
   }
 };
 
-const triggerFileInput = () => {
-  fileInput.value?.click();
-};
-
-const handleFileChange = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    selectedFile.value = input.files[0];
-  }
-};
-
-const handleDragOver = () => {
-  dragActive.value = true;
-};
-
-const handleDrop = (event: DragEvent) => {
-  dragActive.value = false;
-  if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-    const file = event.dataTransfer.files[0];
-    // 检查文件扩展名
+// 使用Tauri API打开文件选择对话框
+const openFileDialog = async () => {
+  try {
     const dbType = databaseTypes.find((t) => t.value === selectedDbType.value);
-    if (dbType?.fileAccept) {
-      const validExtensions = dbType.fileAccept
-        .split(",")
-        .map((ext) => ext.trim());
-      const fileExtension = file.name
-        .substring(file.name.lastIndexOf("."))
-        .toLowerCase();
+    if (!dbType || !dbType.fileExtensions) return;
 
-      if (validExtensions.includes(fileExtension)) {
-        selectedFile.value = file;
-      } else {
-        alert(`请选择有效的${dbType.label}文件 (${dbType.fileAccept})`);
+    // 构建文件选择器过滤器
+    const filters = {
+      name: `${dbType.label} 文件`,
+      extensions: dbType.fileExtensions.map((ext) => ext.replace(".", "")),
+    };
+
+    // 打开文件选择对话框
+    const selected = await open({
+      multiple: false,
+      filters: [filters],
+    });
+
+    if (selected && typeof selected === "string") {
+      // 替换反斜杠为正斜杠
+      selectedFilePath.value = selected.replace(/\\/g, "/");
+      console.log("选择的文件路径:", selectedFilePath.value);
+      // 重置相关选项
+      if (selectedDbType.value === "csv") {
+        importMode.value = "preview";
       }
     }
+  } catch (error) {
+    console.error("打开文件对话框失败:", error);
   }
 };
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+const getFileName = (filePath: string): string => {
+  if (!filePath) return "";
+  // 获取文件名 (跨平台)
+  const parts = filePath.split(/[\/\\]/);
+  return parts[parts.length - 1];
+};
+
+const getDefaultDbName = (): string => {
+  if (!selectedFilePath.value) return "";
+
+  const fileName = getFileName(selectedFilePath.value);
+  const nameWithoutExt = fileName.substring(0, fileName.lastIndexOf("."));
+
+  if (selectedDbType.value === "csv") {
+    return `csv_${nameWithoutExt}`;
+  } else if (selectedDbType.value === "sqlite") {
+    return `sqlite_${nameWithoutExt}`;
+  }
+
+  return nameWithoutExt;
+};
+
+const getDefaultCollName = (): string => {
+  if (selectedDbType.value === "csv") {
+    return "data";
+  } else if (selectedDbType.value === "sqlite") {
+    // 对于SQLite，默认使用表名作为集合名
+    // 这里需要用户在界面上选择具体的表
+    return "table_name";
+  }
+  return "data";
 };
 
 const cancel = () => {
@@ -409,23 +545,75 @@ const confirm = async () => {
     if (isConnectionType.value) {
       isLoadingMessage.value = `正在连接${selectedDbType.value}数据库...`;
       // 模拟连接延迟
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      emit("connect", {
-        type: selectedDbType.value,
-        ...connectionConfig.value,
-      });
+      // TODO: 连接数据库逻辑
     } else {
-      isLoadingMessage.value = `正在导入${selectedDbType.value}文件...`;
-      // 模拟导入延迟
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // 文件类型处理
+      if (importMode.value === "preview" || selectedDbType.value === "excel") {
+        // 预览数据
+        isLoadingMessage.value = `正在处理${selectedDbType.value}文件...`;
 
-      if (selectedFile.value) {
-        emit(
-          "import-file",
-          selectedFile.value,
-          selectedDbType.value as "sqlite" | "csv" | "excel"
-        );
+        let processConfig: FileProcessConfig = {
+          type: selectedDbType.value,
+          filePath: selectedFilePath.value,
+        };
+
+        // 添加CSV特定选项
+        if (selectedDbType.value === "csv") {
+          processConfig.options = { ...csvOptions.value };
+        }
+
+        // TODO: 处理文件逻辑
+      } else if (importMode.value === "mongodb") {
+        // 导入到MongoDB
+        isLoadingMessage.value = `正在将${selectedDbType.value}数据导入到MongoDB...`;
+
+        let importConfig: MongoImportConfig = {
+          sourceType: selectedDbType.value,
+          filePath: selectedFilePath.value,
+        };
+
+        // 添加特定选项
+        if (selectedDbType.value === "csv") {
+          importConfig.options = { ...csvOptions.value };
+        }
+
+        // 添加MongoDB选项
+        if (mongoDbOptions.value.dbName) {
+          importConfig.dbName = mongoDbOptions.value.dbName;
+        }
+        if (mongoDbOptions.value.collName) {
+          importConfig.collName = mongoDbOptions.value.collName;
+        }
+
+        // TODO: 导入到MongoDB逻辑
+        const apiUrl =
+          "http://localhost:8080/api/datasource/csv/import-to-mongo";
+
+        const requestData = {
+          filePath: selectedFilePath.value,
+          options: {
+            delimiter: ",",
+            hasHeader: true,
+            encoding: "utf-8",
+          },
+          dbName: "csv_data",
+          collName: "customers",
+        };
+
+        axios
+          .post(apiUrl, requestData, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            console.log("导入成功:", response.data);
+          })
+          .catch((error) => {
+            console.error("导入失败:", error);
+          });
       }
     }
 

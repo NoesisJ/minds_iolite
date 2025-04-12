@@ -1,14 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop-capability",
-  "platforms": [
-    "macOS",
-    "windows",
-    "linux"
-  ],
-  "windows": [
-    "main"
-  ],
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main"],
   "permissions": [
     "core:app:allow-app-hide",
     "core:app:allow-app-show",
@@ -35,6 +29,8 @@
     "core:tray:allow-new",
     "core:event:allow-listen",
     "core:event:allow-unlisten",
-    "shell:allow-open"
+    "shell:allow-open",
+    "dialog:allow-open",
+    "dialog:default"
   ]
 }
