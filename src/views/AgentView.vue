@@ -1,33 +1,31 @@
 <template>
   <div class="h-full flex flex-col text-white">
     <!-- 顶部标题栏 -->
-    <header class="flex justify-between items-center px-6 py-5">
-      <!-- 选型 -->
-      <div class="flex items-center gap-4">
-        <!-- 下拉历史记录按钮 -->
-        <DropdownMenu
-          :items="
-            chatHistory.map((item) => ({ label: item.title, value: item }))
-          "
-          :callback="(item) => (selectedChat = item.value)"
-          class="history-selector"
-        >
-          <div class="flex items-center">
-            <span>{{ selectedChat ? selectedChat.title : "AI助手" }}</span>
-          </div>
-        </DropdownMenu>
+    <header class="relative flex items-center px-6 py-5 gap-4">
+      <!-- 下拉历史记录按钮 -->
+      <DropdownMenu
+        :items="chatHistoryItems"
+        :callback="selectChat"
+        class="history-selector"
+      >
+        <div class="flex items-center">
+          <span>{{ currentChatTitle }}</span>
+        </div>
+        <template #action="{ item }">
+          <Delete
+            class="w-4 h-4 text-[#c96442] cursor-pointer hover:text-[#ff0000]"
+            @click.stop="deleteChat(item.value)"
+          />
+        </template>
+      </DropdownMenu>
 
-        <!-- 模型选择下拉菜单 -->
-        <DropdownMenu
-          :items="models.map((model) => ({ label: model.name, value: model }))"
-          :callback="(item) => (selectedModel = item.value)"
-          class="model-selector"
-        >
-          <div class="flex items-center">
-            <span>{{ selectedModel ? selectedModel.name : "deepseek" }}</span>
-          </div>
-        </DropdownMenu>
-      </div>
+      <!-- 添加新对话 -->
+      <button
+        class="bg-[#c96442] text-[#ffeaea] rounded-full p-2 transition-colors duration-300 hover:bg-[#ff5100]"
+        @click="chatStore.createNewChat()"
+      >
+        <Plus class="w-6 h-6" />
+      </button>
     </header>
 
     <!-- 消息展示区 -->
@@ -46,28 +44,16 @@
         class="w-full max-w-3xl mx-auto space-y-6"
         ref="messagesContainer"
       >
-        <div
+        <MessageItem
           v-for="message in messages"
           :key="message.id"
-          class="flex w-full"
-          :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
-        >
-          <div
-            class="max-w-[80%] rounded-lg p-4"
-            :class="
-              message.sender === 'user'
-                ? 'bg-[#404040] text-white'
-                : 'bg-[#353535] text-white'
-            "
-          >
-            {{ message.content }}
-          </div>
-        </div>
+          :message="message"
+        />
       </div>
     </main>
 
     <!-- 底部输入区 -->
-    <footer class="p-4 w-full">
+    <footer class="p-4 w-full relative">
       <div
         class="relative max-w-3xl mx-auto bg-[#353535] rounded-2xl border border-[#65645f] py-3 px-6"
       >
@@ -82,157 +68,150 @@
           style="overflow-y: hidden"
         />
 
-        <!-- 功能开关按钮 -->
-        <div class="flex items-center mt-2 ml-[-0.6rem] space-x-3">
-          <!-- 联网搜索按钮 -->
-          <button
-            class="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-200"
-            :class="
-              isSearchEnabled
-                ? 'bg-[#c964428d] text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            "
-            @click="toggleSearch"
-          >
-            <Globe class="w-5 h-5 mr-2" />
-            <span>联网搜索</span>
-          </button>
-        </div>
-
         <!-- 发送按钮 -->
         <button
           class="absolute bottom-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-300"
-          :class="
-            userInput.trim().length > 0
-              ? 'bg-[#c96442] text-white'
-              : 'bg-[#7d4a38] text-[#989897] cursor-not-allowed'
-          "
-          :disabled="userInput.trim().length === 0"
+          :class="sendButtonClass"
+          :disabled="!canSendMessage"
           @click="sendMessage"
         >
           <Send class="w-4 h-4" />
         </button>
       </div>
     </footer>
+
+    <!-- Toast组件 -->
+    <Toast ref="toast" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import DropdownMenu from "@/components/ui/DropDown.vue";
-import { Globe, Send } from "lucide-vue-next";
+import { Delete, Plus, Send } from "lucide-vue-next";
+import { useMessageStore } from "@/stores/messageStore";
+import { useChatStore } from "@/stores/chatStore";
+import MessageItem from "@/components/chat/MessageItem.vue";
+import Toast from "@/components/ui/Toast.vue";
+import { chatService } from "@/services/chatService";
 
-interface Message {
-  id: number;
-  content: string;
-  sender: "user" | "ai";
-  timestamp: string;
-}
-
-interface ChatSession {
-  id: number;
-  title: string;
-  date: Date;
-}
-
-interface Model {
-  id: string;
-  name: string;
-}
-
-// 示例聊天历史记录
-// TODO: 接入实际聊天记录
-const chatHistory = ref<ChatSession[]>([
-  { id: 1, title: "关于项目架构的讨论", date: new Date() },
-  { id: 2, title: "如何优化代码性能", date: new Date() },
-  { id: 3, title: "Bug修复建议", date: new Date() },
-]);
-
-// 示例可选模型
-// TODO: 接入实际模型
-const models = ref<Model[]>([
-  { id: "deepseek", name: "deepseek" },
-  { id: "gpt", name: "gpt" },
-]);
-
-const selectedChat = ref<ChatSession | null>(null);
-const selectedModel = ref<Model>(models.value[0]); // 默认选择deepseek
-
-// 功能开关状态
-const isSearchEnabled = ref(false);
-const isReasoningEnabled = ref(false);
-
-// 切换联网搜索状态
-const toggleSearch = () => {
-  isSearchEnabled.value = !isSearchEnabled.value;
-};
-
-// 状态管理
-const userInput = ref<string>("");
-const messages = ref<Message[]>([]);
-const messagesContainer = ref<HTMLElement | null>(null);
+// 引用和状态
+const toast = ref<InstanceType<typeof Toast> | null>(null);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const messagesContainer = ref<HTMLElement | null>(null);
+const userInput = ref<string>("");
 
-// 自动调整输入框高度
+// 使用状态管理
+const messageStore = useMessageStore();
+const chatStore = useChatStore();
+const { messages } = storeToRefs(messageStore);
+const { chatHistory, selectedChat } = storeToRefs(chatStore);
+
+// 计算属性
+const chatHistoryItems = computed(() =>
+  chatHistory.value.map((item) => ({ label: item.title, value: item }))
+);
+
+const currentChatTitle = computed(() =>
+  selectedChat.value ? selectedChat.value.title : "AI助手"
+);
+
+const canSendMessage = computed(() => userInput.value.trim().length > 0);
+
+const sendButtonClass = computed(() =>
+  canSendMessage.value
+    ? "bg-[#c96442] text-white"
+    : "bg-[#7d4a38] text-[#989897] cursor-not-allowed"
+);
+
+// 方法
 const adjustTextareaHeight = () => {
   if (!textareaRef.value) return;
 
-  textareaRef.value.style.height = "auto"; // 重置高度为自动，以便计算正确的高度
-
-  // 计算新的高度（不超过最大高度）
-  const newHeight = Math.min(
-    textareaRef.value.scrollHeight,
-    400 // 最大高度（px）
-  );
-
-  textareaRef.value.style.height = `${newHeight}px`; // 应用
-  textareaRef.value.style.overflowY = newHeight >= 400 ? "auto" : "hidden"; // 溢出则显示滚动条
+  textareaRef.value.style.height = "auto";
+  const newHeight = Math.min(textareaRef.value.scrollHeight, 400);
+  textareaRef.value.style.height = `${newHeight}px`;
+  textareaRef.value.style.overflowY = newHeight >= 400 ? "auto" : "hidden";
 };
 
-// 在组件挂载时和内容变化时调整高度
+const selectChat = async (item: { value: any }) => {
+  chatStore.setSelectedChat(item.value);
+  try {
+    messageStore.loadMessages(item.value.id);
+  } catch (error) {
+    showError("加载聊天记录失败，请稍后再试");
+    console.error("Error loading chat messages:", error);
+  }
+};
+
+const sendMessage = async () => {
+  if (!canSendMessage.value) return;
+
+  try {
+    console.log("Sending message:", userInput.value);
+    // 先添加用户消息到界面
+    const userMessage = messageStore.addUserMessage(userInput.value);
+
+    // 清空输入框并重置高度
+    userInput.value = "";
+    nextTick(() => {
+      if (textareaRef.value) {
+        textareaRef.value.style.height = "40px";
+      }
+    });
+
+    // 发送消息到服务器
+    const response = await chatService.sendMessage({
+      stream: false,
+      session_id: selectedChat.value?.id ?? "default",
+      message: userMessage.content,
+    });
+
+    // 处理响应
+    messageStore.addAIMessage(response.response);
+  } catch (error) {
+    showError("发送消息失败，请稍后再试");
+    console.error("Error sending message:", error);
+  }
+};
+
+const deleteChat = async (chat: any) => {
+  try {
+    await chatStore.deleteChat(chat.id);
+  } catch (error) {
+    showError("删除聊天记录失败，请稍后再试");
+    console.error("Error deleting chat:", error);
+  }
+};
+
+const showError = (message: string) => {
+  toast.value?.add({
+    severity: "error",
+    summary: "错误",
+    detail: message,
+    life: 3000,
+  });
+
+  messageStore.addSystemMessage(message, "error");
+};
+
+// 生命周期钩子
 onMounted(() => {
   adjustTextareaHeight();
+  // 默认加载最新的聊天记录或创建新聊天
+  if (chatHistory.value.length > 0) {
+    selectChat({ value: chatHistory.value[0] });
+  } else {
+    chatStore.createNewChat();
+  }
 });
 
+// 监听器
 watch(userInput, () => {
   nextTick(adjustTextareaHeight);
 });
 
-// 发送消息方法
-const sendMessage = async () => {
-  if (!userInput.value.trim()) return;
-
-  // 添加用户消息
-  const userMessage: Message = {
-    id: Date.now(),
-    content: userInput.value,
-    sender: "user",
-    timestamp: new Date().toLocaleTimeString(),
-  };
-
-  messages.value.push(userMessage);
-  userInput.value = "";
-
-  nextTick(() => {
-    if (textareaRef.value) {
-      textareaRef.value.style.height = "40px"; // 重置为最小高度
-    }
-  });
-
-  // 模拟AI响应
-  setTimeout(() => {
-    const aiMessage: Message = {
-      id: Date.now(),
-      content: `我是基于${selectedModel.value.name}的AI助手，很高兴为您服务！${isSearchEnabled.value ? "我已启用联网搜索功能。" : ""}${isReasoningEnabled.value ? "我已启用推理功能。" : ""}请问有什么我可以帮助您的吗？`,
-      sender: "ai",
-      timestamp: new Date().toLocaleTimeString(),
-    };
-
-    messages.value.push(aiMessage);
-  }, 1000);
-};
-
-// 监听消息变化，自动滚动到底部
 watch(
   messages,
   () => {

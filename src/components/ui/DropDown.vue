@@ -21,7 +21,7 @@
       <div
         v-if="isOpen"
         ref="menuRef"
-        class="absolute rounded-md shadow-lg bg-[#454545] border border-gray-700/60 z-50 max-h-[200px] overflow-y-auto p-1.5"
+        class="absolute rounded-md shadow-lg bg-[#454545] border border-gray-700/60 z-50 w-fit max-w-[300px] max-h-[200px] overflow-y-auto p-1.5"
         :class="position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'"
         :style="{
           width: menuWidth ? `${menuWidth}px` : 'auto',
@@ -37,11 +37,12 @@
           <div
             v-for="(item, index) in items"
             :key="index"
-            class="text-md block px-4 py-2 text-[#c2c0b6] hover:bg-[#282726] hover:text-white cursor-pointer z-50 relative whitespace-nowrap transition-colors duration-200 ease-in-out rounded-md"
+            class="text-md px-4 py-2 text-[#c2c0b6] hover:bg-[#282726] hover:text-white cursor-pointer z-50 relative whitespace-nowrap transition-colors duration-200 ease-in-out rounded-md flex items-center justify-between gap-2"
             role="menuitem"
             @click="handleItemClick(item)"
           >
             {{ item.label }}
+            <slot name="action" :item="item" />
           </div>
         </div>
       </div>
