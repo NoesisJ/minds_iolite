@@ -1,6 +1,6 @@
 <template>
   <div class="tables-container p-4">
-    <h1 class="text-xl font-semibold mb-6 text-gray-700 dark:text-white">
+    <h1 class="text-xl font-semibold mb-6 text-gray-200 dark:text-white">
       数据表格示例
     </h1>
 
@@ -785,17 +785,12 @@ const handleSearch = (searchEvent) => {
 </script>
 
 <style scoped>
-.tables-container {
-  min-height: 100vh;
-  background-color: #f5f7fb;
-}
-
 :global(.dark) .tables-container {
   background-color: rgb(48, 48, 48);
 }
 
 .table-card {
-  background-color: #ffffff;
+  background-color: var(--material-item-bg);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
@@ -807,7 +802,8 @@ const handleSearch = (searchEvent) => {
 
 .table-header {
   padding: 16px 20px;
-  border-bottom: 1px solid #eef1f6;
+  border-bottom: 1px solid var(--material-item-border);
+  background-color: var(--material-item-header);
 }
 
 :global(.dark) .table-header {
@@ -815,7 +811,7 @@ const handleSearch = (searchEvent) => {
 }
 
 .table-header h2 {
-  color: #333;
+  color: #a7a7a7;
   font-weight: 600;
   margin-bottom: 1rem;
 }
@@ -825,7 +821,6 @@ const handleSearch = (searchEvent) => {
 }
 
 .table-wrapper {
-  padding: 16px;
   overflow-x: auto;
 }
 

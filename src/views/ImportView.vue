@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center">
+  <div class="relative transform-3d flex flex-col items-center justify-center">
     <!-- 主触发按钮 -->
     <button
       @click="openPanel"
@@ -10,7 +10,6 @@
 
     <!-- 主面板 -->
     <div
-      v-if="showPanel"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
@@ -294,12 +293,6 @@
         <!-- 操作按钮 -->
         <div class="flex justify-end space-x-3">
           <button
-            @click="cancel"
-            class="px-4 py-2 border border-gray-300 rounded-md text-gray-300 hover:bg-gray-700 transition-colors"
-          >
-            取消
-          </button>
-          <button
             @click="confirm"
             :disabled="!isFormValid"
             :class="[
@@ -327,6 +320,8 @@
         </p>
       </div>
     </div>
+
+    <Toast ref="toast" />
   </div>
 </template>
 
@@ -341,15 +336,8 @@ import {
   MongoImportConfig,
   databaseTypes,
 } from "@/types/import";
+import Toast from "@/components/ui/Toast.vue";
 
-// 定义组件发出的事件
-// const emit = defineEmits<{
-//   (e: "connect", config: ConnectionConfig): void;
-//   (e: "process-file", config: FileProcessConfig): void;
-//   (e: "import-to-mongo", config: MongoImportConfig): void;
-// }>();
-
-// 响应式状态
 const showPanel = ref(false);
 const selectedDbType = ref<string | null>(null);
 const connectionConfig = ref<ConnectionConfig>({
@@ -364,6 +352,7 @@ const selectedFilePath = ref<string>("");
 const isLoading = ref(false);
 const isLoadingMessage = ref("正在处理...");
 const importMode = ref<"preview" | "mongodb">("preview");
+const toast = ref<InstanceType<typeof Toast> | null>(null);
 
 // CSV特定选项
 const csvOptions = ref({
@@ -532,10 +521,6 @@ const getDefaultCollName = (): string => {
   return "data";
 };
 
-const cancel = () => {
-  showPanel.value = false;
-};
-
 const confirm = async () => {
   if (!selectedDbType.value) return;
 
@@ -566,54 +551,7 @@ const confirm = async () => {
 
         // TODO: 处理文件逻辑
       } else if (importMode.value === "mongodb") {
-        // 导入到MongoDB
-        isLoadingMessage.value = `正在将${selectedDbType.value}数据导入到MongoDB...`;
-
-        let importConfig: MongoImportConfig = {
-          sourceType: selectedDbType.value,
-          filePath: selectedFilePath.value,
-        };
-
-        // 添加特定选项
-        if (selectedDbType.value === "csv") {
-          importConfig.options = { ...csvOptions.value };
-        }
-
-        // 添加MongoDB选项
-        if (mongoDbOptions.value.dbName) {
-          importConfig.dbName = mongoDbOptions.value.dbName;
-        }
-        if (mongoDbOptions.value.collName) {
-          importConfig.collName = mongoDbOptions.value.collName;
-        }
-
-        // TODO: 导入到MongoDB逻辑
-        const apiUrl =
-          "http://localhost:8080/api/datasource/csv/import-to-mongo";
-
-        const requestData = {
-          filePath: selectedFilePath.value,
-          options: {
-            delimiter: ",",
-            hasHeader: true,
-            encoding: "utf-8",
-          },
-          dbName: "csv_data",
-          collName: "customers",
-        };
-
-        axios
-          .post(apiUrl, requestData, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          .then((response) => {
-            console.log("导入成功:", response.data);
-          })
-          .catch((error) => {
-            console.error("导入失败:", error);
-          });
+        importCsvToMongo();
       }
     }
 
@@ -622,7 +560,73 @@ const confirm = async () => {
   } catch (error) {
     console.error("操作失败:", error);
     alert("操作失败，请检查配置或文件");
+    toast.value?.add({
+      severity: "error",
+      summary: "操作失败",
+      detail: `操作失败，请检查配置或文件`,
+      life: 3000,
+    });
     isLoading.value = false;
   }
+};
+
+const importCsvToMongo = () => {
+  isLoadingMessage.value = `正在将${selectedDbType.value}数据导入到MongoDB...`;
+
+  let importConfig: MongoImportConfig = {
+    sourceType: selectedDbType.value || "",
+    filePath: selectedFilePath.value,
+  };
+
+  // 添加特定选项
+  if (selectedDbType.value === "csv") {
+    importConfig.options = { ...csvOptions.value };
+  }
+
+  // 添加MongoDB选项
+  if (mongoDbOptions.value.dbName) {
+    importConfig.dbName = mongoDbOptions.value.dbName;
+  }
+  if (mongoDbOptions.value.collName) {
+    importConfig.collName = mongoDbOptions.value.collName;
+  }
+
+  const apiUrl = "http://localhost:8080/api/datasource/csv/import-to-mongo";
+
+  const requestData = {
+    filePath: selectedFilePath.value,
+    options: {
+      delimiter: ",",
+      hasHeader: true,
+      encoding: "utf-8",
+    },
+    dbName: "csv_data",
+    collName: "customers",
+  };
+
+  axios
+    .post(apiUrl, requestData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      console.log("导入成功:", response.data);
+      toast.value?.add({
+        severity: "success",
+        summary: "导入成功",
+        detail: `数据已成功导入到MongoDB`,
+        life: 3000,
+      });
+    })
+    .catch((error) => {
+      console.error("导入失败:", error);
+      toast.value?.add({
+        severity: "error",
+        summary: "导入失败",
+        detail: `数据导入失败，请检查配置或文件`,
+        life: 3000,
+      });
+    });
 };
 </script>

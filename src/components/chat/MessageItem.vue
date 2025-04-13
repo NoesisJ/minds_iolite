@@ -9,8 +9,12 @@
       <!-- 小复制按钮 -->
       <div
         v-if="message.sender !== 'system'"
-        class="absolute  flex items-center justify-center rounded-md bg-[#7d4a38] w-10 h-8 p-2 text-white hover:bg-[#c96442] border border-[#404040] cursor-pointer opacity-0 group-hover:opacity-100 group-hover:transition-all group-hover:duration-100"
-        :class="message.sender === 'user' ? 'left-[-40px] bottom-[10px] group-hover:left-[-60px]' : 'bottom-[10px] right-[-40px] group-hover:right-[-60px]'"
+        class="absolute flex items-center justify-center rounded-md bg-[#7d4a38] w-10 h-8 p-2 text-white hover:bg-[#c96442] border border-[#404040] cursor-pointer opacity-0 group-hover:opacity-100 group-hover:transition-all group-hover:duration-100"
+        :class="
+          message.sender === 'user'
+            ? 'left-[-40px] bottom-[10px] group-hover:left-[-60px]'
+            : 'bottom-[10px] right-[-40px] group-hover:right-[-60px]'
+        "
         @click="copyToClipboard(message.content)"
       >
         <Copy class="h-4 w-4" />

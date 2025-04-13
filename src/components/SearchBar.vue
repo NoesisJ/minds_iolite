@@ -108,9 +108,9 @@ defineExpose({
 
 :deep(.p-autocomplete-input) {
   border-radius: 4px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--material-item-border);
   padding: 0.5rem 0.75rem;
-  background: white;
+  background: var(--material-bg-dark);
   width: 100%;
   transition: all 0.3s ease;
 }

@@ -1,34 +1,50 @@
 <template>
-  <div class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] py-3 overflow-auto custom-scrollbar">
-    <TogglePanel
-      v-for="item in combinedNavMenus"
-      :key="item.label"
-      :is-active="isItemActive(item)"
-      :default-open="shouldExpand(item)"
-      :route-path="item.route"
-      :has-children="!!item.items"
-      @header-click="navigateTo"
-    >
-      <template #header>
-        <span :class="item.icon" />
-        <span class="ml-2">{{ item.label }}</span>
-      </template>
+  <div
+    class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] pt-3 overflow-hidden flex flex-col justify-between"
+  >
+    <div class="overflow-auto flex-1 custom-scrollbar">
+      <TogglePanel
+        v-for="item in combinedNavMenus"
+        :key="item.label"
+        :is-active="isItemActive(item)"
+        :default-open="shouldExpand(item)"
+        :route-path="item.route"
+        :has-children="!!item.items"
+        @header-click="navigateTo"
+      >
+        <template #header>
+          <span :class="item.icon" />
+          <span class="ml-2">{{ item.label }}</span>
+        </template>
 
-      <template v-if="item.items" #content>
-        <TogglePanel
-          v-for="subItem in item.items"
-          :key="subItem.label"
-          :is-active="isSubItemActive(subItem)"
-          :route-path="subItem.route"
-          @header-click="navigateTo"
-        >
-          <template #header>
-            <span :class="subItem.icon" />
-            <span class="ml-2">{{ subItem.label }}</span>
-          </template>
-        </TogglePanel>
-      </template>
-    </TogglePanel>
+        <template v-if="item.items" #content>
+          <TogglePanel
+            v-for="subItem in item.items"
+            :key="subItem.label"
+            :is-active="isSubItemActive(subItem)"
+            :route-path="subItem.route"
+            @header-click="navigateTo"
+          >
+            <template #header>
+              <span :class="subItem.icon" />
+              <span class="ml-2">{{ subItem.label }}</span>
+            </template>
+          </TogglePanel>
+        </template>
+      </TogglePanel>
+    </div>
+
+    <div
+      class="w-full flex flex-row items-center px-4 py-3 gap-6 bg-[var(--material-item-bg)] hover:bg-[var(--material-item-bg-hover)]"
+      @click="navigateTo('/import')"
+    >
+      <button
+        class="bg-[var(--material-red-dark)] text-white rounded-full w-12 h-8 p-2 transition-colors duration-300 hover:bg-[var(--material-red)] items-center flex justify-center"
+      >
+        <span class="pi pi-cog" />
+      </button>
+      <span class="text-gray-400 mt-1">设置</span>
+    </div>
   </div>
 </template>
 
@@ -54,56 +70,14 @@ interface NavItem {
 // 原始静态菜单
 const navMenus: NavItem[] = [
   {
-    label: "人员管理",
-    icon: "pi pi-users",
-    route: "/information",
-  },
-  {
-    label: "人员分布",
-    icon: "pi pi-chart-bar",
-    route: "/infoCharts",
-  },
-  {
-    label: "财务管理",
-    icon: "pi pi-dollar",
-    items: [
-      {
-        label: "财务数据",
-        icon: "pi pi-box",
-        route: "/finance/list",
-      },
-      {
-        label: "财务统计",
-        icon: "pi pi-chart-pie",
-        route: "/finance/charts",
-      },
-    ],
-  },
-  {
-    label: "物资管理",
-    icon: "pi pi-database",
-    items: [
-      {
-        label: "在库物资",
-        icon: "pi pi-inbox",
-        route: "/material/storage",
-      },
-      {
-        label: "入库审批",
-        icon: "pi pi-filter",
-        route: "/material/requestLogs",
-      },
-    ],
-  },
-  {
-    label: "报名管理",
-    icon: "pi pi-cog",
-    route: "/signUp",
-  },
-  {
     label: "AI助手",
     icon: "pi pi-comments",
     route: "/agent",
+  },
+  {
+    label: "数据分析设计器",
+    icon: "pi pi-pencil",
+    route: "/designer",
   },
   {
     label: "图表",
@@ -153,17 +127,7 @@ const navMenus: NavItem[] = [
     route: "/table",
   },
   {
-    label: "设计器",
-    icon: "pi pi-pencil",
-    route: "/designer",
-  },
-  {
-    label: "导入",
-    icon: "pi pi-upload",
-    route: "/import",
-  },
-  {
-    label: "123",
+    label: "ECharts渲染",
     icon: "pi pi-upload",
     route: "/123",
   },
