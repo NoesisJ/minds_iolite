@@ -27,8 +27,8 @@ body,
   --material-item-header: #404040;
   --material-item-bg: #353535;
   --material-item-bg-hover: #282828;
-  --material-item-bg-selected: #171717;
-  --material-item-bg-selected-hover: #282828;
+  --material-item-bg-selected: #282828;
+  --material-item-bg-selected-hover: #171717;
   --material-item-border: #41413e;
 
   --col-sat-1: hsl(216, 50%, 45%);

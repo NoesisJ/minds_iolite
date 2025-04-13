@@ -1,16 +1,18 @@
 <template>
   <div
-    class="rounded-lg border border-gray-200 overflow-hidden shadow-sm"
+    class="echarts-preview h-[40rem] rounded-lg overflow-hidden shadow-sm bg-[var(--material-item-bg)]"
   >
     <!-- 标签栏 -->
-    <div class="flex bg-gray-50 border-b border-gray-200">
+    <div
+      class="flex bg-[var(--material-item-header)] h-[var(--preview-header-h)] shadow-sm"
+    >
       <button
         @click="activeTab = 'preview'"
         class="px-4 py-2 font-medium text-sm transition-colors duration-200"
         :class="
           activeTab === 'preview'
-            ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+            ? 'text-white border-b-2 border-[var(--material-red-dark)] bg-[var(--material-item-bg-selected)] hover:bg-[var(--material-item-bg-selected-hover)]'
+            : 'text-gray-400 hover:text-gray-200 hover:bg-[var(--material-item-bg-hover)]'
         "
       >
         预览
@@ -20,8 +22,8 @@
         class="px-4 py-2 font-medium text-sm transition-colors duration-200"
         :class="
           activeTab === 'code'
-            ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+            ? 'text-white border-b-2 border-[var(--material-red-dark)] bg-[var(--material-item-bg-selected)] hover:bg-[var(--material-item-bg-selected-hover)]'
+            : 'text-gray-400 hover:text-gray-200 hover:bg-[var(--material-item-bg-hover)]'
         "
       >
         代码
@@ -29,18 +31,16 @@
     </div>
 
     <!-- 内容区域 -->
-    <div class="w-full">
+    <div class="w-full h-[calc(100%-var(--preview-header-h))]">
       <!-- 预览标签内容 -->
-      <div v-if="activeTab === 'preview'" class="p-4 bg-white">
-        <div class="w-full h-80 border border-gray-200 rounded p-2">
-          <div ref="echartsRef" class="w-full h-full"></div>
-        </div>
+      <div v-show="activeTab === 'preview'" class="w-full h-full rounded p-2">
+        <div ref="echartsRef" class="w-full h-full"></div>
       </div>
 
       <!-- 代码标签内容 -->
-      <div v-if="activeTab === 'code'" class="p-4 bg-gray-50">
+      <div v-show="activeTab === 'code'" class="h-full">
         <pre
-          class="text-sm p-4 bg-gray-900 text-gray-100 rounded overflow-auto max-h-80"
+          class="text-sm px-4 py-6 bg-gray-900 text-gray-100 rounded overflow-auto h-full"
         ><code>{{ formattedCode }}</code></pre>
       </div>
     </div>
@@ -222,3 +222,9 @@ defineExpose({
   },
 });
 </script>
+
+<style scoped>
+.echarts-preview {
+  --preview-header-h: 2.5rem; /* 标签栏高度 */
+}
+</style>
