@@ -1,28 +1,36 @@
 use std::os::windows::process::CommandExt;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::Manager;
 use tauri::WindowEvent;
-
-const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 // 进程控制命令
 mod process {
     use super::*;
 
+    static AGENT_RUNNING: AtomicBool = AtomicBool::new(false);
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+
     #[tauri::command]
     pub fn open_agent() {
-        std::process::Command::new("cmd")
-            .args(["/C", "cd ./resources && main.exe"])
-            .creation_flags(CREATE_NO_WINDOW)
-            .spawn()
-            .expect("Failed to start ginApp");
+        if !AGENT_RUNNING.load(Ordering::SeqCst) {
+            std::process::Command::new("cmd")
+                .args(["/C", "cd ./resources && main.exe"])
+                .creation_flags(CREATE_NO_WINDOW)
+                .spawn()
+                .expect("Failed to start main.exe");
+            AGENT_RUNNING.store(true, Ordering::SeqCst);
+        }
     }
 
     #[tauri::command]
     pub fn close_agent() {
-        std::process::Command::new("cmd")
-            .args(["/C", "taskkill /f /im main.exe"])
-            .spawn()
-            .expect("Failed to close ginApp");
+        if AGENT_RUNNING.load(Ordering::SeqCst) {
+            let _ = std::process::Command::new("cmd")
+                .args(["/C", "taskkill /f /im main.exe 2>nul"])
+                .creation_flags(CREATE_NO_WINDOW)
+                .spawn();
+            AGENT_RUNNING.store(false, Ordering::SeqCst);
+        }
     }
 }
 
