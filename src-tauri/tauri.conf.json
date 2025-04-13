@@ -37,6 +37,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["resources/*.exe", "resources/.env", "resources/data/config.json"]
+    "resources": ["resources/*.exe", "resources/.env", "resources/config.yaml"]
   }
 }

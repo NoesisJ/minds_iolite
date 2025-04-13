@@ -1,6 +1,6 @@
 <template>
   <div class="p-6">
-    <EchartsPreview :options="chartOptions" :theme="'dark'" :animation="true" />
+    <!-- <EchartsPreview :options="chartOptions" :theme="'dark'" :animation="true" /> -->
   </div>
 </template>
 
