@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div>
+    <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 默认输入框 -->
       <base-card>
         <template #header>默认输入框</template>

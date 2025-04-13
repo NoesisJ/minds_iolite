@@ -68,7 +68,7 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar {
   height: 12px;
-  width: 6.5px;
+  width: 7px;
   background: color-mix(in srgb, var(--material-red-dark) 5%, transparent);
 }
 .custom-scrollbar::-webkit-scrollbar-corner {

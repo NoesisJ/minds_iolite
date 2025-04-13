@@ -801,9 +801,14 @@ const handleSearch = (searchEvent) => {
 }
 
 .table-header {
-  padding: 16px 20px;
+  padding: 0 20px 0 30px;
+  height: 5rem;
   border-bottom: 1px solid var(--material-item-border);
   background-color: var(--material-item-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 :global(.dark) .table-header {
@@ -813,7 +818,6 @@ const handleSearch = (searchEvent) => {
 .table-header h2 {
   color: #a7a7a7;
   font-weight: 600;
-  margin-bottom: 1rem;
 }
 
 :global(.dark) .table-header h2 {

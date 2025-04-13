@@ -1,112 +1,116 @@
 <template>
-  <div class="charts-container p-4">
-    <h1 class="text-xl font-semibold mb-6 text-white">Highcharts 数据可视化</h1>
+  <div class="bg-[var(--material-bg-light)]">
+    <div class="w-full h-fit p-6">
+      <h1 class="text-xl font-semibold mb-6 text-white">
+        Highcharts 数据可视化
+      </h1>
 
-    <!-- 图表网格 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- 聚点折线图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">聚点折线图</h2>
+      <!-- 图表网格 -->
+      <div class="mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 聚点折线图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">聚点折线图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <LineChart
+              title="美国太阳能就业增长"
+              subtitle="按职位类别划分"
+              yAxisTitle="员工数量"
+              :seriesData="employmentData"
+              :pointStart="2010"
+              :colors="['#4E9BFF', '#FF7B92', '#FFC233', '#38BFFF', '#4DE6A8']"
+              legendLayout="vertical"
+              legendAlign="right"
+              legendVerticalAlign="middle"
+              height="100%"
+            />
+          </div>
         </div>
-        <div class="chart-wrapper">
-          <LineChart
-            title="美国太阳能就业增长"
-            subtitle="按职位类别划分"
-            yAxisTitle="员工数量"
-            :seriesData="employmentData"
-            :pointStart="2010"
-            :colors="['#4E9BFF', '#FF7B92', '#FFC233', '#38BFFF', '#4DE6A8']"
-            legendLayout="vertical"
-            legendAlign="right"
-            legendVerticalAlign="middle"
-            height="100%"
-          />
-        </div>
-      </div>
 
-      <!-- 突出饼图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">突出饼图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <HighlightPieChart
-            title="2022年3月浏览器市场份额"
-            seriesName="市场份额"
-            :data="browserData"
-            tooltipFormat="{series.name}: <b>{point.percentage:.1f}%</b>"
-            :colors="[
-              '#4E9BFF',
-              '#FFC233',
-              '#38BFFF',
-              '#FF7B92',
-              '#4DE6A8',
-              '#9B66FF',
-            ]"
-            :customOptions="{
-              plotOptions: {
-                pie: {
-                  innerSize: '30%',
-                  depth: 35,
+        <!-- 突出饼图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">突出饼图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <HighlightPieChart
+              title="2022年3月浏览器市场份额"
+              seriesName="市场份额"
+              :data="browserData"
+              tooltipFormat="{series.name}: <b>{point.percentage:.1f}%</b>"
+              :colors="[
+                '#4E9BFF',
+                '#FFC233',
+                '#38BFFF',
+                '#FF7B92',
+                '#4DE6A8',
+                '#9B66FF',
+              ]"
+              :customOptions="{
+                plotOptions: {
+                  pie: {
+                    innerSize: '30%',
+                    depth: 35,
+                  },
                 },
-              },
-            }"
-            height="100%"
-          />
+              }"
+              height="100%"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 条形图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">条形图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <ColumnChart
-            title="2021年世界最大城市"
-            subtitle="数据来源: World Population Review"
-            yAxisTitle="人口 (百万)"
-            seriesName="人口"
-            :data="cityData"
-            tooltipFormat="2021年人口: <b>{point.y:.1f} 百万</b>"
-            labelsSuffix="百万"
-            :colorByPoint="true"
-            :dataLabelsRotation="-45"
-            :customOptions="{
-              plotOptions: {
-                series: {
-                  pointWidth: 25,
+        <!-- 条形图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">条形图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <ColumnChart
+              title="2021年世界最大城市"
+              subtitle="数据来源: World Population Review"
+              yAxisTitle="人口 (百万)"
+              seriesName="人口"
+              :data="cityData"
+              tooltipFormat="2021年人口: <b>{point.y:.1f} 百万</b>"
+              labelsSuffix="百万"
+              :colorByPoint="true"
+              :dataLabelsRotation="-45"
+              :customOptions="{
+                plotOptions: {
+                  series: {
+                    pointWidth: 25,
+                  },
                 },
-              },
-            }"
-            height="100%"
-          />
+              }"
+              height="100%"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 折线面积图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">折线面积图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <AreaSplineChart
-            title="挪威驼鹿和鹿的狩猎数量"
-            subtitle="2000 - 2024年数据统计"
-            yAxisTitle="数量"
-            :seriesData="huntingData"
-            :pointStart="2000"
-            :plotBands="[
-              { from: 2020, to: 2023, color: 'rgba(68, 170, 213, .2)' },
-            ]"
-            :colors="['#4E9BFF', '#FF7B92']"
-            :fillOpacity="0.5"
-            legendLayout="vertical"
-            legendAlign="left"
-            legendVerticalAlign="top"
-            height="100%"
-          />
+        <!-- 折线面积图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">折线面积图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <AreaSplineChart
+              title="挪威驼鹿和鹿的狩猎数量"
+              subtitle="2000 - 2024年数据统计"
+              yAxisTitle="数量"
+              :seriesData="huntingData"
+              :pointStart="2000"
+              :plotBands="[
+                { from: 2020, to: 2023, color: 'rgba(68, 170, 213, .2)' },
+              ]"
+              :colors="['#4E9BFF', '#FF7B92']"
+              :fillOpacity="0.5"
+              legendLayout="vertical"
+              legendAlign="left"
+              legendVerticalAlign="top"
+              height="100%"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -236,12 +240,6 @@ const huntingData = [
 </script>
 
 <style scoped>
-.charts-container {
-  background-color: #1a1a1a;
-  min-height: 100vh;
-  padding-bottom: 2rem;
-}
-
 .chart-card {
   background-color: #333;
   border-radius: 0.5rem;

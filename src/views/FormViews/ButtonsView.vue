@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4">
-    <div class="space-y-6">
+  <div>
+    <div class="p-6 space-y-6">
       <!-- Hero Buttons -->
       <base-card>
         <template #header>突出按钮</template>

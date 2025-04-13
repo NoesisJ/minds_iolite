@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div>
+    <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- 普通日期选择器 -->
       <base-card>
         <template #header>普通日期选择器</template>

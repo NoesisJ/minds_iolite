@@ -98,10 +98,6 @@ defineExpose({
 </script>
 
 <style scoped>
-.search-bar {
-  margin-bottom: 1rem;
-}
-
 .search-field {
   min-width: 200px;
 }

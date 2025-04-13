@@ -1,251 +1,257 @@
 <template>
-  <div class="charts-container p-4">
-    <!-- 图表网格 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- 平滑折线图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">平滑折线图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <SmoothLineChart
-            :xAxisData="barData.xAxis.data"
-            :seriesData="barData.series[0].data"
-            :customOptions="{
-              tooltip: {
-                show: true,
-                trigger: 'axis',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+  <div class="bg-[var(--material-bg-light)]">
+    <div class="w-full h-fit p-6">
+      <h1 class="text-xl font-semibold mb-6 text-white">Echarts 数据可视化</h1>
+      <!-- 图表网格 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 平滑折线图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">平滑折线图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <SmoothLineChart
+              :xAxisData="barData.xAxis.data"
+              :seriesData="barData.series[0].data"
+              :customOptions="{
+                tooltip: {
+                  show: true,
+                  trigger: 'axis',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              },
-            }"
-            themeColor="#4E9BFF"
-            :darkMode="true"
-          />
+              }"
+              themeColor="#4E9BFF"
+              :darkMode="true"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 时间轴折线图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">时间轴折线图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <TimeSeriesLineChart
-            seriesName="趋势数据"
-            :seriesData="timeSeriesData"
-            themeColor="#6366f1"
-            areaColor="rgba(99, 102, 241, 0.2)"
-            :zoomRange="{ start: 10, end: 90 }"
-            :darkMode="true"
-            :customOptions="{
-              tooltip: {
-                show: true,
-                trigger: 'axis',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+        <!-- 时间轴折线图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">时间轴折线图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <TimeSeriesLineChart
+              seriesName="趋势数据"
+              :seriesData="timeSeriesData"
+              themeColor="#6366f1"
+              areaColor="rgba(99, 102, 241, 0.2)"
+              :zoomRange="{ start: 10, end: 90 }"
+              :darkMode="true"
+              :customOptions="{
+                tooltip: {
+                  show: true,
+                  trigger: 'axis',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              },
-            }"
-          />
+              }"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 基础饼图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">基础饼图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <BasicPieChart
-            title="访问来源"
-            subtitle="流量分析"
-            seriesName="访问来源"
-            :pieData="pieData"
-            :colorPalette="pieColors"
-            legendPosition="right"
-            :radius="'75%'"
-            :customOptions="{
-              series: [
-                {
-                  center: ['50%', '55%'],
+        <!-- 基础饼图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">基础饼图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <BasicPieChart
+              title="访问来源"
+              subtitle="流量分析"
+              seriesName="访问来源"
+              :pieData="pieData"
+              :colorPalette="pieColors"
+              legendPosition="right"
+              :radius="'75%'"
+              :customOptions="{
+                series: [
+                  {
+                    center: ['50%', '55%'],
+                  },
+                ],
+                tooltip: {
+                  show: true,
+                  trigger: 'item',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              ],
-              tooltip: {
-                show: true,
-                trigger: 'item',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
-                },
-              },
-            }"
-          />
+              }"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 雷达图卡片 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">能力雷达图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <RadarChart
-            title="能力评估"
-            seriesName="能力分布"
-            :indicators="radarIndicators"
-            :seriesData="radarData"
-            :colorPalette="['#4E9BFF', '#FF7B92']"
-            legendPosition="bottom"
-            :customOptions="{
-              tooltip: {
-                show: true,
-                trigger: 'item',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+        <!-- 雷达图卡片 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">能力雷达图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <RadarChart
+              title="能力评估"
+              seriesName="能力分布"
+              :indicators="radarIndicators"
+              :seriesData="radarData"
+              :colorPalette="['#4E9BFF', '#FF7B92']"
+              legendPosition="bottom"
+              :customOptions="{
+                tooltip: {
+                  show: true,
+                  trigger: 'item',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              },
-              radar: {
-                radius: '60%',
-                center: ['50%', '45%'],
-              },
-              legend: {
-                bottom: '5%',
-                padding: [0, 0, 20, 0],
-                itemGap: 30,
-              },
-            }"
-          />
+                radar: {
+                  radius: '60%',
+                  center: ['50%', '45%'],
+                },
+                legend: {
+                  bottom: '5%',
+                  padding: [0, 0, 20, 0],
+                  itemGap: 30,
+                },
+              }"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 联动折线饼图 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">联动折线饼图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <InteractivePieLineChart
-            :pieData="productData"
-            :lineData="timeSeriesData"
-            :customOptions="{
-              tooltip: {
-                show: true,
-                trigger: 'item',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+        <!-- 联动折线饼图 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">联动折线饼图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <InteractivePieLineChart
+              :pieData="productData"
+              :lineData="timeSeriesData"
+              :customOptions="{
+                tooltip: {
+                  show: true,
+                  trigger: 'item',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              },
-            }"
-            :colorPalette="[
-              '#6366f1',
-              '#10b981',
-              '#f59e0b',
-              '#ef4444',
-              '#8b5cf6',
-            ]"
-            :darkMode="true"
-          />
+              }"
+              :colorPalette="[
+                '#6366f1',
+                '#10b981',
+                '#f59e0b',
+                '#ef4444',
+                '#8b5cf6',
+              ]"
+              :darkMode="true"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 混合折柱图 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">混合折柱图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <MixBarLineChart
-            title="气象数据统计"
-            :xAxisData="[
-              '周一',
-              '周二',
-              '周三',
-              '周四',
-              '周五',
-              '周六',
-              '周日',
-            ]"
-            :barData1="[20, 49, 70, 232, 256, 767, 1356]"
-            :barData2="[26, 59, 90, 264, 287, 707, 1756]"
-            :lineData="[20, 22, 33, 45, 63, 102, 203]"
-            :seriesNames="['蒸发量', '降水量', '温度']"
-            :yAxisNames="['水量', '温度']"
-            :yAxisUnits="['ml', '°C']"
-            :colorPalette="['#5470c6', '#91cc75', '#ee6666']"
-            :customOptions="{
-              grid: {
-                top: '80px',
-                bottom: '8%',
-                left: '3%',
-                right: '5%',
-                containLabel: true,
-              },
-              legend: {
-                top: '50px',
-              },
-              tooltip: {
-                show: true,
-                trigger: 'axis',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+        <!-- 混合折柱图 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">混合折柱图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <MixBarLineChart
+              title="气象数据统计"
+              :xAxisData="[
+                '周一',
+                '周二',
+                '周三',
+                '周四',
+                '周五',
+                '周六',
+                '周日',
+              ]"
+              :barData1="[20, 49, 70, 232, 256, 767, 1356]"
+              :barData2="[26, 59, 90, 264, 287, 707, 1756]"
+              :lineData="[20, 22, 33, 45, 63, 102, 203]"
+              :seriesNames="['蒸发量', '降水量', '温度']"
+              :yAxisNames="['水量', '温度']"
+              :yAxisUnits="['ml', '°C']"
+              :colorPalette="['#5470c6', '#91cc75', '#ee6666']"
+              :customOptions="{
+                grid: {
+                  top: '80px',
+                  bottom: '8%',
+                  left: '3%',
+                  right: '5%',
+                  containLabel: true,
                 },
-              },
-            }"
-          />
+                legend: {
+                  top: '50px',
+                },
+                tooltip: {
+                  show: true,
+                  trigger: 'axis',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
+                },
+              }"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 大数据面积图 -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2 class="text-lg">大数据面积图</h2>
-        </div>
-        <div class="chart-wrapper">
-          <AreaLineChart
-            title="股票趋势"
-            seriesName="股价"
-            lineColor="#6366f1"
-            :areaColors="['rgba(99, 102, 241, 0.8)', 'rgba(99, 102, 241, 0.1)']"
-            :zoomRange="{ start: 0, end: 15 }"
-            :customOptions="{
-              tooltip: {
-                show: true,
-                trigger: 'axis',
-                confine: true,
-                z: 100,
-                backgroundColor: 'rgba(50,50,50,0.9)',
-                borderColor: '#666',
-                textStyle: {
-                  color: '#fff',
+        <!-- 大数据面积图 -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="text-lg">大数据面积图</h2>
+          </div>
+          <div class="chart-wrapper">
+            <AreaLineChart
+              title="股票趋势"
+              seriesName="股价"
+              lineColor="#6366f1"
+              :areaColors="[
+                'rgba(99, 102, 241, 0.8)',
+                'rgba(99, 102, 241, 0.1)',
+              ]"
+              :zoomRange="{ start: 0, end: 15 }"
+              :customOptions="{
+                tooltip: {
+                  show: true,
+                  trigger: 'axis',
+                  confine: true,
+                  z: 100,
+                  backgroundColor: 'rgba(50,50,50,0.9)',
+                  borderColor: '#666',
+                  textStyle: {
+                    color: '#fff',
+                  },
                 },
-              },
-            }"
-          />
+              }"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -373,12 +379,6 @@ const timeSeriesData = ref(generateTimeData());
 </script>
 
 <style scoped>
-.charts-container {
-  background-color: #1a1a1a;
-  min-height: 100vh;
-  padding-bottom: 2rem;
-}
-
 .chart-card {
   background-color: #333;
   border-radius: 0.5rem;
