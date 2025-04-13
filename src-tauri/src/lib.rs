@@ -1,29 +1,44 @@
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-use tauri_plugin_window_state::{Builder, StateFlags};
-
 use std::os::windows::process::CommandExt;
-use std::process::Command;
+use tauri::Manager;
+use tauri::WindowEvent;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
-#[tauri::command]
-fn start_main_app() -> Result<(), String> {
-    Command::new("cmd")
-        .args(["/C", "cd ./resources && main.exe"])
-        .creation_flags(CREATE_NO_WINDOW)
-        .spawn()
-        .map_err(|e| format!("Failed to start main.exe: {}", e))?;
+// 进程控制命令
+mod process {
+    use super::*;
 
-    Ok(())
+    #[tauri::command]
+    pub fn open_agent() {
+        std::process::Command::new("cmd")
+            .args(["/C", "cd ./resources && main.exe"])
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .expect("Failed to start ginApp");
+    }
+
+    #[tauri::command]
+    pub fn close_agent() {
+        std::process::Command::new("cmd")
+            .args(["/C", "taskkill /f /im main.exe"])
+            .spawn()
+            .expect("Failed to close ginApp");
+    }
 }
 
-#[tauri::command]
-fn stop_main_app() -> Result<(), String> {
-    Command::new("cmd")
-        .args(["/C", "taskkill /f /im main.exe"])
-        .creation_flags(CREATE_NO_WINDOW)
-        .spawn()
-        .map_err(|e| format!("Failed to stop main.exe: {}", e))?;
+// 应用程序初始化
+fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    process::open_agent(); // 启动子进程
+
+    // 监听窗口事件
+    let main_window = app
+        .get_webview_window("main")
+        .expect("Failed to get main window");
+    main_window.on_window_event(move |event| {
+        if let WindowEvent::CloseRequested { .. } = event {
+            process::close_agent(); // 关闭子进程
+        }
+    });
 
     Ok(())
 }
@@ -33,17 +48,16 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(
-            Builder::default()
-                .with_state_flags(StateFlags::all())
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(tauri_plugin_window_state::StateFlags::all())
                 .build(),
-        ) // Add window state plugin
+        )
         .plugin(tauri_plugin_shell::init())
-        .setup(|_app| {
-            // Removed unnecessary comment
-            start_main_app()?;
-            Ok(())
-        })
-        .invoke_handler(tauri::generate_handler![start_main_app, stop_main_app])
+        .setup(setup_app)
+        .invoke_handler(tauri::generate_handler![
+            process::open_agent,
+            process::close_agent
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
