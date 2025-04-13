@@ -29,7 +29,10 @@
     </header>
 
     <!-- 消息展示区 -->
-    <main class="flex-1 overflow-y-auto p-4 flex flex-col">
+    <main
+      class="flex-1 overflow-y-auto p-4 flex flex-col"
+      ref="messagesContainer"
+    >
       <!-- 欢迎消息 -->
       <div
         v-if="messages.length === 0"
@@ -39,11 +42,7 @@
       </div>
 
       <!-- 消息列表区域 -->
-      <div
-        v-else
-        class="w-full max-w-3xl mx-auto space-y-6"
-        ref="messagesContainer"
-      >
+      <div v-else class="w-full max-w-3xl mx-auto space-y-6">
         <MessageItem
           v-for="message in messages"
           :key="message.id"
@@ -55,7 +54,7 @@
     <!-- 底部输入区 -->
     <footer class="p-4 w-full relative">
       <div
-        class="relative max-w-3xl mx-auto bg-[#353535] rounded-2xl border border-[#65645f] py-3 px-6"
+        class="relative max-w-3xl mx-auto bg-[#353535] rounded-2xl border border-[#65645f] pt-3 pb-12 px-6 min-h-[100px]"
       >
         <!-- 输入框 -->
         <textarea
@@ -217,6 +216,7 @@ watch(
   () => {
     nextTick(() => {
       if (messagesContainer.value) {
+        console.log("Scrolling to bottom of messages container");
         messagesContainer.value.scrollTop =
           messagesContainer.value.scrollHeight;
       }
