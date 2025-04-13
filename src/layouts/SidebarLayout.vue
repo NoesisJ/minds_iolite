@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] py-3">
+  <div class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] py-3 overflow-auto custom-scrollbar">
     <TogglePanel
       v-for="item in combinedNavMenus"
       :key="item.label"
@@ -161,6 +161,11 @@ const navMenus: NavItem[] = [
     label: "导入",
     icon: "pi pi-upload",
     route: "/import",
+  },
+  {
+    label: "123",
+    icon: "pi pi-upload",
+    route: "/123",
   },
 ];
 

@@ -69,13 +69,13 @@ body {
 .custom-scrollbar::-webkit-scrollbar {
   height: 12px;
   width: 6.5px;
-  background: color-mix(in srgb, var(--col-sat-1) 5%, transparent);
+  background: color-mix(in srgb, var(--material-red-dark) 5%, transparent);
 }
 .custom-scrollbar::-webkit-scrollbar-corner {
   background: #000;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--col-sat-1);
+  background: var(--material-red-dark);
   -webkit-border-radius: 1ex;
   -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
 }
