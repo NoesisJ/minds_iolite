@@ -1,9 +1,9 @@
 <template>
   <div
-    class="header-layout z-10 shadow-md py-3 pl-6 pr-4 bg-[var(--material-red-dark)] flex justify-between items-center h-[var(--header-height)]"
+    class="header-layout z-10 shadow-md py-3 pl-4 pr-2 bg-[var(--material-red-dark)] flex justify-between items-center h-[var(--header-height)]"
     data-tauri-drag-region
   >
-    <div class="flex flex-row items-center space-x-6">
+    <div class="flex flex-row items-center space-x-4">
       <a href="#" class="cursor-pointer">
         <Menu class="w-8 h-8 text-white" data-tauri-drag-region />
       </a>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Message,settings,etc -->
-    <div class="flex flex-row items-center gap-2.5 ml-auto mr-20 text-white">
+    <div class="flex flex-row items-center gap-1 ml-auto mr-16 text-white">
       <Mail
         class="cursor-pointer"
         style="font-size: 1.2rem"
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Native Buttons -->
-    <div v-if="isTauri" class="flex flex-row space-x-3">
+    <div v-if="isTauri" class="flex flex-row space-x-2">
       <HeaderButton aria-label="Minimize" @click="appStore.minimizeWindow">
         <template #icon>
           <Minus />

@@ -35,7 +35,7 @@
     </div>
 
     <div
-      class="w-full flex flex-row items-center px-4 py-3 gap-6 bg-[var(--material-item-bg)] hover:bg-[var(--material-item-bg-hover)]"
+      class="w-full flex flex-row items-center px-3 py-3 gap-4 bg-[var(--material-item-bg)] hover:bg-[var(--material-item-bg-hover)]"
       @click="navigateTo('/import')"
     >
       <button
@@ -43,7 +43,7 @@
       >
         <span class="pi pi-cog" />
       </button>
-      <span class="text-gray-400 mt-1">设置</span>
+      <span class="text-gray-400">数据源配置</span>
     </div>
   </div>
 </template>
