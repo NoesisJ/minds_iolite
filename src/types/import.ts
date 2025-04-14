@@ -73,3 +73,29 @@ export interface MongoImportConfig {
   dbName?: string;
   collName?: string;
 }
+
+// 添加新的类型定义
+export interface DatabaseConnectionResult {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
+  collections?: Record<string, CollectionInfo>; // MongoDB
+  tables?: Record<string, TableInfo>; // MySQL
+}
+
+export interface CollectionInfo {
+  fields: Record<string, string>;
+  sample_data: string;
+}
+
+export interface TableInfo {
+  fields: Record<string, string>;
+  sample_data: string;
+}
+
+export interface PreviewData {
+  fields: Record<string, string>;
+  sampleData: any[];
+}

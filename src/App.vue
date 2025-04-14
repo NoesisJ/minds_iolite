@@ -1,5 +1,5 @@
 <template>
-  <LayoutHub class="bg-[#f8f8fa] z-0" />
+  <LayoutHub class="z-0" />
 </template>
 
 <script setup lang="ts">

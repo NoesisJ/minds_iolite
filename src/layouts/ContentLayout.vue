@@ -3,7 +3,7 @@
     <SidebarLayout class="h-full" />
     <!-- Main content -->
     <div
-      class="w-[calc(100%-var(--sidebar-width))] h-full overflow-y-auto custom-scrollbar bg-[var(--material-bg-light)]"
+      class="w-[calc(100%-var(--sidebar-width))] h-full overflow-y-auto custom-scrollbar bg-[var(--material-bg-light)] text-white"
     >
       <router-view v-slot="{ Component }">
         <transition name="slide-fade" mode="out-in">
