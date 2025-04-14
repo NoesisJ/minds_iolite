@@ -67,6 +67,7 @@ const chartOptions = computed(() => ({
     left: "center",
     textStyle: {
       fontSize: 16,
+      color: "#fff",
     },
   },
   tooltip: {

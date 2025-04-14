@@ -12,23 +12,17 @@
         class="cursor-pointer border-l-1 border-[#1f1f1f] px-[1.25rem] py-0"
       >
         <h1 class="text-2xl text-white font-[500]" data-tauri-drag-region>
-          Minds-Iolite
+          Aikura
         </h1>
       </a>
     </div>
 
     <!-- Message,settings,etc -->
-    <div class="flex flex-row items-center gap-1 ml-auto mr-16 text-white">
+    <div class="flex flex-row items-center gap-1 ml-auto mr-10 text-white">
       <Mail
         class="cursor-pointer"
         style="font-size: 1.2rem"
         @click="openMessageWindow"
-      />
-      <Divider layout="vertical" />
-      <Bell
-        class="cursor-pointer"
-        style="font-size: 1.2rem"
-        @click="openNotificationWindow"
       />
       <Divider layout="vertical" />
       <Settings
@@ -89,12 +83,8 @@ const router = useRouter();
 const openMessageWindow = () => {
   router.push("/functional/messages");
 };
-// 打开通知窗口
-const openNotificationWindow = () => {
-  router.push("/functional/notifications");
-};
 // 打开设置窗口
 const openSettingsWindow = () => {
-  router.push("/functional/settings");
+  router.push("/import");
 };
 </script>

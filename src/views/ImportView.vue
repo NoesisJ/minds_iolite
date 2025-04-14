@@ -328,7 +328,7 @@
                     <p class="text-gray-400 mb-1">示例数据:</p>
                     <pre
                       class="bg-gray-800 p-2 rounded text-xs overflow-auto"
-                      >{{ collection.sample_data }}</pre
+                      >{{ formatJson(collection.sample_data) }}</pre
                     >
                   </div>
                 </div>

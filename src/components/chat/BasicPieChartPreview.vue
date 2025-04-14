@@ -55,7 +55,7 @@ const chartOptions = computed(() => ({
     left: "center",
     textStyle: {
       fontSize: 16,
-      color: "#333",
+      color: "#fff",
     },
   },
   tooltip: {
@@ -66,7 +66,7 @@ const chartOptions = computed(() => ({
     orient: "vertical",
     left: "left",
     textStyle: {
-      color: "#333",
+      color: "#fff",
     },
   },
   series: [
@@ -83,7 +83,7 @@ const chartOptions = computed(() => ({
         },
       },
       label: {
-        color: "#333",
+        color: "#fff",
         fontSize: 12,
       },
       itemStyle: {
