@@ -4,7 +4,7 @@
     v-model:selection="selection"
     :value="data"
     dataKey="id"
-    :rows="rows"
+    :rows="Number(rows)"
     :filters="filters"
     scrollable
     :tableStyle="tableStyle"
@@ -82,7 +82,7 @@ interface Props {
   columns: any[];
   showSelection?: boolean;
   showActions?: boolean;
-  rows?: number;
+  rows?: number | string;
   tableStyle?: string;
   filters?: Record<string, any>;
   selection?: any[];
@@ -117,6 +117,9 @@ watch(
     selection.value = newValue;
   }
 );
+
+// Log the rows value for debugging
+console.log("Table component - rows:", props.rows, "type:", typeof props.rows);
 
 defineExpose({
   dt,

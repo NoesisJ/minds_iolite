@@ -454,7 +454,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { File, Loader } from "lucide-vue-next";
 import { open } from "@tauri-apps/plugin-dialog";
 import axios from "axios";
@@ -486,6 +486,11 @@ const toast = ref<InstanceType<typeof Toast> | null>(null);
 const connectionResult = ref<DatabaseConnectionResult | null>(null);
 const previewData = ref<PreviewData | null>(null);
 const showPreview = ref(false);
+
+// 持久连接相关变量
+const sessionId = ref<string>("");
+const hasActiveSession = ref(false);
+const refreshInterval = ref<number | null>(null);
 
 // CSV特定选项
 const csvOptions = ref({
@@ -700,6 +705,11 @@ const connectToDatabase = async () => {
 
     // 显示预览
     showPreview.value = true;
+    
+    // 创建持久连接
+    if (selectedDbType.value) {
+      await createPersistentSession(selectedDbType.value, requestData);
+    }
   } catch (error) {
     console.error("连接失败:", error);
     toast.value?.add({
@@ -781,7 +791,10 @@ const importCsvToMongo = async () => {
 
     const apiUrl = "http://localhost:8080/api/datasource/csv/import-to-mongo";
 
-    await axios.post(apiUrl, importConfig);
+    const response = await axios.post(apiUrl, importConfig);
+    const importResult = response.data;
+
+    console.log("CSV导入MongoDB结果:", importResult);
 
     toast.value?.add({
       severity: "success",
@@ -789,6 +802,13 @@ const importCsvToMongo = async () => {
       detail: `数据已成功导入到MongoDB`,
       life: 3000,
     });
+    
+    // 显示导入后的MongoDB连接信息
+    connectionResult.value = importResult;
+    showPreview.value = true;
+    
+    // 为导入的CSV数据创建持久连接
+    await createPersistentSession("mongodb", importResult);
   } catch (error) {
     console.error("导入失败:", error);
     toast.value?.add({
@@ -808,6 +828,213 @@ const formatJson = (jsonStr: string) => {
     return JSON.stringify(jsonObj, null, 2); // 缩进2空格
   } catch {
     return jsonStr; // 失败时返回原始字符串
+  }
+};
+
+// 生命周期钩子
+onMounted(() => {
+  // 检查是否有保存的会话ID
+  const savedSessionId = localStorage.getItem("dbSessionId");
+  if (savedSessionId !== null) {
+    sessionId.value = savedSessionId;
+    checkSession(savedSessionId);
+  }
+});
+
+onBeforeUnmount(() => {
+  // 组件卸载前清理
+  if (refreshInterval.value) {
+    window.clearInterval(refreshInterval.value);
+  }
+});
+
+// 检查保存的会话是否有效
+const checkSession = async (id: string) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/sessions/${id}`);
+    if (response.data.success) {
+      hasActiveSession.value = true;
+      // 恢复会话状态
+      const sessionState = response.data.state;
+      // 更新UI显示会话信息
+      connectionResult.value = {
+        host: sessionState.info.host,
+        port: sessionState.info.port,
+        username: sessionState.info.username,
+        password: "", // 添加空密码以满足类型要求
+        database: sessionState.info.database,
+        collections: sessionState.collections,
+        tables: sessionState.tables
+      };
+      selectedDbType.value = sessionState.info.type;
+      
+      // 开始定期刷新会话
+      startSessionRefresh();
+      
+      toast.value?.add({
+        severity: "info",
+        summary: "会话已恢复",
+        detail: `已恢复到之前的${selectedDbType.value}数据库连接`,
+        life: 3000,
+      });
+    }
+  } catch (error) {
+    console.log("保存的会话已失效:", error);
+    // 清除无效的会话ID
+    localStorage.removeItem("dbSessionId");
+    sessionId.value = "";
+    hasActiveSession.value = false;
+  }
+};
+
+// 开始定期刷新会话
+const startSessionRefresh = () => {
+  if (refreshInterval.value) {
+    window.clearInterval(refreshInterval.value);
+  }
+  
+  // 每10分钟刷新一次会话
+  refreshInterval.value = window.setInterval(() => {
+    if (sessionId.value) {
+      refreshSession();
+    }
+  }, 10 * 60 * 1000); // 10分钟
+};
+
+// 刷新会话
+const refreshSession = async () => {
+  if (!sessionId.value) return;
+  
+  try {
+    await axios.put(`http://localhost:8080/api/sessions/${sessionId.value}/refresh`);
+    console.log("会话已刷新");
+  } catch (error) {
+    console.error("会话刷新失败:", error);
+    // 如果刷新失败，可能是会话已过期
+    localStorage.removeItem("dbSessionId");
+    sessionId.value = "";
+    hasActiveSession.value = false;
+    
+    if (refreshInterval.value) {
+      window.clearInterval(refreshInterval.value);
+      refreshInterval.value = null;
+    }
+    
+    toast.value?.add({
+      severity: "error",
+      summary: "会话已失效",
+      detail: "数据库会话已失效，请重新连接",
+      life: 3000,
+    });
+  }
+};
+
+// 关闭会话
+const closeSession = async () => {
+  if (!sessionId.value) return;
+  
+  try {
+    await axios.delete(`http://localhost:8080/api/sessions/${sessionId.value}`);
+    console.log("会话已关闭");
+    
+    // 清理会话状态
+    localStorage.removeItem("dbSessionId");
+    sessionId.value = "";
+    hasActiveSession.value = false;
+    
+    if (refreshInterval.value) {
+      window.clearInterval(refreshInterval.value);
+      refreshInterval.value = null;
+    }
+    
+    toast.value?.add({
+      severity: "info",
+      summary: "会话已关闭",
+      detail: "数据库会话已关闭",
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("关闭会话失败:", error);
+  }
+};
+
+// 创建持久连接
+const createPersistentSession = async (type: string, connectionInfo: any) => {
+  try {
+    isLoadingMessage.value = `正在创建持久连接...`;
+    
+    // 先关闭已有的会话
+    if (sessionId.value) {
+      await closeSession();
+    }
+    
+    // 构建请求数据
+    let requestData: any = {
+      type: type
+    };
+    
+    // 根据不同类型构建参数
+    if (type === "mongodb") {
+      if (connectionInfo.host && connectionInfo.port) {
+        requestData.host = connectionInfo.host;
+        requestData.port = connectionInfo.port;
+        requestData.database = connectionInfo.database;
+        
+        // 如果是从CSV导入，添加集合信息
+        if (connectionInfo.collections) {
+          requestData.collections = connectionInfo.collections;
+        }
+      } else if (connectionInfo.ConnectionURI) {
+        requestData.uri = connectionInfo.ConnectionURI;
+        requestData.database = connectionInfo.Database;
+      }
+    } else if (type === "mysql") {
+      requestData.host = connectionInfo.host;
+      requestData.port = connectionInfo.port;
+      requestData.username = connectionInfo.username;
+      requestData.password = connectionInfo.password;
+      requestData.database = connectionInfo.database;
+    } else if (type === "csv") {
+      // CSV通过MongoDB连接实现持久化
+      requestData.type = "mongodb";
+      requestData.host = "localhost"; // 本地MongoDB服务器
+      requestData.port = 27017;
+      
+      // 使用导入CSV时指定的数据库名
+      const dbName = mongoDbOptions.value.dbName || getDefaultDbName();
+      requestData.database = dbName;
+    }
+    
+    // 创建持久会话
+    const response = await axios.post("http://localhost:8080/api/sessions", requestData);
+    
+    if (response.data.success) {
+      sessionId.value = response.data.sessionId;
+      hasActiveSession.value = true;
+      
+      // 保存会话ID
+      localStorage.setItem("dbSessionId", sessionId.value);
+      
+      // 开始定期刷新会话
+      startSessionRefresh();
+      
+      console.log("创建持久连接成功:", response.data);
+      
+      toast.value?.add({
+        severity: "success",
+        summary: "持久连接已建立",
+        detail: `已建立${type}数据库的持久连接`,
+        life: 3000,
+      });
+    }
+  } catch (error) {
+    console.error("创建持久连接失败:", error);
+    toast.value?.add({
+      severity: "error",
+      summary: "创建持久连接失败",
+      detail: "无法建立持久连接，请重试",
+      life: 3000,
+    });
   }
 };
 </script>

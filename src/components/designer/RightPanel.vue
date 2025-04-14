@@ -351,6 +351,382 @@
         </div>
       </div>
 
+      <!-- 表格组件的属性编辑器 -->
+      <div
+        v-else-if="currentComponent && currentComponent.componentId === 'table'"
+      >
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">表格标题</label>
+          <input
+            v-model="currentComponent.props.title"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">每页行数</label>
+          <select
+            v-model="currentComponent.props.rowsPerPage"
+            @change="updateRowsPerPage"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option :value="5">5 行</option>
+            <option :value="10">10 行</option>
+            <option :value="15">15 行</option>
+            <option :value="20">20 行</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">数据来源</label>
+          <select
+            v-model="currentComponent.props.dataSource"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="default">默认示例数据</option>
+            <option value="database">从数据库读取</option>
+          </select>
+        </div>
+
+        <!-- 数据库配置选项 -->
+        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
+          <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">会话ID</label>
+            <input
+              v-model="currentComponent.props.databaseConfig.sessionId"
+              type="text"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder="输入数据库会话ID"
+            />
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">集合/表名</label>
+            <input
+              v-model="currentComponent.props.databaseConfig.collection"
+              type="text"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder="MongoDB集合名或MySQL表名"
+            />
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
+            <textarea
+              v-model="filterJson"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder='{"field": "value"}'
+              rows="2"
+              @blur="updateFilterCondition"
+            ></textarea>
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
+            <textarea
+              v-model="sortJson"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder='{"field": 1}'
+              rows="2"
+              @blur="updateSortCondition"
+            ></textarea>
+          </div>
+          
+          <button
+            @click="testDatabaseConnection"
+            class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
+          >
+            测试连接
+          </button>
+        </div>
+
+        <div class="mb-4 space-y-2">
+          <label class="block text-sm font-medium mb-1">表格功能</label>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="sortable-option"
+              v-model="currentComponent.props.sortable"
+              class="mr-2"
+            />
+            <label for="sortable-option">允许排序</label>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="multiselect-option"
+              v-model="currentComponent.props.multiSelect"
+              class="mr-2"
+            />
+            <label for="multiselect-option">允许多选</label>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="showheader-option"
+              v-model="currentComponent.props.showHeader"
+              class="mr-2"
+            />
+            <label for="showheader-option">显示表头</label>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">边框样式</label>
+          <select
+            v-model="currentComponent.props.borderStyle"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="none">无边框</option>
+            <option value="row">行边框</option>
+            <option value="cell">单元格边框</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">表格大小</label>
+          <select
+            v-model="currentComponent.props.size"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="small">小尺寸</option>
+            <option value="medium">中等尺寸</option>
+            <option value="large">大尺寸</option>
+          </select>
+        </div>
+
+        <!-- 自定义样式 -->
+        <div class="mb-4">
+          <details class="border rounded p-2">
+            <summary class="font-medium cursor-pointer">高级样式设置</summary>
+            <div class="pt-2 space-y-2">
+              <div>
+                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
+                <input
+                  v-model="currentComponent.styles.margin"
+                  type="text"
+                  placeholder="例如: 8px 12px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
+                <input
+                  v-model="currentComponent.styles.width"
+                  type="text"
+                  placeholder="例如: 100% 或 120px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">高度 (height)</label>
+                <input
+                  v-model="currentComponent.styles.height"
+                  type="text"
+                  placeholder="例如: auto 或 300px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- 财务表格组件的属性编辑器 -->
+      <div
+        v-else-if="currentComponent && currentComponent.componentId === 'finance-table'"
+      >
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">表格标题</label>
+          <input
+            v-model="currentComponent.props.title"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">表格副标题</label>
+          <input
+            v-model="currentComponent.props.subtitle"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">每页行数</label>
+          <select
+            v-model="currentComponent.props.rows"
+            @change="updateRows"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option :value="5">5 行</option>
+            <option :value="10">10 行</option>
+            <option :value="15">15 行</option>
+            <option :value="20">20 行</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">数据来源</label>
+          <select
+            v-model="currentComponent.props.dataSource"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="default">默认示例数据</option>
+            <option value="database">从数据库读取</option>
+          </select>
+        </div>
+
+        <!-- 数据库配置选项 -->
+        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
+          <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">会话ID</label>
+            <input
+              v-model="currentComponent.props.databaseConfig.sessionId"
+              type="text"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder="输入数据库会话ID"
+            />
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">集合/表名</label>
+            <input
+              v-model="currentComponent.props.databaseConfig.collection"
+              type="text"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder="MongoDB集合名或MySQL表名"
+            />
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
+            <textarea
+              v-model="filterJson"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder='{"field": "value"}'
+              rows="2"
+              @blur="updateFilterCondition"
+            ></textarea>
+          </div>
+          
+          <div class="mb-2">
+            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
+            <textarea
+              v-model="sortJson"
+              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              placeholder='{"field": 1}'
+              rows="2"
+              @blur="updateSortCondition"
+            ></textarea>
+          </div>
+          
+          <button
+            @click="testDatabaseConnection"
+            class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
+          >
+            测试连接
+          </button>
+        </div>
+
+        <div class="mb-4 space-y-2">
+          <label class="block text-sm font-medium mb-1">表格功能</label>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="show-title-option"
+              v-model="currentComponent.props.showTitle"
+              class="mr-2"
+            />
+            <label for="show-title-option">显示标题</label>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="show-selection-option"
+              v-model="currentComponent.props.showSelection"
+              class="mr-2"
+            />
+            <label for="show-selection-option">允许选择行</label>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">主键字段</label>
+          <input
+            v-model="currentComponent.props.primaryField"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            placeholder="用于唯一标识每一行的字段"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">货币字段</label>
+          <input
+            v-model="currentComponent.props.currencyFields"
+            type="text"
+            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            placeholder="需要格式化为货币的字段，用逗号分隔"
+          />
+        </div>
+
+        <!-- 自定义样式 -->
+        <div class="mb-4">
+          <details class="border rounded p-2">
+            <summary class="font-medium cursor-pointer">高级样式设置</summary>
+            <div class="pt-2 space-y-2">
+              <div>
+                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
+                <input
+                  v-model="currentComponent.styles.margin"
+                  type="text"
+                  placeholder="例如: 8px 12px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
+                <input
+                  v-model="currentComponent.styles.width"
+                  type="text"
+                  placeholder="例如: 100% 或 120px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">边框圆角 (borderRadius)</label>
+                <input
+                  v-model="currentComponent.styles.borderRadius"
+                  type="text"
+                  placeholder="例如: 4px 或 8px"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">阴影效果 (boxShadow)</label>
+                <input
+                  v-model="currentComponent.styles.boxShadow"
+                  type="text"
+                  placeholder="例如: 0 2px 10px rgba(0,0,0,0.05)"
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                />
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
       <!-- 不支持的组件类型 -->
       <div v-else>
         <p class="text-yellow-500">
@@ -385,6 +761,10 @@ const designerStore = useDesignerStore();
 const pageTitle = ref("");
 const pageName = ref("");
 const layoutType = ref("");
+
+// 数据库配置相关
+const filterJson = ref('{}');
+const sortJson = ref('{}');
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -590,6 +970,115 @@ const updateLayoutPadding = (value: number) => {
   region.layout.padding = value;
   designerStore.updateRegion(region);
 };
+
+// 更新表格每页行数 - 普通表格
+const updateRowsPerPage = (event: Event) => {
+  if (!currentComponent.value || !currentComponent.value.id) return;
+  // Convert string value to number
+  const value = parseInt(currentComponent.value.props.rowsPerPage);
+  designerStore.updateComponentProps(currentComponent.value.id, {
+    ...currentComponent.value.props,
+    rowsPerPage: value
+  });
+};
+
+// 更新表格每页行数 - 财务表格
+const updateRows = (event: Event) => {
+  if (!currentComponent.value || !currentComponent.value.id) return;
+  // Convert string value to number
+  const value = parseInt(currentComponent.value.props.rows);
+  designerStore.updateComponentProps(currentComponent.value.id, {
+    ...currentComponent.value.props,
+    rows: value
+  });
+};
+
+// 更新过滤条件
+const updateFilterCondition = () => {
+  if (!currentComponent.value || !currentComponent.value.id) return;
+  try {
+    const filterObj = JSON.parse(filterJson.value);
+    if (!currentComponent.value.props.databaseConfig) {
+      currentComponent.value.props.databaseConfig = {};
+    }
+    currentComponent.value.props.databaseConfig.filter = filterObj;
+    designerStore.updateComponentProps(currentComponent.value.id, {
+      ...currentComponent.value.props
+    });
+  } catch (e) {
+    console.error('过滤条件JSON格式错误:', e);
+  }
+};
+
+// 更新排序条件
+const updateSortCondition = () => {
+  if (!currentComponent.value || !currentComponent.value.id) return;
+  try {
+    const sortObj = JSON.parse(sortJson.value);
+    if (!currentComponent.value.props.databaseConfig) {
+      currentComponent.value.props.databaseConfig = {};
+    }
+    currentComponent.value.props.databaseConfig.sort = sortObj;
+    designerStore.updateComponentProps(currentComponent.value.id, {
+      ...currentComponent.value.props
+    });
+  } catch (e) {
+    console.error('排序条件JSON格式错误:', e);
+  }
+};
+
+// 测试数据库连接
+const testDatabaseConnection = async () => {
+  if (!currentComponent.value || !currentComponent.value.id || !currentComponent.value.props.databaseConfig) return;
+  
+  const sessionId = currentComponent.value.props.databaseConfig.sessionId;
+  const collection = currentComponent.value.props.databaseConfig.collection;
+  
+  if (!sessionId || !collection) {
+    alert('请输入会话ID和集合/表名');
+    return;
+  }
+  
+  try {
+    // 导入数据库服务
+    const { databaseService } = await import('@/services/databaseService');
+    
+    const result = await databaseService.getTableData({
+      sessionId,
+      collection,
+      limit: 1
+    });
+    
+    if (result.length > 0) {
+      alert('连接成功！数据库中包含数据。');
+    } else {
+      alert('连接成功，但未找到数据。请检查集合/表名或过滤条件。');
+    }
+  } catch (e: any) {
+    alert(`连接失败: ${e.message || '未知错误'}`);
+  }
+};
+
+// 监听当前组件变化，更新JSON字段
+watch(() => currentComponent.value?.props?.databaseConfig?.filter, (newVal) => {
+  if (newVal && currentComponent.value) {
+    try {
+      filterJson.value = JSON.stringify(newVal, null, 2);
+    } catch (e) {
+      filterJson.value = '{}';
+    }
+  }
+}, { deep: true, immediate: true });
+
+watch(() => currentComponent.value?.props?.databaseConfig?.sort, (newVal) => {
+  if (newVal && currentComponent.value) {
+    try {
+      sortJson.value = JSON.stringify(newVal, null, 2);
+    } catch (e) {
+      sortJson.value = '{}';
+    }
+  }
+}, { deep: true, immediate: true });
 
 // 添加调试信息
 console.log("RightPanel 重新渲染");

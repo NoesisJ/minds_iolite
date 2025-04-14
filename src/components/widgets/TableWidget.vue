@@ -1,6 +1,16 @@
 <template>
   <div class="table-widget" :style="styles">
-    <div v-if="tableType && data.length > 0" class="table-container">
+    <div v-if="isLoading" class="table-loading">
+      <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">加载数据中...</p>
+    </div>
+    
+    <div v-else-if="loadError" class="table-error">
+      <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">{{ loadError }}</p>
+    </div>
+    
+    <div v-else-if="tableType && tableData.length > 0" class="table-container">
       <div v-if="showTitle" class="table-title mb-4">
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
           {{ title }}
@@ -14,9 +24,9 @@
       </div>
 
       <Table
-        :data="data"
+        :data="tableData"
         :columns="columns"
-        :rows="rows"
+        :rows="Number(rows)"
         :showSelection="showSelection"
         v-model:selection="selectedItems"
         @edit="handleEdit"
@@ -48,7 +58,7 @@
     <div v-else class="table-placeholder">
       <i class="pi pi-table text-4xl text-gray-400"></i>
       <p class="text-gray-500 mt-2">
-        {{ data.length === 0 ? "暂无数据" : "表格类型未指定" }}
+        {{ tableData.length === 0 ? "暂无数据" : "表格类型未指定" }}
       </p>
     </div>
 
@@ -135,7 +145,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from "vue";
+import { ref, computed, defineProps, defineEmits, onMounted, watch } from "vue";
 import Table from "@/components/Table.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
@@ -144,6 +154,7 @@ import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
+import { databaseService } from "@/services/databaseService";
 
 const toast = useToast();
 const props = defineProps({
@@ -179,7 +190,7 @@ const props = defineProps({
   },
   // 每页行数
   rows: {
-    type: Number,
+    type: [Number, String],
     default: 5,
   },
   // 是否显示选择框
@@ -217,9 +228,108 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  // 新增数据源属性
+  dataSource: {
+    type: String,
+    default: "default" // 默认使用示例数据
+  },
+  // 数据库配置
+  databaseConfig: {
+    type: Object,
+    default: () => ({
+      sessionId: "",
+      collection: "",
+      filter: {},
+      sort: {},
+      fields: []
+    })
+  }
 });
 
 const emit = defineEmits(["update:data"]);
+
+// 本地状态
+const localData = ref([]);
+const isLoading = ref(false);
+const loadError = ref(null);
+
+// 组合数据源
+const tableData = computed(() => {
+  // 如果使用默认数据，直接返回props.data
+  if (props.dataSource === "default") {
+    return props.data;
+  }
+  // 否则使用从数据库加载的数据
+  return localData.value;
+});
+
+// 监听数据源变化
+watch(() => props.dataSource, loadDataIfNeeded);
+watch(() => props.databaseConfig, loadDataIfNeeded, { deep: true });
+
+// 在组件挂载时加载数据
+onMounted(loadDataIfNeeded);
+
+// 加载数据的方法
+async function loadDataIfNeeded() {
+  // 如果使用默认数据，不需要加载
+  if (props.dataSource === "default") {
+    return;
+  }
+  
+  // 如果没有会话ID，也不加载
+  if (!props.databaseConfig.sessionId) {
+    loadError.value = "未配置数据库会话ID";
+    return;
+  }
+  
+  try {
+    isLoading.value = true;
+    loadError.value = null;
+    
+    // 从数据库服务获取数据
+    const result = await databaseService.getTableData({
+      sessionId: props.databaseConfig.sessionId,
+      collection: props.databaseConfig.collection,
+      table: props.databaseConfig.collection, // 同时支持MongoDB和MySQL
+      fields: props.databaseConfig.fields,
+      limit: parseInt(props.rows) * 5, // 获取多页数据以支持客户端分页
+      filter: props.databaseConfig.filter,
+      sort: props.databaseConfig.sort
+    });
+    
+    // 更新本地数据
+    localData.value = result;
+    
+    // 成功提示
+    if (result.length > 0) {
+      toast.add({
+        severity: 'success',
+        summary: '数据加载成功',
+        detail: `已从数据库加载 ${result.length} 条记录`,
+        life: 3000
+      });
+    } else {
+      toast.add({
+        severity: 'info',
+        summary: '数据加载完成',
+        detail: '没有找到符合条件的数据',
+        life: 3000
+      });
+    }
+  } catch (error) {
+    console.error('加载数据失败:', error);
+    loadError.value = error.message || '加载数据时出错';
+    toast.add({
+      severity: 'error',
+      summary: '数据加载失败',
+      detail: loadError.value,
+      life: 5000
+    });
+  } finally {
+    isLoading.value = false;
+  }
+}
 
 // 对话框状态和数据
 const editDialog = ref(false);
@@ -385,6 +495,21 @@ const getPrimaryField = (item) => {
 :global(.dark) .table-placeholder {
   background-color: #1a1d2d;
   border-color: #36394a;
+}
+
+.table-loading, .table-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background-color: #f8fafc;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+:global(.dark) .table-loading, :global(.dark) .table-error {
+  background-color: #1a1d2d;
 }
 
 /* 表单样式 */
