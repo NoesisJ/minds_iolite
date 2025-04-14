@@ -43,10 +43,9 @@
             @drop="onDrop($event, region.id)"
           >
             <div class="region-header mb-2 flex justify-between items-center">
-              <span
-                class="text-sm font-medium text-gray-400"
-                >{{ region.name }}</span
-              >
+              <span class="text-sm font-medium text-gray-400">{{
+                region.name
+              }}</span>
               <div class="flex items-center space-x-2">
                 <span class="text-xs text-gray-500"
                   >{{ region.components.length }}个组件</span

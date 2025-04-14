@@ -10,10 +10,8 @@
         getShapeClasses(),
         getSizeClasses(),
         getStatusClasses(),
-        disabled
-          ? 'opacity-60 cursor-not-allowed bg-gray-800'
-          : 'bg-gray-700',
-        'text-gray-100'
+        disabled ? 'opacity-60 cursor-not-allowed bg-gray-800' : 'bg-gray-700',
+        'text-gray-100',
       ]"
     >
       <option v-if="placeholder" value="" disabled selected>

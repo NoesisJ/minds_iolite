@@ -1002,7 +1002,7 @@ const updateLayoutPadding = (value: number) => {
 };
 
 // 更新表格每页行数 - 普通表格
-const updateRowsPerPage = (event: Event) => {
+const updateRowsPerPage = () => {
   if (!currentComponent.value || !currentComponent.value.id) return;
   // Convert string value to number
   const value = parseInt(currentComponent.value.props.rowsPerPage);
@@ -1013,7 +1013,7 @@ const updateRowsPerPage = (event: Event) => {
 };
 
 // 更新表格每页行数 - 财务表格
-const updateRows = (event: Event) => {
+const updateRows = () => {
   if (!currentComponent.value || !currentComponent.value.id) return;
   // Convert string value to number
   const value = parseInt(currentComponent.value.props.rows);

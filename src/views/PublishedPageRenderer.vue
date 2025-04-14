@@ -32,9 +32,7 @@
       </div>
     </div>
     <div v-else class="error-message">
-      <div
-        class="flex flex-col items-center justify-center p-8 text-gray-400"
-      >
+      <div class="flex flex-col items-center justify-center p-8 text-gray-400">
         <i class="pi pi-exclamation-circle text-5xl mb-4"></i>
         <div class="text-xl mb-2">页面不存在或已被删除</div>
         <p class="mb-4">请检查页面是否已发布或联系管理员</p>

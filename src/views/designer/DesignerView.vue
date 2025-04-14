@@ -30,8 +30,8 @@ const designerStore = useDesignerStore();
 // 组件挂载时自动加载保存的数据
 onMounted(() => {
   // 设置设计器模式标志
-  window.__DESIGNER_MODE__ = true;
-  window.$designerStore = designerStore;
+  (window as any).__DESIGNER_MODE__ = true;
+  (window as any).$designerStore = designerStore;
 
   const loaded = designerStore.loadFromLocalStorage();
 
@@ -43,7 +43,7 @@ onMounted(() => {
 
 // 组件卸载时重置设计器模式标志
 onUnmounted(() => {
-  window.__DESIGNER_MODE__ = false;
+  (window as any).__DESIGNER_MODE__ = false;
 });
 </script>
 

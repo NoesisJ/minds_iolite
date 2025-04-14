@@ -2,9 +2,7 @@
   <div v-if="show" class="manage-dialog-overlay" @click="onClose">
     <div class="manage-dialog-container" @click.stop>
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-white">
-          管理已发布页面
-        </h2>
+        <h2 class="text-xl font-medium text-white">管理已发布页面</h2>
         <button
           @click="onClose"
           class="close-btn text-gray-400 hover:text-gray-200"
@@ -78,9 +76,7 @@
     >
       <div class="confirm-dialog-container">
         <div class="confirm-dialog-header">
-          <h3 class="text-lg font-medium text-white">
-            确认取消发布
-          </h3>
+          <h3 class="text-lg font-medium text-white">确认取消发布</h3>
         </div>
         <div class="confirm-dialog-content">
           <p class="text-gray-300">

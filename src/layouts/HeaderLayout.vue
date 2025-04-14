@@ -61,7 +61,6 @@
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import {
-  Bell,
   Mail,
   Settings,
   Minus,

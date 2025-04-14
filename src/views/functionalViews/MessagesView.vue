@@ -75,7 +75,9 @@
                     @click="toggleLoved(message)"
                   ></Button>
                 </div>
-                <span class="text-surface-400">{{ formatTimeDiff(message.time) }}</span>
+                <span class="text-surface-400">{{
+                  formatTimeDiff(message.time)
+                }}</span>
               </div>
             </template>
             <template #icons>

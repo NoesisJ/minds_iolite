@@ -34,9 +34,7 @@
     <div v-show="activeTab === 'components'" class="p-4">
       <!-- 组件分类选择 -->
       <div class="mb-4">
-        <div class="text-sm font-medium mb-2 text-gray-300">
-          组件分类
-        </div>
+        <div class="text-sm font-medium mb-2 text-gray-300">组件分类</div>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="category in componentCategories"
@@ -56,9 +54,7 @@
 
       <!-- 组件列表 -->
       <div>
-        <div class="text-sm font-medium mb-2 text-gray-300">
-          可用组件
-        </div>
+        <div class="text-sm font-medium mb-2 text-gray-300">可用组件</div>
         <div class="grid grid-cols-2 gap-2">
           <div
             v-for="component in filteredComponents"
@@ -85,9 +81,7 @@
     <!-- 页面标签内容 -->
     <div v-show="activeTab === 'pages'" class="p-4">
       <div class="flex justify-between items-center mb-3">
-        <div class="text-sm font-medium text-gray-300">
-          页面管理
-        </div>
+        <div class="text-sm font-medium text-gray-300">页面管理</div>
         <button
           @click="createNewPage"
           class="p-1 rounded text-blue-500 hover:bg-blue-900/20"

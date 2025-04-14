@@ -17,9 +17,7 @@
             class="flex items-center min-w-[120px]"
           >
             <span class="text-gray-200">切换页面</span>
-            <i
-              class="pi pi-chevron-down ml-1.5 text-gray-400"
-            ></i>
+            <i class="pi pi-chevron-down ml-1.5 text-gray-400"></i>
           </base-button>
 
           <div
@@ -63,9 +61,7 @@
     </div>
 
     <!-- 页面内容 -->
-    <div
-      class="viewer-content bg-gray-900 min-h-[calc(100vh-56px)] p-4"
-    >
+    <div class="viewer-content bg-gray-900 min-h-[calc(100vh-56px)] p-4">
       <div
         v-if="currentPage"
         class="bg-gray-800 rounded-lg shadow-md p-4 max-w-6xl mx-auto"

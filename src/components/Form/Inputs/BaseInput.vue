@@ -10,9 +10,7 @@
       getShapeClasses(),
       getSizeClasses(),
       getStatusClasses(),
-      disabled
-        ? 'opacity-60 cursor-not-allowed bg-gray-900'
-        : 'bg-gray-800',
+      disabled ? 'opacity-60 cursor-not-allowed bg-gray-900' : 'bg-gray-800',
     ]"
   />
 </template>

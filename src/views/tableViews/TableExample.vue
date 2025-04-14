@@ -1,21 +1,15 @@
 <template>
   <div class="tables-container p-4">
-    <h1 class="text-xl font-semibold mb-6 text-white">
-      数据表格示例
-    </h1>
+    <h1 class="text-xl font-semibold mb-6 text-white">数据表格示例</h1>
 
     <!-- 选中数据展示 -->
     <div
       v-if="selectedFinanceData.length || selectedUserData.length"
       class="mb-6 p-4 bg-gray-800 rounded-lg shadow"
     >
-      <h3 class="text-lg font-medium mb-3 text-white">
-        已选中的数据
-      </h3>
+      <h3 class="text-lg font-medium mb-3 text-white">已选中的数据</h3>
       <div v-if="selectedFinanceData.length > 0">
-        <h4 class="text-md font-medium text-gray-300 mb-2">
-          财务数据
-        </h4>
+        <h4 class="text-md font-medium text-gray-300 mb-2">财务数据</h4>
         <p class="text-gray-300">
           已选中 {{ selectedFinanceData.length }} 条记录
         </p>
@@ -30,12 +24,8 @@
         </div>
       </div>
       <div v-if="selectedUserData.length > 0" class="mt-4">
-        <h4 class="text-md font-medium text-gray-300 mb-2">
-          用户数据
-        </h4>
-        <p class="text-gray-300">
-          已选中 {{ selectedUserData.length }} 条记录
-        </p>
+        <h4 class="text-md font-medium text-gray-300 mb-2">用户数据</h4>
+        <p class="text-gray-300">已选中 {{ selectedUserData.length }} 条记录</p>
         <div class="flex flex-wrap gap-2 mt-2">
           <span
             v-for="item in selectedUserData"
@@ -55,7 +45,7 @@
         <div class="table-header">
           <h2 class="text-lg">基础数据表格</h2>
           <SearchBar
-            :fields="[ 
+            :fields="[
               { field: 'name', label: '姓名', placeholder: '搜索姓名' },
               { field: 'department', label: '部门', placeholder: '搜索部门' },
             ]"
@@ -80,7 +70,7 @@
         <div class="table-header">
           <h2 class="text-lg">产品信息表格</h2>
           <SearchBar
-            :fields="[ 
+            :fields="[
               { field: 'name', label: '产品名称', placeholder: '搜索产品名称' },
               { field: 'category', label: '类别', placeholder: '搜索类别' },
             ]"
@@ -105,7 +95,7 @@
         <div class="table-header">
           <h2 class="text-lg">财务数据表格</h2>
           <SearchBar
-            :fields="[ 
+            :fields="[
               { field: 'account', label: '账户', placeholder: '搜索账户' },
               { field: 'type', label: '类型', placeholder: '搜索类型' },
             ]"
@@ -132,7 +122,7 @@
         <div class="table-header">
           <h2 class="text-lg">用户管理表格</h2>
           <SearchBar
-            :fields="[ 
+            :fields="[
               { field: 'username', label: '用户名', placeholder: '搜索用户名' },
               { field: 'role', label: '角色', placeholder: '搜索角色' },
             ]"

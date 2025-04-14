@@ -73,9 +73,7 @@
 
     <!-- 表格组件 -->
     <template v-else-if="componentType === 'table'">
-      <div
-        class="table-preview border border-gray-700 rounded overflow-hidden"
-      >
+      <div class="table-preview border border-gray-700 rounded overflow-hidden">
         <div class="table-header bg-gray-800 p-2 text-sm">
           <div
             class="grid"

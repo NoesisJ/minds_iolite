@@ -390,7 +390,7 @@
                 <thead>
                   <tr class="border-b border-gray-600">
                     <th
-                      v-for="(type, field) in previewData.fields"
+                      v-for="(_, field) in previewData.fields"
                       :key="field"
                       class="px-2 py-1 text-left text-gray-400"
                     >
@@ -405,7 +405,7 @@
                     class="border-b border-gray-600"
                   >
                     <td
-                      v-for="(type, field) in previewData.fields"
+                      v-for="(_, field) in previewData.fields"
                       :key="field"
                       class="px-2 py-1 text-white"
                     >
