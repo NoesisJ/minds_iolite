@@ -1,4 +1,3 @@
-<!-- components/chat/MessageItem.vue -->
 <template>
   <div
     class="flex w-full select-text group"
@@ -6,12 +5,12 @@
   >
     <div class="max-w-[80%] rounded-lg p-4 relative" :class="messageClass">
       <!-- 普通文本内容 -->
-      <template v-if="!hasChartData">
+      <template v-if="!hasChartData && !hasBracketData">
         {{ message.content }}
       </template>
 
-      <!-- 图表内容 -->
-      <template v-else>
+      <!-- 图表内容 (代码块格式) -->
+      <template v-else-if="hasChartData">
         <!-- 提取非JSON部分的文本 -->
         <div v-if="nonJsonContent" class="mb-4">
           {{ nonJsonContent[0] }}
@@ -40,6 +39,24 @@
 
         <div v-if="nonJsonContent" class="mb-4">
           {{ nonJsonContent[1] }}
+        </div>
+      </template>
+
+      <!-- 中括号JSON内容显示为代码块 -->
+      <template v-else-if="hasBracketData">
+        <!-- 提取中括号前面的文本 -->
+        <div v-if="bracketNonJsonContent[0]" class="mb-4">
+          {{ bracketNonJsonContent[0] }}
+        </div>
+
+        <!-- 显示JSON格式的代码块 -->
+        <pre
+          class="bg-[#2d2d2d] p-3 rounded-md overflow-x-auto"
+        ><code>{{ formattedBracketJsonContent }}</code></pre>
+
+        <!-- 提取中括号后面的文本 -->
+        <div v-if="bracketNonJsonContent[1]" class="mt-4">
+          {{ bracketNonJsonContent[1] }}
         </div>
       </template>
 
@@ -72,10 +89,10 @@ const props = defineProps<{
   message: Message;
 }>();
 
-// 尝试从消息内容中提取JSON数据
+// 尝试从消息内容中提取代码块中的JSON数据
 const extractJsonData = (content: string) => {
   try {
-    // 1. 先尝试匹配 ```...``` 代码块
+    // 尝试匹配 ```...``` 代码块
     const codeBlockRegex = /```([\s\S]*?)```/g;
     const codeBlockMatch = content.match(codeBlockRegex);
 
@@ -87,31 +104,82 @@ const extractJsonData = (content: string) => {
       // 尝试解析为 JSON
       return JSON.parse(formattedCodeContent);
     }
-
-    // 2. 如果没有代码块，尝试匹配 [...] 中括号内容
-    const jsonMatch = content.match(/\[.*\]/s);
-    if (jsonMatch) {
-      const jsonString = jsonMatch[0].replace(/^\[|\]$/g, "");
-      const formattedJsonString = jsonString.replace(/'/g, '"');
-      return JSON.parse(formattedJsonString);
-    }
     return null;
   } catch (e) {
-    console.error("Failed to parse JSON from message:", e);
+    console.error("Failed to parse JSON from code block:", e);
     return null;
   }
 };
 
+// 提取中括号中的内容
+const extractBracketData = (content: string) => {
+  try {
+    // 尝试匹配 [...] 中括号内容
+    const jsonMatch = content.match(/\[([\s\S]*)\]/);
+    if (jsonMatch) {
+      // 删掉头尾的中括号
+      const jsonContent = jsonMatch[1].split("[")[1].split("]")[0];
+      // 处理单引号和双引号的转换
+      const formattedJsonContent = jsonContent.replace(/'/g, '"');
+      // 尝试解析为 JSON
+      return JSON.parse(formattedJsonContent);
+    }
+    return null;
+  } catch (e) {
+    console.error("Failed to extract bracket data:", e);
+    return null;
+  }
+};
+
+// 从代码块中提取JSON数据
 const chartData = computed(() => extractJsonData(props.message.content));
 const hasChartData = computed(() => !!chartData.value);
 
-// 提取非JSON部分的文本内容
+// 提取中括号内容
+const bracketData = computed(() => extractBracketData(props.message.content));
+const hasBracketData = computed(
+  () => !!bracketData.value && !hasChartData.value
+);
+
+// 格式化中括号内JSON内容
+const formattedBracketJsonContent = computed(() => {
+  if (!bracketData.value) return "";
+  try {
+    // 处理中括号内容格式化
+    const jsonContent = bracketData.value.replace(/'/g, '"');
+    // 尝试解析并美化JSON
+    const parsedJson = JSON.parse(jsonContent);
+    return JSON.stringify(parsedJson, null, 2);
+  } catch (e) {
+    console.error("Failed to format bracket JSON:", e);
+    return bracketData.value;
+  }
+});
+
+// 提取代码块前后非JSON部分的文本内容
 const nonJsonContent = computed(() => {
-  if (!hasChartData.value) return props.message.content;
-  // 提取非JSON部分的文本内容为除去json的两个部分
-  const codeBlockRegex = /```([\s\S]*?)```/g;
-  const codeBlockMatch = props.message.content.match(codeBlockRegex);
-  return props.message.content.split(codeBlockMatch?.[0] || "")
+  if (!hasChartData.value) return [props.message.content];
+
+  const codeBlockRegex = /```([\s\S]*?)```/;
+  const match = props.message.content.match(codeBlockRegex);
+
+  if (!match) return [props.message.content];
+
+  const parts = props.message.content.split(match[0]);
+  return [parts[0]?.trim(), parts[1]?.trim()];
+});
+
+// 提取中括号前后的文本内容
+const bracketNonJsonContent = computed(() => {
+  if (!hasBracketData.value) return ["", ""];
+
+  const bracketRegex = /\[(.*?)\]/s;
+  const match = props.message.content.match(bracketRegex);
+
+  if (!match) return [props.message.content, ""];
+
+  const parts = props.message.content.split(match[0]);
+  return [parts[0]?.trim(), parts[1]?.split("]")[1]?.trim()];
 });
 
 // 为饼图准备数据格式
