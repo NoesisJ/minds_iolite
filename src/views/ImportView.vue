@@ -1,19 +1,11 @@
 <template>
   <div class="relative transform-3d flex flex-col items-center justify-center">
-    <!-- 主触发按钮 -->
-    <button
-      @click="openPanel"
-      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-    >
-      连接/导入数据库
-    </button>
-
     <!-- 主面板 -->
     <div
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
       <div
-        class="bg-[var(--material-bg-light)] rounded-2xl shadow-xl w-full max-w-2xl max-h-[700px] p-6 overflow-auto"
+        class="bg-[var(--material-bg-light)] rounded-2xl shadow-xl w-full max-w-2xl h-[90%] p-6 overflow-auto"
       >
         <h2 class="text-2xl font-normal mb-4">数据库连接/导入</h2>
 
@@ -290,6 +282,142 @@
           </div>
         </div>
 
+        <div v-if="showPreview && connectionResult" class="mb-6">
+          <h3 class="text-lg font-medium mb-3">数据库连接成功</h3>
+          <div class="bg-gray-700 rounded-md p-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-sm text-gray-400">主机</p>
+                <p class="text-white">{{ connectionResult.host }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">端口</p>
+                <p class="text-white">{{ connectionResult.port }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">数据库</p>
+                <p class="text-white">{{ connectionResult.database }}</p>
+              </div>
+            </div>
+
+            <!-- MongoDB 集合预览 -->
+            <div
+              v-if="
+                selectedDbType === 'mongodb' && connectionResult.collections
+              "
+            >
+              <h4 class="text-md font-medium mb-2">集合信息</h4>
+              <div class="space-y-4">
+                <div
+                  v-for="(collection, name) in connectionResult.collections"
+                  :key="name"
+                  class="border border-gray-600 rounded-md p-3"
+                >
+                  <h5 class="font-medium text-white mb-2">{{ name }}</h5>
+                  <div class="text-sm">
+                    <p class="text-gray-400 mb-1">字段类型:</p>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                      <span
+                        v-for="(type, field) in collection.fields"
+                        :key="field"
+                        class="px-2 py-1 bg-gray-600 rounded text-xs"
+                      >
+                        {{ field }}: {{ type }}
+                      </span>
+                    </div>
+                    <p class="text-gray-400 mb-1">示例数据:</p>
+                    <pre
+                      class="bg-gray-800 p-2 rounded text-xs overflow-auto"
+                      >{{ collection.sample_data }}</pre
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MySQL 表预览 -->
+            <div v-if="selectedDbType === 'mysql' && connectionResult.tables">
+              <h4 class="text-md font-medium mb-2">表信息</h4>
+              <div class="space-y-4">
+                <div
+                  v-for="(table, name) in connectionResult.tables"
+                  :key="name"
+                  class="border border-gray-600 rounded-md p-3"
+                >
+                  <h5 class="font-medium text-white mb-2">{{ name }}</h5>
+                  <div class="text-sm">
+                    <p class="text-gray-400 mb-1">字段类型:</p>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                      <span
+                        v-for="(type, field) in table.fields"
+                        :key="field"
+                        class="px-2 py-1 bg-gray-600 rounded text-xs"
+                      >
+                        {{ field }}: {{ type }}
+                      </span>
+                    </div>
+                    <p class="text-gray-400 mb-1">示例数据:</p>
+                    <pre
+                      class="bg-gray-800 p-2 rounded text-xs overflow-auto"
+                      >{{ formatJson(table.sample_data) }}</pre
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 文件数据预览 -->
+        <div v-if="showPreview && previewData" class="mb-6">
+          <h3 class="text-lg font-medium mb-3">文件数据预览</h3>
+          <div class="bg-gray-700 rounded-md p-4">
+            <div class="mb-4">
+              <p class="text-sm text-gray-400 mb-1">字段类型:</p>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="(type, field) in previewData.fields"
+                  :key="field"
+                  class="px-2 py-1 bg-gray-600 rounded text-xs"
+                >
+                  {{ field }}: {{ type }}
+                </span>
+              </div>
+            </div>
+
+            <div class="overflow-auto max-h-60">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="border-b border-gray-600">
+                    <th
+                      v-for="(type, field) in previewData.fields"
+                      :key="field"
+                      class="px-2 py-1 text-left text-gray-400"
+                    >
+                      {{ field }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(row, index) in previewData.sampleData"
+                    :key="index"
+                    class="border-b border-gray-600"
+                  >
+                    <td
+                      v-for="(type, field) in previewData.fields"
+                      :key="field"
+                      class="px-2 py-1 text-white"
+                    >
+                      {{ row[field] }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- 操作按钮 -->
         <div class="flex justify-end space-x-3">
           <button
@@ -335,10 +463,12 @@ import {
   FileProcessConfig,
   MongoImportConfig,
   databaseTypes,
+  DatabaseConnectionResult,
+  PreviewData,
 } from "@/types/import";
 import Toast from "@/components/ui/Toast.vue";
 
-const showPanel = ref(false);
+// 状态管理
 const selectedDbType = ref<string | null>(null);
 const connectionConfig = ref<ConnectionConfig>({
   type: "",
@@ -353,6 +483,9 @@ const isLoading = ref(false);
 const isLoadingMessage = ref("正在处理...");
 const importMode = ref<"preview" | "mongodb">("preview");
 const toast = ref<InstanceType<typeof Toast> | null>(null);
+const connectionResult = ref<DatabaseConnectionResult | null>(null);
+const previewData = ref<PreviewData | null>(null);
+const showPreview = ref(false);
 
 // CSV特定选项
 const csvOptions = ref({
@@ -421,31 +554,6 @@ const confirmButtonText = computed(() => {
   }
 });
 
-// 方法
-const openPanel = () => {
-  showPanel.value = true;
-  selectedDbType.value = null;
-  selectedFilePath.value = "";
-  importMode.value = "preview";
-  csvOptions.value = {
-    delimiter: ",",
-    hasHeader: true,
-    encoding: "utf-8",
-  };
-  mongoDbOptions.value = {
-    dbName: "",
-    collName: "",
-  };
-  connectionConfig.value = {
-    type: "",
-    host: "localhost",
-    port: "",
-    username: "",
-    password: "",
-    database: "",
-  };
-};
-
 const selectDatabaseType = (type: string) => {
   selectedDbType.value = type;
   selectedFilePath.value = "";
@@ -485,6 +593,12 @@ const openFileDialog = async () => {
     }
   } catch (error) {
     console.error("打开文件对话框失败:", error);
+    toast.value?.add({
+      severity: "error",
+      summary: "错误",
+      detail: "打开文件对话框失败",
+      life: 3000,
+    });
   }
 };
 
@@ -528,105 +642,172 @@ const confirm = async () => {
 
   try {
     if (isConnectionType.value) {
-      isLoadingMessage.value = `正在连接${selectedDbType.value}数据库...`;
-      // 模拟连接延迟
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // TODO: 连接数据库逻辑
+      await connectToDatabase();
     } else {
-      // 文件类型处理
       if (importMode.value === "preview" || selectedDbType.value === "excel") {
-        // 预览数据
-        isLoadingMessage.value = `正在处理${selectedDbType.value}文件...`;
-
-        let processConfig: FileProcessConfig = {
-          type: selectedDbType.value,
-          filePath: selectedFilePath.value,
-        };
-
-        // 添加CSV特定选项
-        if (selectedDbType.value === "csv") {
-          processConfig.options = { ...csvOptions.value };
-        }
-
-        // TODO: 处理文件逻辑
+        await previewFileData();
       } else if (importMode.value === "mongodb") {
-        importCsvToMongo();
+        await importCsvToMongo();
       }
     }
-
-    showPanel.value = false;
-    isLoading.value = false;
   } catch (error) {
     console.error("操作失败:", error);
-    alert("操作失败，请检查配置或文件");
     toast.value?.add({
       severity: "error",
       summary: "操作失败",
       detail: `操作失败，请检查配置或文件`,
       life: 3000,
     });
+  }
+};
+
+const connectToDatabase = async () => {
+  try {
+    isLoading.value = true;
+    isLoadingMessage.value = `正在连接${selectedDbType.value}数据库...`;
+
+    let apiUrl = "";
+    let requestData = {};
+
+    if (selectedDbType.value === "mongodb") {
+      apiUrl = "http://localhost:8080/api/datasource/mongodb/connect";
+      requestData = {
+        ConnectionURI: `mongodb://${connectionConfig.value.host}:${connectionConfig.value.port}`,
+        Database: connectionConfig.value.database,
+      };
+    } else if (selectedDbType.value === "mysql") {
+      apiUrl = "http://localhost:8080/api/datasource/mysql/connect";
+      requestData = {
+        host: connectionConfig.value.host,
+        port: connectionConfig.value.port,
+        username: connectionConfig.value.username,
+        password: connectionConfig.value.password,
+        database: connectionConfig.value.database,
+      };
+    }
+
+    const response = await axios.post(apiUrl, requestData);
+    connectionResult.value = response.data;
+
+    console.log("连接结果:", connectionResult.value);
+
+    toast.value?.add({
+      severity: "success",
+      summary: "连接成功",
+      detail: `已成功连接到${selectedDbType.value}数据库`,
+      life: 3000,
+    });
+
+    // 显示预览
+    showPreview.value = true;
+  } catch (error) {
+    console.error("连接失败:", error);
+    toast.value?.add({
+      severity: "error",
+      summary: "连接失败",
+      detail: `无法连接到${selectedDbType.value}数据库，请检查配置`,
+      life: 3000,
+    });
+  } finally {
     isLoading.value = false;
   }
 };
 
-const importCsvToMongo = () => {
-  isLoadingMessage.value = `正在将${selectedDbType.value}数据导入到MongoDB...`;
+const previewFileData = async () => {
+  try {
+    isLoading.value = true;
+    isLoadingMessage.value = `正在处理${selectedDbType.value}文件...`;
 
-  let importConfig: MongoImportConfig = {
-    sourceType: selectedDbType.value || "",
-    filePath: selectedFilePath.value,
-  };
+    let apiUrl = "";
+    let requestData: FileProcessConfig = {
+      type: selectedDbType.value || "",
+      filePath: selectedFilePath.value,
+    };
 
-  // 添加特定选项
-  if (selectedDbType.value === "csv") {
-    importConfig.options = { ...csvOptions.value };
-  }
+    if (selectedDbType.value === "csv") {
+      requestData.options = { ...csvOptions.value };
+      apiUrl = "http://localhost:8080/api/datasource/csv/preview";
+    } else if (selectedDbType.value === "sqlite") {
+      apiUrl = "http://localhost:8080/api/datasource/sqlite/preview";
+    } else if (selectedDbType.value === "excel") {
+      apiUrl = "http://localhost:8080/api/datasource/excel/preview";
+    }
 
-  // 添加MongoDB选项
-  if (mongoDbOptions.value.dbName) {
-    importConfig.dbName = mongoDbOptions.value.dbName;
-  }
-  if (mongoDbOptions.value.collName) {
-    importConfig.collName = mongoDbOptions.value.collName;
-  }
+    const response = await axios.post(apiUrl, requestData);
+    previewData.value = response.data;
 
-  const apiUrl = "http://localhost:8080/api/datasource/csv/import-to-mongo";
-
-  const requestData = {
-    filePath: selectedFilePath.value,
-    options: {
-      delimiter: ",",
-      hasHeader: true,
-      encoding: "utf-8",
-    },
-    dbName: "csv_data",
-    collName: "customers",
-  };
-
-  axios
-    .post(apiUrl, requestData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((response) => {
-      console.log("导入成功:", response.data);
-      toast.value?.add({
-        severity: "success",
-        summary: "导入成功",
-        detail: `数据已成功导入到MongoDB`,
-        life: 3000,
-      });
-    })
-    .catch((error) => {
-      console.error("导入失败:", error);
-      toast.value?.add({
-        severity: "error",
-        summary: "导入失败",
-        detail: `数据导入失败，请检查配置或文件`,
-        life: 3000,
-      });
+    toast.value?.add({
+      severity: "success",
+      summary: "处理成功",
+      detail: `文件处理完成`,
+      life: 3000,
     });
+
+    // 显示预览
+    showPreview.value = true;
+  } catch (error) {
+    console.error("文件处理失败:", error);
+    toast.value?.add({
+      severity: "error",
+      summary: "处理失败",
+      detail: `无法处理文件，请检查文件格式`,
+      life: 3000,
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const importCsvToMongo = async () => {
+  try {
+    isLoading.value = true;
+    isLoadingMessage.value = `正在将${selectedDbType.value}数据导入到MongoDB...`;
+
+    const importConfig: MongoImportConfig = {
+      sourceType: selectedDbType.value || "",
+      filePath: selectedFilePath.value,
+    };
+
+    if (selectedDbType.value === "csv") {
+      importConfig.options = { ...csvOptions.value };
+    }
+
+    if (mongoDbOptions.value.dbName) {
+      importConfig.dbName = mongoDbOptions.value.dbName;
+    }
+    if (mongoDbOptions.value.collName) {
+      importConfig.collName = mongoDbOptions.value.collName;
+    }
+
+    const apiUrl = "http://localhost:8080/api/datasource/csv/import-to-mongo";
+
+    await axios.post(apiUrl, importConfig);
+
+    toast.value?.add({
+      severity: "success",
+      summary: "导入成功",
+      detail: `数据已成功导入到MongoDB`,
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("导入失败:", error);
+    toast.value?.add({
+      severity: "error",
+      summary: "导入失败",
+      detail: `数据导入失败，请检查配置或文件`,
+      life: 3000,
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const formatJson = (jsonStr: string) => {
+  try {
+    const jsonObj = JSON.parse(jsonStr);
+    return JSON.stringify(jsonObj, null, 2); // 缩进2空格
+  } catch {
+    return jsonStr; // 失败时返回原始字符串
+  }
 };
 </script>
