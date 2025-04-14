@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import ToolBar from "@/components/designer/ToolBar.vue";
 import LeftPanel from "@/components/designer/LeftPanel.vue";
@@ -29,12 +29,21 @@ const designerStore = useDesignerStore();
 
 // 组件挂载时自动加载保存的数据
 onMounted(() => {
+  // 设置设计器模式标志
+  window.__DESIGNER_MODE__ = true;
+  window.$designerStore = designerStore;
+  
   const loaded = designerStore.loadFromLocalStorage();
 
   // 如果没有保存的数据，创建一个默认页面
   if (!loaded && designerStore.pages.length === 0) {
     designerStore.createPage();
   }
+});
+
+// 组件卸载时重置设计器模式标志
+onUnmounted(() => {
+  window.__DESIGNER_MODE__ = false;
 });
 </script>
 

@@ -111,7 +111,6 @@ onMounted(() => {
 <style scoped>
 .published-page-container {
   min-height: calc(100vh - 56px);
-  background-color: #f9fafb;
 }
 
 .page-content {

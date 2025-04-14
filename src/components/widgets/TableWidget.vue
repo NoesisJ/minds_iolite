@@ -258,13 +258,27 @@ const handleDelete = (item) => {
 // 保存编辑项
 const saveItem = () => {
   if (currentIndex.value !== -1) {
+    // 创建新的数据数组
     const updatedData = [...props.data];
     updatedData[currentIndex.value] = { ...currentItem.value };
-    emit("update:data", updatedData);
-
+    
+    // 更新组件属性
+    if (window.__DESIGNER_MODE__) {
+      // 在设计器环境中
+      const designerStore = window.$designerStore;
+      if (designerStore && designerStore.selectedComponentId) {
+        designerStore.updateComponentProps(designerStore.selectedComponentId, {
+          data: updatedData
+        });
+      }
+    } else {
+      // 常规环境中
+      emit("update:data", updatedData);
+    }
+    
     // 显示成功消息
     showToast("修改成功");
-
+    
     // 关闭对话框
     editDialog.value = false;
   }
@@ -273,19 +287,33 @@ const saveItem = () => {
 // 确认删除
 const deleteConfirmed = () => {
   if (currentIndex.value !== -1) {
+    // 创建不包含被删除项的新数组
     const updatedData = props.data.filter(
       (item) => item.id !== currentItem.value.id
     );
-    emit("update:data", updatedData);
-
+    
+    // 更新组件属性
+    if (window.__DESIGNER_MODE__) {
+      // 在设计器环境中
+      const designerStore = window.$designerStore;
+      if (designerStore && designerStore.selectedComponentId) {
+        designerStore.updateComponentProps(designerStore.selectedComponentId, {
+          data: updatedData
+        });
+      }
+    } else {
+      // 常规环境中
+      emit("update:data", updatedData);
+    }
+    
     // 如果删除的是选中项，也从选中数据中移除
     selectedItems.value = selectedItems.value.filter(
       (item) => item.id !== currentItem.value.id
     );
-
+    
     // 显示成功消息
     showToast("删除成功");
-
+    
     // 关闭对话框
     deleteDialog.value = false;
   }
