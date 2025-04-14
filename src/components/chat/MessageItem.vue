@@ -107,22 +107,17 @@ const hasChartData = computed(() => !!chartData.value);
 
 // 提取非JSON部分的文本内容
 const nonJsonContent = computed(() => {
-  if (!hasChartData.value) return null;
-  const jsonMatch = props.message.content.match(/\[.*\]/s);
-  if (jsonMatch) {
-    // 提取非JSON部分的文本内容为除去json的两个部分
-    return props.message.content.split(jsonMatch[0]);
-  }
-  return props.message.content;
+  if (!hasChartData.value) return props.message.content;
+  // 提取非JSON部分的文本内容为除去json的两个部分
+  const codeBlockRegex = /```([\s\S]*?)```/g;
+  const codeBlockMatch = props.message.content.match(codeBlockRegex);
+  return props.message.content.split(codeBlockMatch?.[0] || "")
 });
 
 // 为饼图准备数据格式
 const pieChartData = computed(() => {
   if (!chartData.value || chartData.value.chart_type !== "pie") return [];
-  return chartData.value.labels.map((label: string, index: number) => ({
-    name: label,
-    value: chartData.value.values[index],
-  }));
+  return chartData.value.pieData;
 });
 
 const messageClass = computed(() => {
