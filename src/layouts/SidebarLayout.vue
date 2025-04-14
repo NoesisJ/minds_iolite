@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] pt-3 overflow-hidden flex flex-col justify-between"
+    class="w-[var(--sidebar-width)] bg-[var(--material-bg-dark)] pt-3 overflow-hidden flex flex-col justify-between border-r border-[var(--material-item-border)]"
   >
     <div class="overflow-auto flex-1 custom-scrollbar">
       <TogglePanel

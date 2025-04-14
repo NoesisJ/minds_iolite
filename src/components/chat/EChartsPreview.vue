@@ -2,29 +2,21 @@
   <div
     class="echarts-preview h-[40rem] rounded-lg overflow-hidden shadow-sm bg-[var(--material-item-bg)]"
   >
-    <!-- 标签栏 -->
+    <!-- 标签栏 (保持不变) -->
     <div
       class="flex bg-[var(--material-item-header)] h-[var(--preview-header-h)] shadow-sm"
     >
       <button
         @click="activeTab = 'preview'"
         class="px-4 py-2 font-medium text-sm transition-colors duration-200"
-        :class="
-          activeTab === 'preview'
-            ? 'text-white border-b-2 border-[var(--material-red-dark)] bg-[var(--material-item-bg-selected)] hover:bg-[var(--material-item-bg-selected-hover)]'
-            : 'text-gray-400 hover:text-gray-200 hover:bg-[var(--material-item-bg-hover)]'
-        "
+        :class="activeTab === 'preview' ? activeTabStyle : inactiveTabStyle"
       >
         预览
       </button>
       <button
         @click="activeTab = 'code'"
         class="px-4 py-2 font-medium text-sm transition-colors duration-200"
-        :class="
-          activeTab === 'code'
-            ? 'text-white border-b-2 border-[var(--material-red-dark)] bg-[var(--material-item-bg-selected)] hover:bg-[var(--material-item-bg-selected-hover)]'
-            : 'text-gray-400 hover:text-gray-200 hover:bg-[var(--material-item-bg-hover)]'
-        "
+        :class="activeTab === 'code' ? activeTabStyle : inactiveTabStyle"
       >
         代码
       </button>
@@ -32,16 +24,16 @@
 
     <!-- 内容区域 -->
     <div class="w-full h-[calc(100%-var(--preview-header-h))]">
-      <!-- 预览标签内容 -->
       <div v-show="activeTab === 'preview'" class="w-full h-full rounded p-2">
         <div ref="echartsRef" class="w-full h-full"></div>
       </div>
 
-      <!-- 代码标签内容 -->
       <div v-show="activeTab === 'code'" class="h-full">
         <pre
           class="text-sm px-4 py-6 bg-gray-900 text-gray-100 rounded overflow-auto h-full"
-        ><code>{{ formattedCode }}</code></pre>
+        >
+          <code>{{ formattedCode }}</code>
+        </pre>
       </div>
     </div>
   </div>
@@ -52,19 +44,88 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from "vue";
 import * as echarts from "echarts";
 import type { ECharts, EChartsOption } from "echarts";
 
+// 1. 定义类型
+interface ChartDataPayload {
+  /** 图表类型 */
+  chartType: "line" | "bar" | "pie" | "scatter" | "custom";
+  /** 二维数据数组 */
+  data: any[][];
+  /** 可选的定制配置 */
+  custom?: Partial<EChartsOption>;
+}
+
 interface Props {
-  // 图表配置选项
+  /** 来自后端的数据配置 */
+  chartData?: ChartDataPayload;
+  /** 完整配置（优先级高于chartData） */
   options?: EChartsOption;
-  // 需要展示的代码（可选，如果不提供则自动生成）
   code?: string;
-  // 图表主题（可选）
   theme?: string | object;
-  // 是否启用图表动画（默认true）
   animation?: boolean;
 }
 
+// 2. 默认主题配置
+const DEFAULT_THEME_CONFIG = {
+  common: {
+    backgroundColor: "transparent",
+    textStyle: {
+      fontFamily: "Inter, system-ui, sans-serif",
+      color: "#333",
+    },
+    animationDuration: 1000,
+    grid: {
+      containLabel: true,
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      top: "10%",
+    },
+  },
+  typeStyles: {
+    line: {
+      color: ["#5470C6", "#91CC75", "#FAC858"],
+      series: {
+        symbolSize: 8,
+        lineWidth: 3,
+        smooth: true,
+      },
+    },
+    bar: {
+      color: ["#5470C6", "#EE6666"],
+      series: {
+        barWidth: "60%",
+        itemStyle: {
+          borderRadius: [4, 4, 0, 0],
+        },
+      },
+    },
+    pie: {
+      color: ["#37A2FF", "#32C5E9", "#67E0E3"],
+      series: {
+        radius: ["40%", "70%"],
+        avoidLabelOverlap: false,
+        label: {
+          show: true,
+          formatter: "{b}: {c} ({d}%)",
+        },
+      },
+    },
+    scatter: {
+      color: ["#91CC75", "#FAC858", "#EE6666"],
+      series: {
+        symbolSize: 10,
+      },
+    },
+    custom: {
+      color: ["#5470C6", "#91CC75", "#FAC858"],
+      series: {},
+    },
+  },
+};
+
 const props = withDefaults(defineProps<Props>(), {
-  options: () => ({}),
+  chartData: undefined,
+  options: undefined,
   code: "",
   theme: "",
   animation: true,
@@ -72,159 +133,135 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["chart-mounted", "chart-updated"]);
 
-// 状态变量
+// 3. 响应式状态
 const activeTab = ref<"preview" | "code">("preview");
+
+// Define formattedCode
+const formattedCode = computed(() => {
+  return props.code || "No code available";
+});
 const echartsRef = ref<HTMLElement | null>(null);
 const chartInstance = ref<ECharts | null>(null);
+const activeTabStyle =
+  "text-white border-b-2 border-[var(--material-red-dark)] bg-[var(--material-item-bg-selected)] hover:bg-[var(--material-item-bg-selected-hover)]";
+const inactiveTabStyle =
+  "text-gray-400 hover:text-gray-200 hover:bg-[var(--material-item-bg-hover)]";
 
-// 格式化代码
-const formattedCode = computed(() => {
-  if (props.code) {
-    return props.code;
-  }
+// 1. 增强类型定义
+interface ChartDataPayload {
+  chartType: "line" | "bar" | "pie" | "scatter" | "custom";
+  data: any[][];
+  dimensions?: string[]; // 可选维度定义
+  custom?: Partial<EChartsOption>;
+}
 
-  // 自动生成使用示例代码
-  return `<template>
-    <div ref="chartRef" style="width: 100%; height: 400px;"></div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from 'vue';
-  import * as echarts from 'echarts';
-  
-  const chartRef = ref<HTMLElement | null>(null);
-  const chartInstance = ref<echarts.ECharts | null>(null);
-  
-  const options = ${JSON.stringify(props.options, null, 2)};
-  
-  onMounted(() => {
-    if (chartRef.value) {
-      chartInstance.value = echarts.init(chartRef.value);
-      chartInstance.value.setOption(options);
-      
-      // 响应式调整大小
-      const resizeObserver = new ResizeObserver(() => {
-        chartInstance.value?.resize();
-      });
-      resizeObserver.observe(chartRef.value);
-    }
-  });
-  
-  onUnmounted(() => {
-    chartInstance.value?.dispose();
-  });
-  <\/script>`;
+interface Props {
+  chartData?: ChartDataPayload;
+  options?: EChartsOption;
+  code?: string;
+  theme?: string | object;
+  animation?: boolean;
+}
+
+// 3. 配置合并增强
+const mergedOptions = computed<EChartsOption>(() => {
+  return {
+    ...(props.options || {}),
+    ...(props.chartData ? {
+      dataset: { source: props.chartData.data },
+      series: props.chartData.data[0].slice(1).map((_, i) => ({
+        type: props.chartData?.chartType,
+        ...(props.chartData?.chartType && DEFAULT_THEME_CONFIG.typeStyles[props.chartData.chartType]?.series || {}),
+        ...(Array.isArray(props.chartData?.custom?.series) ? props.chartData.custom.series[i] : {}),
+      })),
+      xAxis: props.chartData.chartType !== "pie" ? {
+        type: "category" as const,
+        data: props.chartData.data[0].slice(1),
+      } : undefined,
+      yAxis: props.chartData.chartType !== "pie" ? { type: "value" as const } : undefined,
+    } : {}),
+  } as EChartsOption;
 });
 
-// 初始化或更新图表
-const initOrUpdateChart = () => {
-  if (activeTab.value === "preview" && echartsRef.value) {
-    nextTick(() => {
-      if (!chartInstance.value) {
-        // 初始化图表
-        chartInstance.value = echartsRef.value
-          ? echarts.init(echartsRef.value, props.theme, {
-              renderer: "canvas",
-              width: "auto",
-              height: "auto",
-            })
-          : null;
+// 4. 图表初始化（增加错误处理）
+const initChart = async () => {
+  if (!echartsRef.value) return;
 
-        if (chartInstance.value) {
-          emit("chart-mounted", chartInstance.value);
-        }
-      }
+  try {
+    chartInstance.value?.dispose();
+    chartInstance.value = echarts.init(echartsRef.value, props.theme);
 
-      if (chartInstance.value && props.options) {
-        // 设置图表选项
-        chartInstance.value.setOption(props.options, {
-          notMerge: true,
-          lazyUpdate: false,
-          silent: false,
-          replaceMerge: ["series"],
-        });
-        emit("chart-updated", chartInstance.value);
-      }
-    });
+    // 确保配置有效性
+    const options = mergedOptions.value;
+    if (
+      !options.series ||
+      (Array.isArray(options.series) && options.series.length === 0)
+    ) {
+      throw new Error("Invalid chart configuration: missing series data");
+    }
+
+    chartInstance.value.setOption(options);
+    emit("chart-mounted", chartInstance.value);
+  } catch (err) {
+    console.error("[ECharts Error]", err);
+    // 可以在这里显示错误提示
   }
 };
 
-// 响应式调整图表大小
 const resizeChart = () => {
-  if (chartInstance.value) {
-    chartInstance.value.resize({
-      animation: {
-        duration: 300,
-      },
-    });
-  }
+  chartInstance.value?.resize({
+    animation: { duration: props.animation ? 300 : 0 },
+  });
 };
 
-// 监听配置变化
+// 6. 监听器
 watch(
-  () => props.options,
+  () => [props.chartData, props.options],
   () => {
-    initOrUpdateChart();
+    if (chartInstance.value) {
+      chartInstance.value.setOption(mergedOptions.value, {
+        notMerge: true,
+        replaceMerge: ["series"],
+      });
+      emit("chart-updated", chartInstance.value);
+    }
   },
   { deep: true }
 );
 
-// 监听主题变化
+watch(activeTab, (newVal) => {
+  if (newVal === "preview") nextTick(resizeChart);
+});
+
 watch(
   () => props.theme,
-  (newTheme) => {
-    if (chartInstance.value) {
-      chartInstance.value.dispose();
-      chartInstance.value = echarts.init(echartsRef.value, newTheme);
-      initOrUpdateChart();
-    }
+  () => {
+    initChart();
   }
 );
 
-// 监听标签切换
-watch(activeTab, (newTab) => {
-  if (newTab === "preview") {
-    nextTick(() => {
-      initOrUpdateChart();
-      resizeChart();
-    });
-  }
-});
-
-// 生命周期钩子
+// 7. 生命周期
 onMounted(() => {
-  initOrUpdateChart();
-
-  // 添加窗口大小变化监听
+  initChart();
   window.addEventListener("resize", resizeChart);
 });
 
 onUnmounted(() => {
-  // 移除事件监听器
   window.removeEventListener("resize", resizeChart);
-
-  // 销毁图表实例
-  if (chartInstance.value) {
-    chartInstance.value.dispose();
-    chartInstance.value = null;
-  }
+  chartInstance.value?.dispose();
 });
 
-// 暴露方法供父组件调用
+// 8. 暴露方法
 defineExpose({
-  // 获取图表实例
   getInstance: () => chartInstance.value,
-  // 重新渲染图表
-  resize: () => resizeChart(),
-  // 切换到指定标签
-  switchTab: (tab: "preview" | "code") => {
-    activeTab.value = tab;
-  },
+  resize: resizeChart,
+  switchTab: (tab: "preview" | "code") => (activeTab.value = tab),
+  getCurrentOptions: () => mergedOptions.value,
 });
 </script>
 
 <style scoped>
 .echarts-preview {
-  --preview-header-h: 2.5rem; /* 标签栏高度 */
+  --preview-header-h: 2.5rem;
 }
 </style>
