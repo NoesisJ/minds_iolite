@@ -96,7 +96,6 @@ export const formComponents: ComponentDefinition[] = [
 
 // 数据组件库
 export const dataComponents: ComponentDefinition[] = [
-
   {
     id: "finance-table",
     type: "table",
@@ -117,7 +116,7 @@ export const dataComponents: ComponentDefinition[] = [
         collection: "",
         filter: {},
         sort: {},
-        fields: []
+        fields: [],
       },
       columns: [
         { field: "account", header: "账户", sortable: true },
@@ -182,49 +181,56 @@ export const dataComponents: ComponentDefinition[] = [
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
           amount: 30000,
           date: "2023-01-28",
           status: "待结算",
-        },{
+        },
+        {
           id: 6,
           account: "收入账户F",
           type: "收入",
@@ -248,7 +254,6 @@ export const dataComponents: ComponentDefinition[] = [
       boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
     },
   },
-  
 ];
 
 // ECharts 图表组件

@@ -32,7 +32,7 @@ onMounted(() => {
   // 设置设计器模式标志
   window.__DESIGNER_MODE__ = true;
   window.$designerStore = designerStore;
-  
+
   const loaded = designerStore.loadFromLocalStorage();
 
   // 如果没有保存的数据，创建一个默认页面

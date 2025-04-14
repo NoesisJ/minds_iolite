@@ -377,7 +377,7 @@
             <option :value="20">20 行</option>
           </select>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">数据来源</label>
           <select
@@ -390,9 +390,12 @@
         </div>
 
         <!-- 数据库配置选项 -->
-        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
+        <div
+          v-if="currentComponent.props.dataSource === 'database'"
+          class="mb-4 border p-3 rounded"
+        >
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
-          
+
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">会话ID</label>
             <input
@@ -402,7 +405,7 @@
               placeholder="输入数据库会话ID"
             />
           </div>
-          
+
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">集合/表名</label>
             <input
@@ -412,9 +415,11 @@
               placeholder="MongoDB集合名或MySQL表名"
             />
           </div>
-          
+
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
+            <label class="block text-xs font-medium mb-1"
+              >过滤条件 (JSON)</label
+            >
             <textarea
               v-model="filterJson"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -423,9 +428,11 @@
               @blur="updateFilterCondition"
             ></textarea>
           </div>
-          
+
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
+            <label class="block text-xs font-medium mb-1"
+              >排序条件 (JSON)</label
+            >
             <textarea
               v-model="sortJson"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -434,7 +441,7 @@
               @blur="updateSortCondition"
             ></textarea>
           </div>
-          
+
           <button
             @click="testDatabaseConnection"
             class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
@@ -506,7 +513,9 @@
             <summary class="font-medium cursor-pointer">高级样式设置</summary>
             <div class="pt-2 space-y-2">
               <div>
-                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >外边距 (margin)</label
+                >
                 <input
                   v-model="currentComponent.styles.margin"
                   type="text"
@@ -515,7 +524,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >宽度 (width)</label
+                >
                 <input
                   v-model="currentComponent.styles.width"
                   type="text"
@@ -524,7 +535,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1">高度 (height)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >高度 (height)</label
+                >
                 <input
                   v-model="currentComponent.styles.height"
                   type="text"
@@ -539,7 +552,9 @@
 
       <!-- 财务表格组件的属性编辑器 -->
       <div
-        v-else-if="currentComponent && currentComponent.componentId === 'finance-table'"
+        v-else-if="
+          currentComponent && currentComponent.componentId === 'finance-table'
+        "
       >
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">表格标题</label>
@@ -572,7 +587,7 @@
             <option :value="20">20 行</option>
           </select>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">数据来源</label>
           <select
@@ -585,9 +600,12 @@
         </div>
 
         <!-- 数据库配置选项 -->
-        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
+        <div
+          v-if="currentComponent.props.dataSource === 'database'"
+          class="mb-4 border p-3 rounded"
+        >
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
-          
+
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">会话ID</label>
             <input
@@ -597,7 +615,7 @@
               placeholder="输入数据库会话ID"
             />
           </div>
-          
+
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">集合/表名</label>
             <input
@@ -607,9 +625,11 @@
               placeholder="MongoDB集合名或MySQL表名"
             />
           </div>
-          
+
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
+            <label class="block text-xs font-medium mb-1"
+              >过滤条件 (JSON)</label
+            >
             <textarea
               v-model="filterJson"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -618,9 +638,11 @@
               @blur="updateFilterCondition"
             ></textarea>
           </div>
-          
+
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
+            <label class="block text-xs font-medium mb-1"
+              >排序条件 (JSON)</label
+            >
             <textarea
               v-model="sortJson"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -629,7 +651,7 @@
               @blur="updateSortCondition"
             ></textarea>
           </div>
-          
+
           <button
             @click="testDatabaseConnection"
             class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
@@ -687,7 +709,9 @@
             <summary class="font-medium cursor-pointer">高级样式设置</summary>
             <div class="pt-2 space-y-2">
               <div>
-                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >外边距 (margin)</label
+                >
                 <input
                   v-model="currentComponent.styles.margin"
                   type="text"
@@ -696,7 +720,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >宽度 (width)</label
+                >
                 <input
                   v-model="currentComponent.styles.width"
                   type="text"
@@ -705,7 +731,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1">边框圆角 (borderRadius)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >边框圆角 (borderRadius)</label
+                >
                 <input
                   v-model="currentComponent.styles.borderRadius"
                   type="text"
@@ -714,7 +742,9 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1">阴影效果 (boxShadow)</label>
+                <label class="block text-xs font-medium mb-1"
+                  >阴影效果 (boxShadow)</label
+                >
                 <input
                   v-model="currentComponent.styles.boxShadow"
                   type="text"
@@ -763,8 +793,8 @@ const pageName = ref("");
 const layoutType = ref("");
 
 // 数据库配置相关
-const filterJson = ref('{}');
-const sortJson = ref('{}');
+const filterJson = ref("{}");
+const sortJson = ref("{}");
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -978,7 +1008,7 @@ const updateRowsPerPage = (event: Event) => {
   const value = parseInt(currentComponent.value.props.rowsPerPage);
   designerStore.updateComponentProps(currentComponent.value.id, {
     ...currentComponent.value.props,
-    rowsPerPage: value
+    rowsPerPage: value,
   });
 };
 
@@ -989,7 +1019,7 @@ const updateRows = (event: Event) => {
   const value = parseInt(currentComponent.value.props.rows);
   designerStore.updateComponentProps(currentComponent.value.id, {
     ...currentComponent.value.props,
-    rows: value
+    rows: value,
   });
 };
 
@@ -1003,10 +1033,10 @@ const updateFilterCondition = () => {
     }
     currentComponent.value.props.databaseConfig.filter = filterObj;
     designerStore.updateComponentProps(currentComponent.value.id, {
-      ...currentComponent.value.props
+      ...currentComponent.value.props,
     });
   } catch (e) {
-    console.error('过滤条件JSON格式错误:', e);
+    console.error("过滤条件JSON格式错误:", e);
   }
 };
 
@@ -1020,65 +1050,78 @@ const updateSortCondition = () => {
     }
     currentComponent.value.props.databaseConfig.sort = sortObj;
     designerStore.updateComponentProps(currentComponent.value.id, {
-      ...currentComponent.value.props
+      ...currentComponent.value.props,
     });
   } catch (e) {
-    console.error('排序条件JSON格式错误:', e);
+    console.error("排序条件JSON格式错误:", e);
   }
 };
 
 // 测试数据库连接
 const testDatabaseConnection = async () => {
-  if (!currentComponent.value || !currentComponent.value.id || !currentComponent.value.props.databaseConfig) return;
-  
+  if (
+    !currentComponent.value ||
+    !currentComponent.value.id ||
+    !currentComponent.value.props.databaseConfig
+  )
+    return;
+
   const sessionId = currentComponent.value.props.databaseConfig.sessionId;
   const collection = currentComponent.value.props.databaseConfig.collection;
-  
+
   if (!sessionId || !collection) {
-    alert('请输入会话ID和集合/表名');
+    alert("请输入会话ID和集合/表名");
     return;
   }
-  
+
   try {
     // 导入数据库服务
-    const { databaseService } = await import('@/services/databaseService');
-    
+    const { databaseService } = await import("@/services/databaseService");
+
     const result = await databaseService.getTableData({
       sessionId,
       collection,
-      limit: 1
+      limit: 1,
     });
-    
+
     if (result.length > 0) {
-      alert('连接成功！数据库中包含数据。');
+      alert("连接成功！数据库中包含数据。");
     } else {
-      alert('连接成功，但未找到数据。请检查集合/表名或过滤条件。');
+      alert("连接成功，但未找到数据。请检查集合/表名或过滤条件。");
     }
   } catch (e: any) {
-    alert(`连接失败: ${e.message || '未知错误'}`);
+    alert(`连接失败: ${e.message || "未知错误"}`);
   }
 };
 
 // 监听当前组件变化，更新JSON字段
-watch(() => currentComponent.value?.props?.databaseConfig?.filter, (newVal) => {
-  if (newVal && currentComponent.value) {
-    try {
-      filterJson.value = JSON.stringify(newVal, null, 2);
-    } catch (e) {
-      filterJson.value = '{}';
+watch(
+  () => currentComponent.value?.props?.databaseConfig?.filter,
+  (newVal) => {
+    if (newVal && currentComponent.value) {
+      try {
+        filterJson.value = JSON.stringify(newVal, null, 2);
+      } catch (e) {
+        filterJson.value = "{}";
+      }
     }
-  }
-}, { deep: true, immediate: true });
+  },
+  { deep: true, immediate: true }
+);
 
-watch(() => currentComponent.value?.props?.databaseConfig?.sort, (newVal) => {
-  if (newVal && currentComponent.value) {
-    try {
-      sortJson.value = JSON.stringify(newVal, null, 2);
-    } catch (e) {
-      sortJson.value = '{}';
+watch(
+  () => currentComponent.value?.props?.databaseConfig?.sort,
+  (newVal) => {
+    if (newVal && currentComponent.value) {
+      try {
+        sortJson.value = JSON.stringify(newVal, null, 2);
+      } catch (e) {
+        sortJson.value = "{}";
+      }
     }
-  }
-}, { deep: true, immediate: true });
+  },
+  { deep: true, immediate: true }
+);
 
 // 添加调试信息
 console.log("RightPanel 重新渲染");

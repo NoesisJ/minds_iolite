@@ -167,19 +167,32 @@ interface Props {
 const mergedOptions = computed<EChartsOption>(() => {
   return {
     ...(props.options || {}),
-    ...(props.chartData ? {
-      dataset: { source: props.chartData.data },
-      series: props.chartData.data[0].slice(1).map((_, i) => ({
-        type: props.chartData?.chartType,
-        ...(props.chartData?.chartType && DEFAULT_THEME_CONFIG.typeStyles[props.chartData.chartType]?.series || {}),
-        ...(Array.isArray(props.chartData?.custom?.series) ? props.chartData.custom.series[i] : {}),
-      })),
-      xAxis: props.chartData.chartType !== "pie" ? {
-        type: "category" as const,
-        data: props.chartData.data[0].slice(1),
-      } : undefined,
-      yAxis: props.chartData.chartType !== "pie" ? { type: "value" as const } : undefined,
-    } : {}),
+    ...(props.chartData
+      ? {
+          dataset: { source: props.chartData.data },
+          series: props.chartData.data[0].slice(1).map((_, i) => ({
+            type: props.chartData?.chartType,
+            ...((props.chartData?.chartType &&
+              DEFAULT_THEME_CONFIG.typeStyles[props.chartData.chartType]
+                ?.series) ||
+              {}),
+            ...(Array.isArray(props.chartData?.custom?.series)
+              ? props.chartData.custom.series[i]
+              : {}),
+          })),
+          xAxis:
+            props.chartData.chartType !== "pie"
+              ? {
+                  type: "category" as const,
+                  data: props.chartData.data[0].slice(1),
+                }
+              : undefined,
+          yAxis:
+            props.chartData.chartType !== "pie"
+              ? { type: "value" as const }
+              : undefined,
+        }
+      : {}),
   } as EChartsOption;
 });
 

@@ -4,12 +4,12 @@
       <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
       <p class="mt-2 text-gray-600 dark:text-gray-300">加载数据中...</p>
     </div>
-    
+
     <div v-else-if="loadError" class="table-error">
       <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
       <p class="mt-2 text-gray-600 dark:text-gray-300">{{ loadError }}</p>
     </div>
-    
+
     <div v-else-if="tableType && tableData.length > 0" class="table-container">
       <div v-if="showTitle" class="table-title mb-4">
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -231,7 +231,7 @@ const props = defineProps({
   // 新增数据源属性
   dataSource: {
     type: String,
-    default: "default" // 默认使用示例数据
+    default: "default", // 默认使用示例数据
   },
   // 数据库配置
   databaseConfig: {
@@ -241,9 +241,9 @@ const props = defineProps({
       collection: "",
       filter: {},
       sort: {},
-      fields: []
-    })
-  }
+      fields: [],
+    }),
+  },
 });
 
 const emit = defineEmits(["update:data"]);
@@ -276,17 +276,17 @@ async function loadDataIfNeeded() {
   if (props.dataSource === "default") {
     return;
   }
-  
+
   // 如果没有会话ID，也不加载
   if (!props.databaseConfig.sessionId) {
     loadError.value = "未配置数据库会话ID";
     return;
   }
-  
+
   try {
     isLoading.value = true;
     loadError.value = null;
-    
+
     // 从数据库服务获取数据
     const result = await databaseService.getTableData({
       sessionId: props.databaseConfig.sessionId,
@@ -295,36 +295,36 @@ async function loadDataIfNeeded() {
       fields: props.databaseConfig.fields,
       limit: parseInt(props.rows) * 5, // 获取多页数据以支持客户端分页
       filter: props.databaseConfig.filter,
-      sort: props.databaseConfig.sort
+      sort: props.databaseConfig.sort,
     });
-    
+
     // 更新本地数据
     localData.value = result;
-    
+
     // 成功提示
     if (result.length > 0) {
       toast.add({
-        severity: 'success',
-        summary: '数据加载成功',
+        severity: "success",
+        summary: "数据加载成功",
         detail: `已从数据库加载 ${result.length} 条记录`,
-        life: 3000
+        life: 3000,
       });
     } else {
       toast.add({
-        severity: 'info',
-        summary: '数据加载完成',
-        detail: '没有找到符合条件的数据',
-        life: 3000
+        severity: "info",
+        summary: "数据加载完成",
+        detail: "没有找到符合条件的数据",
+        life: 3000,
       });
     }
   } catch (error) {
-    console.error('加载数据失败:', error);
-    loadError.value = error.message || '加载数据时出错';
+    console.error("加载数据失败:", error);
+    loadError.value = error.message || "加载数据时出错";
     toast.add({
-      severity: 'error',
-      summary: '数据加载失败',
+      severity: "error",
+      summary: "数据加载失败",
       detail: loadError.value,
-      life: 5000
+      life: 5000,
     });
   } finally {
     isLoading.value = false;
@@ -371,24 +371,24 @@ const saveItem = () => {
     // 创建新的数据数组
     const updatedData = [...props.data];
     updatedData[currentIndex.value] = { ...currentItem.value };
-    
+
     // 更新组件属性
     if (window.__DESIGNER_MODE__) {
       // 在设计器环境中
       const designerStore = window.$designerStore;
       if (designerStore && designerStore.selectedComponentId) {
         designerStore.updateComponentProps(designerStore.selectedComponentId, {
-          data: updatedData
+          data: updatedData,
         });
       }
     } else {
       // 常规环境中
       emit("update:data", updatedData);
     }
-    
+
     // 显示成功消息
     showToast("修改成功");
-    
+
     // 关闭对话框
     editDialog.value = false;
   }
@@ -401,29 +401,29 @@ const deleteConfirmed = () => {
     const updatedData = props.data.filter(
       (item) => item.id !== currentItem.value.id
     );
-    
+
     // 更新组件属性
     if (window.__DESIGNER_MODE__) {
       // 在设计器环境中
       const designerStore = window.$designerStore;
       if (designerStore && designerStore.selectedComponentId) {
         designerStore.updateComponentProps(designerStore.selectedComponentId, {
-          data: updatedData
+          data: updatedData,
         });
       }
     } else {
       // 常规环境中
       emit("update:data", updatedData);
     }
-    
+
     // 如果删除的是选中项，也从选中数据中移除
     selectedItems.value = selectedItems.value.filter(
       (item) => item.id !== currentItem.value.id
     );
-    
+
     // 显示成功消息
     showToast("删除成功");
-    
+
     // 关闭对话框
     deleteDialog.value = false;
   }
@@ -497,7 +497,8 @@ const getPrimaryField = (item) => {
   border-color: #36394a;
 }
 
-.table-loading, .table-error {
+.table-loading,
+.table-error {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -508,7 +509,8 @@ const getPrimaryField = (item) => {
   padding: 20px;
 }
 
-:global(.dark) .table-loading, :global(.dark) .table-error {
+:global(.dark) .table-loading,
+:global(.dark) .table-error {
   background-color: #1a1d2d;
 }
 
