@@ -454,7 +454,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { File, Loader } from "lucide-vue-next";
 import { open } from "@tauri-apps/plugin-dialog";
 import axios from "axios";
@@ -467,7 +467,6 @@ import {
   PreviewData,
 } from "@/types/import";
 import Toast from "@/components/ui/Toast.vue";
-import { setActiveSession } from "@/services/sessionStore";
 
 // 状态管理
 const selectedDbType = ref<string | null>(null);
@@ -1025,19 +1024,7 @@ const createPersistentSession = async (type: string, connectionInfo: any) => {
 
       // 保存会话ID
       localStorage.setItem("dbSessionId", sessionId.value);
-<<<<<<< Updated upstream
 
-=======
-      
-      // 保存会话信息到sessionStore，用于表格组件自动获取
-      setActiveSession({
-        sessionId: response.data.sessionId,
-        type: requestData.type,
-        database: requestData.database,
-        collection: selectedDbType.value === 'csv' ? mongoDbOptions.value.collName || getFileName(selectedFilePath.value).split('.')[0] : undefined
-      });
-      
->>>>>>> Stashed changes
       // 开始定期刷新会话
       startSessionRefresh();
 

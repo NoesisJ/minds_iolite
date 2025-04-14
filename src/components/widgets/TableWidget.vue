@@ -1,28 +1,27 @@
 <template>
   <div class="table-widget" :style="styles">
     <div v-if="isLoading" class="table-loading">
-      <i class="pi pi-spin pi-spinner text-4xl text-blue-400"></i>
-      <p class="mt-2 text-gray-300">加载数据中...</p>
+      <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">加载数据中...</p>
     </div>
 
     <div v-else-if="loadError" class="table-error">
       <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
-      <p class="mt-2 text-gray-300">{{ loadError }}</p>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">{{ loadError }}</p>
     </div>
 
     <div v-else-if="tableType && tableData.length > 0" class="table-container">
       <div v-if="showTitle" class="table-title mb-4">
-        <h3 class="text-xl font-semibold text-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
           {{ title }}
         </h3>
         <p
           v-if="subtitle"
-          class="text-sm text-gray-400 mt-1"
+          class="text-sm text-gray-500 dark:text-gray-400 mt-1"
         >
           {{ subtitle }}
         </p>
       </div>
-
 
       <Table
         :data="tableData"
@@ -37,19 +36,19 @@
       <!-- 选中数据展示 -->
       <div
         v-if="showSelection && selectedItems.length > 0"
-        class="mt-4 p-3 bg-gray-800 rounded-lg"
+        class="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
       >
-        <h4 class="text-md font-medium text-gray-300 mb-2">
+        <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-2">
           已选中数据
         </h4>
-        <p class="text-gray-300">
+        <p class="dark:text-gray-300">
           已选中 {{ selectedItems.length }} 条记录
         </p>
         <div class="flex flex-wrap gap-2 mt-2">
           <span
             v-for="item in selectedItems"
             :key="item.id"
-            class="px-3 py-1 bg-blue-900 text-blue-100 rounded-full text-xs"
+            class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded-full text-xs"
           >
             {{ getPrimaryField(item) }}
           </span>
@@ -57,8 +56,8 @@
       </div>
     </div>
     <div v-else class="table-placeholder">
-      <i class="pi pi-table text-4xl text-gray-500"></i>
-      <p class="text-gray-400 mt-2">
+      <i class="pi pi-table text-4xl text-gray-400"></i>
+      <p class="text-gray-500 mt-2">
         {{ tableData.length === 0 ? "暂无数据" : "表格类型未指定" }}
       </p>
     </div>
@@ -156,7 +155,6 @@ import Dropdown from "primevue/dropdown";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 import { databaseService } from "@/services/databaseService";
-import { getActiveSession } from "@/services/sessionStore";
 
 const toast = useToast();
 const props = defineProps({
@@ -255,186 +253,6 @@ const localData = ref([]);
 const isLoading = ref(false);
 const loadError = ref(null);
 
-// 模拟数据 - 当选择数据库模式时使用
-const mockDatabaseData = [
-  {
-    id: 1001,
-    account: "瑞锋紧固件厂",
-    type: "六角螺栓",
-    amount: 356.50,
-    date: "2024-05-01",
-    status: "已结算"
-  },
-  {
-    id: 1002,
-    account: "恒强五金制品有限公司",
-    type: "不锈钢螺母",
-    amount: 298.00,
-    date: "2024-05-02",
-    status: "已结算"
-  },
-  {
-    id: 1003,
-    account: "德美机械配件厂",
-    type: "内六角螺丝",
-    amount: 425.00,
-    date: "2024-05-05",
-    status: "待结算"
-  },
-  {
-    id: 1004,
-    account: "汇力紧固系统有限公司",
-    type: "膨胀螺栓",
-    amount: 185.00,
-    date: "2024-05-07",
-    status: "已结算"
-  },
-  {
-    id: 1005,
-    account: "宇航标准件有限公司",
-    type: "自攻螺丝",
-    amount: 153.80,
-    date: "2024-05-08",
-    status: "已结算"
-  },
-  {
-    id: 1006,
-    account: "金石机械零部件厂",
-    type: "弹簧垫圈",
-    amount: 72.50,
-    date: "2024-05-10",
-    status: "待结算"
-  },
-  {
-    id: 1007,
-    account: "鑫辉标准件有限公司",
-    type: "铆钉",
-    amount: 120.00,
-    date: "2024-05-12",
-    status: "已结算"
-  },
-  {
-    id: 1008,
-    account: "华迈机械配件有限公司",
-    type: "梅花螺丝",
-    amount: 350.00,
-    date: "2024-05-13",
-    status: "待结算"
-  },
-  {
-    id: 1009,
-    account: "东升紧固件厂",
-    type: "开口销",
-    amount: 80.00,
-    date: "2024-05-15",
-    status: "已结算"
-  },
-  {
-    id: 1010,
-    account: "奥力五金制品厂",
-    type: "尼龙螺母",
-    amount: 270.50,
-    date: "2024-05-16",
-    status: "已结算"
-  },
-  {
-    id: 1011,
-    account: "豪特标准件有限公司",
-    type: "圆柱销",
-    amount: 130.00,
-    date: "2024-05-18",
-    status: "待结算"
-  },
-  {
-    id: 1012,
-    account: "兴达紧固件配件厂",
-    type: "木螺丝",
-    amount: 160.80,
-    date: "2024-05-19",
-    status: "已结算"
-  },
-  {
-    id: 1013,
-    account: "精锐五金制品公司",
-    type: "T型螺栓",
-    amount: 420.00,
-    date: "2024-05-20",
-    status: "待结算"
-  },
-  {
-    id: 1014,
-    account: "航宇机械五金厂",
-    type: "蝶形螺母",
-    amount: 95.00,
-    date: "2024-05-21",
-    status: "已结算"
-  },
-  {
-    id: 1015,
-    account: "联胜工业紧固件公司",
-    type: "十字沉头螺丝",
-    amount: 680.00,
-    date: "2024-05-22",
-    status: "待结算"
-  },
-  {
-    id: 1016,
-    account: "正大标准件有限公司",
-    type: "平垫圈",
-    amount: 65.50,
-    date: "2024-05-23",
-    status: "已结算"
-  },
-  {
-    id: 1017,
-    account: "宏德机械配件厂",
-    type: "U型螺栓",
-    amount: 578.00,
-    date: "2024-05-25",
-    status: "已结算"
-  },
-  {
-    id: 1018,
-    account: "强盛五金制品厂",
-    type: "扁头螺钉",
-    amount: 315.00,
-    date: "2024-05-26",
-    status: "待结算"
-  },
-  {
-    id: 1019,
-    account: "恒信紧固件有限公司",
-    type: "锁紧螺母",
-    amount: 280.50,
-    date: "2024-05-28",
-    status: "已结算"
-  },
-  {
-    id: 1020,
-    account: "鑫隆标准件厂",
-    type: "半圆头螺栓",
-    amount: 730.00,
-    date: "2024-05-29",
-    status: "待结算"
-  },
-  {
-    id: 1021,
-    account: "盛达机械零部件厂",
-    type: "双头螺栓",
-    amount: 290.80,
-    date: "2024-05-30",
-    status: "已结算"
-  },
-  {
-    id: 1022,
-    account: "永固紧固系统有限公司",
-    type: "止动垫圈",
-    amount: 165.00,
-    date: "2024-05-31",
-    status: "待结算"
-  }
-];
-
 // 组合数据源
 const tableData = computed(() => {
   // 如果使用默认数据，直接返回props.data
@@ -458,7 +276,6 @@ async function loadDataIfNeeded() {
   if (props.dataSource === "default") {
     return;
   }
-<<<<<<< Updated upstream
 
   // 如果没有会话ID，也不加载
   if (!props.databaseConfig.sessionId) {
@@ -484,65 +301,13 @@ async function loadDataIfNeeded() {
     // 更新本地数据
     localData.value = result;
 
-=======
-  
-  // 显示加载状态
-  isLoading.value = true;
-  loadError.value = null;
-  
-  try {
-    // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // 使用模拟数据而不是真正调用数据库
-    console.log("使用模拟数据代替真实数据库连接");
-    
-    // 可以在这里根据过滤条件筛选模拟数据
-    let filteredData = [...mockDatabaseData];
-    
-    // 如果有过滤条件，模拟过滤
-    if (props.databaseConfig.filter && Object.keys(props.databaseConfig.filter).length > 0) {
-      const filters = props.databaseConfig.filter;
-      filteredData = mockDatabaseData.filter(item => {
-        for (const key in filters) {
-          if (item[key] !== filters[key]) {
-            return false;
-          }
-        }
-        return true;
-      });
-    }
-    
-    // 如果有排序条件，模拟排序
-    if (props.databaseConfig.sort && Object.keys(props.databaseConfig.sort).length > 0) {
-      const sortField = Object.keys(props.databaseConfig.sort)[0];
-      const sortOrder = props.databaseConfig.sort[sortField]; // 1为升序，-1为降序
-      
-      filteredData.sort((a, b) => {
-        if (a[sortField] < b[sortField]) return sortOrder === 1 ? -1 : 1;
-        if (a[sortField] > b[sortField]) return sortOrder === 1 ? 1 : -1;
-        return 0;
-      });
-    }
-    
-    // 更新本地数据
-    localData.value = filteredData;
-    
->>>>>>> Stashed changes
     // 成功提示
-    if (filteredData.length > 0) {
+    if (result.length > 0) {
       toast.add({
-<<<<<<< Updated upstream
         severity: "success",
         summary: "数据加载成功",
         detail: `已从数据库加载 ${result.length} 条记录`,
         life: 3000,
-=======
-        severity: 'success',
-        summary: '数据加载成功',
-        detail: `已从数据库加载 ${filteredData.length} 条记录`,
-        life: 3000
->>>>>>> Stashed changes
       });
     } else {
       toast.add({
@@ -703,9 +468,13 @@ const getPrimaryField = (item) => {
 <style scoped>
 .table-widget {
   width: 100%;
-  background-color: #242736;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .table-widget {
+  background-color: #242736;
 }
 
 .table-container {
@@ -718,9 +487,14 @@ const getPrimaryField = (item) => {
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  background-color: #1a1d2d;
-  border: 1px dashed #36394a;
+  background-color: #f5f5f5;
+  border: 1px dashed #ccc;
   border-radius: 4px;
+}
+
+:global(.dark) .table-placeholder {
+  background-color: #1a1d2d;
+  border-color: #36394a;
 }
 
 .table-loading,
@@ -730,23 +504,14 @@ const getPrimaryField = (item) => {
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  background-color: #1a1d2d;
+  background-color: #f8fafc;
   border-radius: 4px;
   padding: 20px;
 }
 
-<<<<<<< Updated upstream
 :global(.dark) .table-loading,
 :global(.dark) .table-error {
   background-color: #1a1d2d;
-=======
-.table-loading i {
-  color: #4a90e2;
-}
-
-.table-placeholder i {
-  color: #6b7280;
->>>>>>> Stashed changes
 }
 
 /* 表单样式 */
