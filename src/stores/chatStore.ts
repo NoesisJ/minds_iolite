@@ -68,8 +68,6 @@ export const useChatStore = defineStore("chats", () => {
   async function deleteChat(chatId: string) {
     const index = chatHistory.value.findIndex((chat) => chat.id === chatId);
     if (index !== -1) {
-      chatHistory.value.splice(index, 1);
-
       console.log("删除聊天会话:", chatId);
 
       // 发送删除请求到后端
@@ -87,6 +85,8 @@ export const useChatStore = defineStore("chats", () => {
         console.error("删除聊天会话失败:", response.statusText);
         throw new Error("删除聊天会话失败");
       }
+
+      chatHistory.value.splice(index, 1);
 
       // 如果删除的是当前选中的聊天，则选择第一个聊天或创建新聊天
       if (selectedChat.value?.id === chatId) {
