@@ -118,7 +118,7 @@ const extractBracketData = (content: string) => {
     const jsonMatch = content.match(/\[([\s\S]*)\]/);
     if (jsonMatch) {
       // 删掉头尾的中括号
-      const jsonContent = jsonMatch[1].split("[")[1].split("]")[0];
+      const jsonContent = jsonMatch[1];
       // 处理单引号和双引号的转换
       const formattedJsonContent = jsonContent.replace(/'/g, '"');
       // 尝试解析为 JSON
