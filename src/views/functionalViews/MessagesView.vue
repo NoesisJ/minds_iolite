@@ -75,9 +75,7 @@
                     @click="toggleLoved(message)"
                   ></Button>
                 </div>
-                <span class="text-surface-500 dark:text-surface-400">{{
-                  formatTimeDiff(message.time)
-                }}</span>
+                <span class="text-surface-400">{{ formatTimeDiff(message.time) }}</span>
               </div>
             </template>
             <template #icons>
@@ -309,14 +307,14 @@ watch(
 
 /* 设置未读消息的背景颜色 */
 .unread-message {
-  background-color: #231340;
+  background-color: #1e1132;
   border-left: 4px solid #ff5722;
 }
 
 /* 设置已读消息的背景颜色 */
 .read-message {
-  background-color: #18181b;
-  border-left: 4px solid #f5f5f5;
+  background-color: #141417;
+  border-left: 4px solid #374151;
   transition:
     background-color 1s ease,
     border-left 1s ease; /* 添加背景颜色变化的过渡 */
@@ -338,5 +336,15 @@ watch(
 .scroll-gradient.bottom {
   bottom: 0;
   background: linear-gradient(to top, var(--material-bg-light), transparent);
+}
+
+:global(.dark) .unread-message {
+  background-color: #1e1132;
+  border-left: 4px solid #ff5722;
+}
+
+:global(.dark) .read-message {
+  background-color: #141417;
+  border-left: 4px solid #374151;
 }
 </style>

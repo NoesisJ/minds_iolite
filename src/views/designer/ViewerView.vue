@@ -2,10 +2,10 @@
   <div class="viewer-view">
     <!-- 顶部导航 -->
     <div
-      class="viewer-header flex justify-between items-center p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+      class="viewer-header flex justify-between items-center p-3 bg-gray-800 border-b border-gray-700"
     >
       <div class="flex items-center space-x-4">
-        <h1 class="text-xl font-semibold text-gray-800 dark:text-white">
+        <h1 class="text-xl font-semibold text-white">
           {{ currentPage?.title || "页面阅览" }}
         </h1>
 
@@ -16,22 +16,22 @@
             @click="togglePageMenu"
             class="flex items-center min-w-[120px]"
           >
-            <span class="text-gray-700 dark:text-gray-200">切换页面</span>
+            <span class="text-gray-200">切换页面</span>
             <i
-              class="pi pi-chevron-down ml-1.5 text-gray-500 dark:text-gray-400"
+              class="pi pi-chevron-down ml-1.5 text-gray-400"
             ></i>
           </base-button>
 
           <div
             v-show="showPageMenu"
-            class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-10 w-48"
+            class="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-700 rounded shadow-lg z-10 w-48"
           >
             <div class="py-1 max-h-[250px] overflow-y-auto">
               <div
                 v-for="page in pages"
                 :key="page.id"
                 @click="handlePageSelection(page.id)"
-                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-700 dark:text-gray-200"
+                class="px-4 py-2 hover:bg-gray-700 cursor-pointer text-gray-200"
               >
                 {{ page.title }}
               </div>
@@ -64,11 +64,11 @@
 
     <!-- 页面内容 -->
     <div
-      class="viewer-content bg-gray-50 dark:bg-gray-900 min-h-[calc(100vh-56px)] p-4"
+      class="viewer-content bg-gray-900 min-h-[calc(100vh-56px)] p-4"
     >
       <div
         v-if="currentPage"
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 max-w-6xl mx-auto"
+        class="bg-gray-800 rounded-lg shadow-md p-4 max-w-6xl mx-auto"
       >
         <div
           v-for="(region, index) in currentPage.regions"
@@ -100,7 +100,7 @@
           </div>
           <div
             v-else
-            class="empty-region p-4 text-center text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded"
+            class="empty-region p-4 text-center text-gray-400 border border-dashed border-gray-700 rounded"
           >
             {{ region.name }} - 空区域
           </div>
@@ -108,7 +108,7 @@
       </div>
       <div
         v-else
-        class="flex flex-col items-center justify-center h-[60vh] text-gray-500 dark:text-gray-400"
+        class="flex flex-col items-center justify-center h-[60vh] text-gray-400"
       >
         <i class="pi pi-exclamation-circle text-5xl mb-4"></i>
         <div class="text-xl mb-2">未找到页面</div>

@@ -33,7 +33,7 @@
     </div>
     <div v-else class="error-message">
       <div
-        class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400"
+        class="flex flex-col items-center justify-center p-8 text-gray-400"
       >
         <i class="pi pi-exclamation-circle text-5xl mb-4"></i>
         <div class="text-xl mb-2">页面不存在或已被删除</div>
@@ -111,15 +111,17 @@ onMounted(() => {
 <style scoped>
 .published-page-container {
   min-height: calc(100vh - 56px);
+  background-color: #111827;
 }
 
 .page-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
+  color: #e5e7eb;
 }
 
 .region-wrapper {
@@ -133,15 +135,6 @@ onMounted(() => {
 .error-message {
   text-align: center;
   padding: 40px 0;
-}
-
-/* 深色模式支持 */
-:global(.dark) .published-page-container {
-  background-color: #111827;
-}
-
-:global(.dark) .page-content {
-  background-color: #1f2937;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  color: #9ca3af;
 }
 </style>

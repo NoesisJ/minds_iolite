@@ -2,12 +2,12 @@
   <div v-if="show" class="manage-dialog-overlay" @click="onClose">
     <div class="manage-dialog-container" @click.stop>
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-gray-800 dark:text-white">
+        <h2 class="text-xl font-medium text-white">
           管理已发布页面
         </h2>
         <button
           @click="onClose"
-          class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          class="close-btn text-gray-400 hover:text-gray-200"
         >
           <i class="pi pi-times"></i>
         </button>
@@ -16,8 +16,8 @@
       <div class="dialog-content">
         <div v-if="publishedPages.length === 0" class="empty-state">
           <i class="pi pi-info-circle text-3xl mb-3 text-gray-400"></i>
-          <div class="text-gray-500 dark:text-gray-400">暂无已发布页面</div>
-          <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+          <div class="text-gray-400">暂无已发布页面</div>
+          <div class="text-sm text-gray-400 mt-2">
             使用"发布到侧边栏"功能将设计器页面发布到侧边栏
           </div>
         </div>
@@ -62,7 +62,7 @@
 
       <div class="dialog-footer">
         <button
-          class="btn-close px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+          class="btn-close px-4 py-2 rounded bg-gray-700 text-gray-200 hover:bg-gray-600"
           @click="onClose"
         >
           关闭
@@ -78,19 +78,19 @@
     >
       <div class="confirm-dialog-container">
         <div class="confirm-dialog-header">
-          <h3 class="text-lg font-medium text-gray-800 dark:text-white">
+          <h3 class="text-lg font-medium text-white">
             确认取消发布
           </h3>
         </div>
         <div class="confirm-dialog-content">
-          <p class="text-gray-600 dark:text-gray-300">
+          <p class="text-gray-300">
             确定要取消发布页面 "{{ pageToDelete?.title }}"
             吗？此操作将从侧边栏中移除该页面。
           </p>
         </div>
         <div class="confirm-dialog-footer">
           <button
-            class="btn-cancel px-3 py-1 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="btn-cancel px-3 py-1 rounded text-gray-300 hover:bg-gray-700"
             @click="showConfirmDelete = false"
           >
             取消

@@ -11,7 +11,7 @@
           :class="
             activeTab === 'components'
               ? 'text-blue-500 border-b-2 border-blue-500'
-              : 'text-gray-600 dark:text-gray-300'
+              : 'text-gray-300'
           "
         >
           组件
@@ -22,7 +22,7 @@
           :class="
             activeTab === 'pages'
               ? 'text-blue-500 border-b-2 border-blue-500'
-              : 'text-gray-600 dark:text-gray-300'
+              : 'text-gray-300'
           "
         >
           页面
@@ -34,7 +34,7 @@
     <div v-show="activeTab === 'components'" class="p-4">
       <!-- 组件分类选择 -->
       <div class="mb-4">
-        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        <div class="text-sm font-medium mb-2 text-gray-300">
           组件分类
         </div>
         <div class="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@
             :class="
               activeCategory === category.id
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
             "
           >
             {{ category.name }}
@@ -56,24 +56,24 @@
 
       <!-- 组件列表 -->
       <div>
-        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        <div class="text-sm font-medium mb-2 text-gray-300">
           可用组件
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div
             v-for="component in filteredComponents"
             :key="component.id"
-            class="component-item p-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:border-blue-400 dark:hover:border-blue-400 transition-colors"
+            class="component-item p-2 bg-gray-700 rounded border border-gray-600 cursor-move hover:border-blue-400 transition-colors"
             draggable="true"
             @dragstart="onDragStart($event, component)"
           >
             <div class="flex items-center">
               <div
-                class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500 mr-2"
+                class="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-blue-500 mr-2"
               >
                 <i class="pi" :class="component.icon"></i>
               </div>
-              <div class="text-sm font-medium text-gray-800 dark:text-gray-200">
+              <div class="text-sm font-medium text-gray-200">
                 {{ component.name }}
               </div>
             </div>
@@ -85,12 +85,12 @@
     <!-- 页面标签内容 -->
     <div v-show="activeTab === 'pages'" class="p-4">
       <div class="flex justify-between items-center mb-3">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div class="text-sm font-medium text-gray-300">
           页面管理
         </div>
         <button
           @click="createNewPage"
-          class="p-1 rounded text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          class="p-1 rounded text-blue-500 hover:bg-blue-900/20"
         >
           <i class="pi pi-plus text-sm"></i>
         </button>
@@ -104,8 +104,8 @@
           class="page-item p-2 rounded border cursor-pointer flex items-center justify-between"
           :class="
             currentPageId === page.id
-              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 dark:border-blue-500'
-              : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-400'
+              ? 'bg-blue-900/20 border-blue-500'
+              : 'bg-gray-700 border-gray-600 hover:border-blue-400'
           "
         >
           <div class="flex items-center flex-grow overflow-hidden">
@@ -123,13 +123,13 @@
                   if (el) inputElement = el as HTMLInputElement;
                 }
               "
-              class="w-full bg-white dark:bg-gray-700 border border-blue-400 dark:border-blue-500 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              class="w-full bg-gray-700 border border-blue-500 px-1 py-0.5 rounded text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
 
             <!-- 普通显示模式 -->
             <span
               v-else
-              class="text-gray-800 dark:text-gray-200 truncate"
+              class="text-gray-200 truncate"
               @dblclick.stop="startEditingPage(page)"
             >
               {{ page.title || "未命名页面" }}
@@ -138,13 +138,13 @@
 
           <div class="flex space-x-1 flex-shrink-0 ml-2">
             <button
-              class="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
+              class="p-1 text-gray-400 hover:text-blue-400"
               @click.stop="startEditingPage(page)"
             >
               <i class="pi pi-pencil text-xs"></i>
             </button>
             <button
-              class="p-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+              class="p-1 text-gray-400 hover:text-red-400"
               @click.stop="deletePage(page.id)"
             >
               <i class="pi pi-trash text-xs"></i>
@@ -154,7 +154,7 @@
 
         <div
           v-if="designerStore.pages.length === 0"
-          class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm italic"
+          class="text-center py-4 text-gray-400 text-sm italic"
         >
           暂无页面，请点击上方"+"创建
         </div>

@@ -38,7 +38,7 @@
             :min="minDate"
             :max="maxDate"
           />
-          <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <div class="mt-2 text-sm text-gray-400">
             只能选择前后5天以内的日期
           </div>
         </div>

@@ -7,12 +7,12 @@
     @input="$emit('update:modelValue', $event.target.value)"
     :class="[
       'w-full transition-colors outline-none',
-      'bg-white dark:bg-gray-700 border dark:border-gray-600',
-      'text-gray-900 dark:text-gray-100',
+      'bg-gray-700 border-gray-600',
+      'text-gray-100',
       getShapeClasses(),
       getSizeClasses(),
       getStatusClasses(),
-      disabled ? 'opacity-60 cursor-not-allowed' : '',
+      disabled ? 'opacity-60 cursor-not-allowed bg-gray-800' : '',
     ]"
   ></textarea>
 </template>
@@ -82,17 +82,17 @@ function getSizeClasses() {
 function getStatusClasses() {
   switch (props.status) {
     case "info":
-      return "border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+      return "border-blue-400 focus:border-blue-400 focus:ring-1 focus:ring-blue-400";
     case "success":
-      return "border-green-500 focus:border-green-500 focus:ring-1 focus:ring-green-500";
+      return "border-green-400 focus:border-green-400 focus:ring-1 focus:ring-green-400";
     case "warning":
-      return "border-yellow-500 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500";
+      return "border-yellow-400 focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400";
     case "danger":
-      return "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500";
+      return "border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400";
     case "primary":
-      return "border-purple-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500";
+      return "border-purple-400 focus:border-purple-400 focus:ring-1 focus:ring-purple-400";
     default:
-      return "border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400";
+      return "border-gray-600 focus:border-blue-400 focus:ring-1 focus:ring-blue-400";
   }
 }
 </script>

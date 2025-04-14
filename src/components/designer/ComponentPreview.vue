@@ -17,7 +17,7 @@
     <!-- 图片组件 -->
     <template v-else-if="componentType === 'image'">
       <div
-        class="image-preview flex items-center justify-center bg-gray-100 dark:bg-gray-800 min-h-[100px]"
+        class="image-preview flex items-center justify-center bg-gray-800 min-h-[100px]"
       >
         <img
           v-if="componentProps.src"
@@ -74,9 +74,9 @@
     <!-- 表格组件 -->
     <template v-else-if="componentType === 'table'">
       <div
-        class="table-preview border border-gray-200 dark:border-gray-700 rounded overflow-hidden"
+        class="table-preview border border-gray-700 rounded overflow-hidden"
       >
-        <div class="table-header bg-gray-100 dark:bg-gray-800 p-2 text-sm">
+        <div class="table-header bg-gray-800 p-2 text-sm">
           <div
             class="grid"
             :style="{
@@ -93,7 +93,7 @@
           </div>
         </div>
         <div class="table-body p-2 text-sm">
-          <div class="text-gray-500 dark:text-gray-400 text-center py-2">
+          <div class="text-gray-400 text-center py-2">
             表格数据将在运行时显示
           </div>
         </div>
@@ -116,13 +116,13 @@
         </div>
         <div
           v-else
-          class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
+          class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
           :style="{ height: componentProps.height || '300px' }"
         >
           <div class="text-3xl mb-2">
             <i :class="getChartIcon(componentProps.chartType)"></i>
           </div>
-          <div class="text-gray-500 dark:text-gray-400 text-center">
+          <div class="text-gray-400 text-center">
             <div class="font-medium">
               {{ getChartName(componentProps.chartType) }}
             </div>
