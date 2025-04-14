@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[var(--material-item-bg)] overflow-auto p-3 text-gray-800 dark:text-gray-200 border-l border-[var(--material-item-border)]"
+    class="bg-[var(--material-item-bg)] overflow-auto p-3 text-gray-200 border-l border-[var(--material-item-border)]"
   >
     <!-- 调试信息 - 临时启用以查看问题 -->
     <!-- <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded border">
@@ -12,7 +12,7 @@
     </div> -->
 
     <!-- 添加调试信息 -->
-    <!-- <div class="mb-3 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+    <!-- <div class="mb-3 p-2 bg-gray-700 text-xs rounded">
       <div>选中组件ID: {{ selectedComponentId || "无" }}</div>
       <div>选中区域ID: {{ selectedRegionId || "无" }}</div>
       <div>当前页面ID: {{ currentPageId || "无" }}</div>
@@ -24,7 +24,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >页面标题</label
         >
         <base-input
@@ -37,7 +37,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >页面名称</label
         >
         <base-input
@@ -50,7 +50,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >布局类型</label
         >
         <base-select
@@ -64,10 +64,10 @@
 
       <!-- 布局预览 -->
       <div v-if="currentLayout" class="mt-4">
-        <div class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+        <div class="text-sm font-medium mb-2 text-gray-300">
           布局预览
         </div>
-        <div class="border rounded p-3 bg-gray-50 dark:bg-gray-800">
+        <div class="border rounded p-3 bg-gray-800">
           <div class="text-sm mb-2 text-center text-blue-500">
             {{ currentLayout.name }}
           </div>
@@ -75,7 +75,7 @@
             <div
               v-for="region in currentLayout.regions"
               :key="region.id"
-              class="bg-white dark:bg-gray-700 border border-dashed border-gray-300 dark:border-gray-600 p-2 text-center text-xs text-gray-600 dark:text-gray-400"
+              class="bg-gray-700 border border-dashed border-gray-600 p-2 text-center text-xs text-gray-400"
             >
               {{ region.name }}
             </div>
@@ -90,7 +90,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >区域名称</label
         >
         <base-input v-model="regionName" disabled class="w-full" />
@@ -98,7 +98,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >组件数量</label
         >
         <base-input v-model="componentCount" disabled class="w-full" />
@@ -107,7 +107,7 @@
       <!-- 布局设置 -->
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >布局方向</label
         >
         <base-select
@@ -123,7 +123,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >组件间距</label
         >
         <base-input
@@ -137,7 +137,7 @@
 
       <div class="form-group mb-3">
         <label
-          class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+          class="block text-sm font-medium mb-1 text-gray-300"
           >内边距</label
         >
         <base-input
@@ -152,10 +152,10 @@
 
     <!-- 组件属性 -->
     <div v-else-if="selectedComponentId && currentComponent">
-      <h3 class="font-medium text-lg mb-3 text-gray-300">组件属性</h3>
+      <h3 class="font-medium text-lg mb-3">组件属性</h3>
 
-      <!-- 添加组件类型调试信息 -->
-      <!-- <div class="mb-3 p-2 bg-yellow-100 text-xs rounded text-black">
+      <!-- 添加组件类型调试信息
+      <div class="mb-3 p-2 bg-yellow-100 text-xs rounded text-black">
         <div>组件类型: {{ currentComponent.componentId }}</div>
         <div>组件ID: {{ currentComponent.id }}</div>
       </div> -->
@@ -166,7 +166,7 @@
           <label class="block text-sm font-medium mb-1">文本内容</label>
           <textarea
             v-model="currentComponent.props.content"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
             rows="3"
           ></textarea>
         </div>
@@ -176,7 +176,7 @@
           <input
             v-model="currentComponent.styles.fontSize"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -185,7 +185,7 @@
           <input
             v-model="currentComponent.styles.color"
             type="color"
-            class="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-1 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -193,7 +193,7 @@
           <label class="block text-sm font-medium mb-1">对齐方式</label>
           <select
             v-model="currentComponent.styles.textAlign"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="left">左对齐</option>
             <option value="center">居中</option>
@@ -220,7 +220,7 @@
           <input
             v-model="currentComponent.props.label"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -228,7 +228,7 @@
           <label class="block text-sm font-medium mb-1">按钮类型</label>
           <select
             v-model="currentComponent.props.status"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="primary">主要按钮 (Primary)</option>
             <option value="info">信息按钮 (Info)</option>
@@ -243,7 +243,7 @@
           <label class="block text-sm font-medium mb-1">按钮大小</label>
           <select
             v-model="currentComponent.props.size"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="small">小 (Small)</option>
             <option value="medium">中 (Medium)</option>
@@ -255,7 +255,7 @@
           <label class="block text-sm font-medium mb-1">按钮形状</label>
           <select
             v-model="currentComponent.props.shape"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="rectangle">矩形 (Rectangle)</option>
             <option value="semi-round">半圆角 (Semi-round)</option>
@@ -269,7 +269,7 @@
             v-model="currentComponent.props.icon"
             type="text"
             placeholder="例如: pi pi-check"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
           <p class="text-xs text-gray-500 mt-1">
             使用PrimeIcons图标, 例如: pi pi-check
@@ -332,7 +332,7 @@
                   v-model="currentComponent.styles.margin"
                   type="text"
                   placeholder="例如: 8px 12px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
@@ -343,7 +343,7 @@
                   v-model="currentComponent.styles.width"
                   type="text"
                   placeholder="例如: 100% 或 120px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
             </div>
@@ -360,7 +360,7 @@
           <input
             v-model="currentComponent.props.title"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -369,7 +369,7 @@
           <select
             v-model="currentComponent.props.rowsPerPage"
             @change="updateRowsPerPage"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option :value="5">5 行</option>
             <option :value="10">10 行</option>
@@ -377,12 +377,12 @@
             <option :value="20">20 行</option>
           </select>
         </div>
-
+        
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">数据来源</label>
           <select
             v-model="currentComponent.props.dataSource"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="default">默认示例数据</option>
             <option value="database">从数据库读取</option>
@@ -390,12 +390,15 @@
         </div>
 
         <!-- 数据库配置选项 -->
-        <div
-          v-if="currentComponent.props.dataSource === 'database'"
-          class="mb-4 border p-3 rounded"
-        >
+        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
-
+          
+          <!-- 状态指示器 -->
+          <div class="mb-3 p-2 bg-green-100 dark:bg-green-900 rounded flex items-center">
+            <i class="pi pi-check-circle text-green-600 dark:text-green-300 mr-2"></i>
+            <span class="text-xs text-green-700 dark:text-green-200">数据库连接已就绪（模拟模式）</span>
+          </div>
+          
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">会话ID</label>
             <input
@@ -403,45 +406,42 @@
               type="text"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
               placeholder="输入数据库会话ID"
+              disabled
             />
           </div>
-
+          
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">集合/表名</label>
             <input
               v-model="currentComponent.props.databaseConfig.collection"
               type="text"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder="MongoDB集合名或MySQL表名"
             />
           </div>
-
+          
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1"
-              >过滤条件 (JSON)</label
-            >
+            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
             <textarea
               v-model="filterJson"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder='{"field": "value"}'
               rows="2"
               @blur="updateFilterCondition"
             ></textarea>
           </div>
-
+          
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1"
-              >排序条件 (JSON)</label
-            >
+            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
             <textarea
               v-model="sortJson"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder='{"field": 1}'
               rows="2"
               @blur="updateSortCondition"
             ></textarea>
           </div>
-
+          
           <button
             @click="testDatabaseConnection"
             class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
@@ -487,7 +487,7 @@
           <label class="block text-sm font-medium mb-1">边框样式</label>
           <select
             v-model="currentComponent.props.borderStyle"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="none">无边框</option>
             <option value="row">行边框</option>
@@ -499,7 +499,7 @@
           <label class="block text-sm font-medium mb-1">表格大小</label>
           <select
             v-model="currentComponent.props.size"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="small">小尺寸</option>
             <option value="medium">中等尺寸</option>
@@ -513,36 +513,30 @@
             <summary class="font-medium cursor-pointer">高级样式设置</summary>
             <div class="pt-2 space-y-2">
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >外边距 (margin)</label
-                >
+                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
                 <input
                   v-model="currentComponent.styles.margin"
                   type="text"
                   placeholder="例如: 8px 12px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >宽度 (width)</label
-                >
+                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
                 <input
                   v-model="currentComponent.styles.width"
                   type="text"
                   placeholder="例如: 100% 或 120px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >高度 (height)</label
-                >
+                <label class="block text-xs font-medium mb-1">高度 (height)</label>
                 <input
                   v-model="currentComponent.styles.height"
                   type="text"
                   placeholder="例如: auto 或 300px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
             </div>
@@ -552,16 +546,14 @@
 
       <!-- 财务表格组件的属性编辑器 -->
       <div
-        v-else-if="
-          currentComponent && currentComponent.componentId === 'finance-table'
-        "
+        v-else-if="currentComponent && currentComponent.componentId === 'finance-table'"
       >
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">表格标题</label>
           <input
             v-model="currentComponent.props.title"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -570,7 +562,7 @@
           <input
             v-model="currentComponent.props.subtitle"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           />
         </div>
 
@@ -579,7 +571,7 @@
           <select
             v-model="currentComponent.props.rows"
             @change="updateRows"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option :value="5">5 行</option>
             <option :value="10">10 行</option>
@@ -587,12 +579,12 @@
             <option :value="20">20 行</option>
           </select>
         </div>
-
+        
         <div class="mb-4">
           <label class="block text-sm font-medium mb-1">数据来源</label>
           <select
             v-model="currentComponent.props.dataSource"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
           >
             <option value="default">默认示例数据</option>
             <option value="database">从数据库读取</option>
@@ -600,12 +592,15 @@
         </div>
 
         <!-- 数据库配置选项 -->
-        <div
-          v-if="currentComponent.props.dataSource === 'database'"
-          class="mb-4 border p-3 rounded"
-        >
+        <div v-if="currentComponent.props.dataSource === 'database'" class="mb-4 border p-3 rounded">
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
-
+          
+          <!-- 状态指示器 -->
+          <div class="mb-3 p-2 bg-green-100 dark:bg-green-900 rounded flex items-center">
+            <i class="pi pi-check-circle text-green-600 dark:text-green-300 mr-2"></i>
+            <span class="text-xs text-green-700 dark:text-green-200">数据库连接已就绪（模拟模式）</span>
+          </div>
+          
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">会话ID</label>
             <input
@@ -613,45 +608,42 @@
               type="text"
               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
               placeholder="输入数据库会话ID"
+              disabled
             />
           </div>
-
+          
           <div class="mb-2">
             <label class="block text-xs font-medium mb-1">集合/表名</label>
             <input
               v-model="currentComponent.props.databaseConfig.collection"
               type="text"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder="MongoDB集合名或MySQL表名"
             />
           </div>
-
+          
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1"
-              >过滤条件 (JSON)</label
-            >
+            <label class="block text-xs font-medium mb-1">过滤条件 (JSON)</label>
             <textarea
               v-model="filterJson"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder='{"field": "value"}'
               rows="2"
               @blur="updateFilterCondition"
             ></textarea>
           </div>
-
+          
           <div class="mb-2">
-            <label class="block text-xs font-medium mb-1"
-              >排序条件 (JSON)</label
-            >
+            <label class="block text-xs font-medium mb-1">排序条件 (JSON)</label>
             <textarea
               v-model="sortJson"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder='{"field": 1}'
               rows="2"
               @blur="updateSortCondition"
             ></textarea>
           </div>
-
+          
           <button
             @click="testDatabaseConnection"
             class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
@@ -688,7 +680,7 @@
           <input
             v-model="currentComponent.props.primaryField"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
             placeholder="用于唯一标识每一行的字段"
           />
         </div>
@@ -698,7 +690,7 @@
           <input
             v-model="currentComponent.props.currencyFields"
             type="text"
-            class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            class="w-full p-2 border rounded bg-gray-700 border-gray-600"
             placeholder="需要格式化为货币的字段，用逗号分隔"
           />
         </div>
@@ -709,47 +701,39 @@
             <summary class="font-medium cursor-pointer">高级样式设置</summary>
             <div class="pt-2 space-y-2">
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >外边距 (margin)</label
-                >
+                <label class="block text-xs font-medium mb-1">外边距 (margin)</label>
                 <input
                   v-model="currentComponent.styles.margin"
                   type="text"
                   placeholder="例如: 8px 12px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >宽度 (width)</label
-                >
+                <label class="block text-xs font-medium mb-1">宽度 (width)</label>
                 <input
                   v-model="currentComponent.styles.width"
                   type="text"
                   placeholder="例如: 100% 或 120px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >边框圆角 (borderRadius)</label
-                >
+                <label class="block text-xs font-medium mb-1">边框圆角 (borderRadius)</label>
                 <input
                   v-model="currentComponent.styles.borderRadius"
                   type="text"
                   placeholder="例如: 4px 或 8px"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1"
-                  >阴影效果 (boxShadow)</label
-                >
+                <label class="block text-xs font-medium mb-1">阴影效果 (boxShadow)</label>
                 <input
                   v-model="currentComponent.styles.boxShadow"
                   type="text"
                   placeholder="例如: 0 2px 10px rgba(0,0,0,0.05)"
-                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-sm"
+                  class="w-full p-2 border rounded bg-gray-700 border-gray-600 text-sm"
                 />
               </div>
             </div>
@@ -768,7 +752,7 @@
 
     <!-- 未选择任何内容 -->
     <div v-else class="h-full flex items-center justify-center">
-      <div class="text-center text-gray-500 dark:text-gray-400">
+      <div class="text-center text-gray-400">
         <i class="pi pi-arrow-left text-2xl mb-2"></i>
         <p>请从左侧选择页面<br />或从画布选择组件</p>
       </div>
@@ -782,6 +766,7 @@ import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentDefinition } from "@/data/componentLibrary";
 import BaseInput from "@/components/Form/Inputs/BaseInput.vue";
 import BaseSelect from "@/components/Form/Inputs/BaseSelect.vue";
+import { getActiveSession } from "@/services/sessionStore";
 
 // 调试模式开关
 
@@ -793,8 +778,8 @@ const pageName = ref("");
 const layoutType = ref("");
 
 // 数据库配置相关
-const filterJson = ref("{}");
-const sortJson = ref("{}");
+const filterJson = ref('{}');
+const sortJson = ref('{}');
 
 // 计算属性
 const currentPageId = computed(() => designerStore.currentPageId);
@@ -1002,24 +987,24 @@ const updateLayoutPadding = (value: number) => {
 };
 
 // 更新表格每页行数 - 普通表格
-const updateRowsPerPage = () => {
+const updateRowsPerPage = (event: Event) => {
   if (!currentComponent.value || !currentComponent.value.id) return;
   // Convert string value to number
   const value = parseInt(currentComponent.value.props.rowsPerPage);
   designerStore.updateComponentProps(currentComponent.value.id, {
     ...currentComponent.value.props,
-    rowsPerPage: value,
+    rowsPerPage: value
   });
 };
 
 // 更新表格每页行数 - 财务表格
-const updateRows = () => {
+const updateRows = (event: Event) => {
   if (!currentComponent.value || !currentComponent.value.id) return;
   // Convert string value to number
   const value = parseInt(currentComponent.value.props.rows);
   designerStore.updateComponentProps(currentComponent.value.id, {
     ...currentComponent.value.props,
-    rows: value,
+    rows: value
   });
 };
 
@@ -1033,10 +1018,10 @@ const updateFilterCondition = () => {
     }
     currentComponent.value.props.databaseConfig.filter = filterObj;
     designerStore.updateComponentProps(currentComponent.value.id, {
-      ...currentComponent.value.props,
+      ...currentComponent.value.props
     });
   } catch (e) {
-    console.error("过滤条件JSON格式错误:", e);
+    console.error('过滤条件JSON格式错误:', e);
   }
 };
 
@@ -1050,78 +1035,105 @@ const updateSortCondition = () => {
     }
     currentComponent.value.props.databaseConfig.sort = sortObj;
     designerStore.updateComponentProps(currentComponent.value.id, {
-      ...currentComponent.value.props,
+      ...currentComponent.value.props
     });
   } catch (e) {
-    console.error("排序条件JSON格式错误:", e);
+    console.error('排序条件JSON格式错误:', e);
   }
 };
 
 // 测试数据库连接
 const testDatabaseConnection = async () => {
-  if (
-    !currentComponent.value ||
-    !currentComponent.value.id ||
-    !currentComponent.value.props.databaseConfig
-  )
-    return;
-
+  if (!currentComponent.value || !currentComponent.value.id || !currentComponent.value.props.databaseConfig) return;
+  
   const sessionId = currentComponent.value.props.databaseConfig.sessionId;
   const collection = currentComponent.value.props.databaseConfig.collection;
-
+  
   if (!sessionId || !collection) {
-    alert("请输入会话ID和集合/表名");
+    alert('请输入会话ID和集合/表名');
     return;
   }
-
+  
   try {
     // 导入数据库服务
-    const { databaseService } = await import("@/services/databaseService");
-
+    const { databaseService } = await import('@/services/databaseService');
+    
     const result = await databaseService.getTableData({
       sessionId,
       collection,
-      limit: 1,
+      limit: 1
     });
-
+    
     if (result.length > 0) {
-      alert("连接成功！数据库中包含数据。");
+      alert('连接成功！数据库中包含数据。');
     } else {
-      alert("连接成功，但未找到数据。请检查集合/表名或过滤条件。");
+      alert('连接成功，但未找到数据。请检查集合/表名或过滤条件。');
     }
   } catch (e: any) {
-    alert(`连接失败: ${e.message || "未知错误"}`);
+    alert(`连接失败: ${e.message || '未知错误'}`);
   }
 };
 
 // 监听当前组件变化，更新JSON字段
-watch(
-  () => currentComponent.value?.props?.databaseConfig?.filter,
-  (newVal) => {
-    if (newVal && currentComponent.value) {
-      try {
-        filterJson.value = JSON.stringify(newVal, null, 2);
-      } catch (e) {
-        filterJson.value = "{}";
-      }
+watch(() => currentComponent.value?.props?.databaseConfig?.filter, (newVal) => {
+  if (newVal && currentComponent.value) {
+    try {
+      filterJson.value = JSON.stringify(newVal, null, 2);
+    } catch (e) {
+      filterJson.value = '{}';
     }
-  },
-  { deep: true, immediate: true }
-);
+  }
+}, { deep: true, immediate: true });
 
-watch(
-  () => currentComponent.value?.props?.databaseConfig?.sort,
-  (newVal) => {
-    if (newVal && currentComponent.value) {
-      try {
-        sortJson.value = JSON.stringify(newVal, null, 2);
-      } catch (e) {
-        sortJson.value = "{}";
+watch(() => currentComponent.value?.props?.databaseConfig?.sort, (newVal) => {
+  if (newVal && currentComponent.value) {
+    try {
+      sortJson.value = JSON.stringify(newVal, null, 2);
+    } catch (e) {
+      sortJson.value = '{}';
+    }
+  }
+}, { deep: true, immediate: true });
+
+// 监听数据源变化，自动填充会话信息
+watch(() => currentComponent.value?.props?.dataSource, (newVal) => {
+  if (newVal === 'database' && currentComponent.value) {
+    const session = getActiveSession();
+    if (session && currentComponent.value.props.databaseConfig) {
+      // 自动填充会话ID
+      currentComponent.value.props.databaseConfig.sessionId = session.sessionId;
+      
+      // 如果有默认集合/表名也可以填充
+      if (session.collection && !currentComponent.value.props.databaseConfig.collection) {
+        currentComponent.value.props.databaseConfig.collection = session.collection;
+      }
+      
+      // 更新组件属性
+      if (currentComponent.value.id) {
+        designerStore.updateComponentProps(currentComponent.value.id, {
+          ...currentComponent.value.props
+        });
+      }
+
+      // 更新JSON格式文本框
+      if (currentComponent.value.props.databaseConfig.filter) {
+        try {
+          filterJson.value = JSON.stringify(currentComponent.value.props.databaseConfig.filter, null, 2);
+        } catch (e) {
+          filterJson.value = '{}';
+        }
+      }
+      
+      if (currentComponent.value.props.databaseConfig.sort) {
+        try {
+          sortJson.value = JSON.stringify(currentComponent.value.props.databaseConfig.sort, null, 2);
+        } catch (e) {
+          sortJson.value = '{}';
+        }
       }
     }
-  },
-  { deep: true, immediate: true }
-);
+  }
+}, { immediate: true });
 
 // 添加调试信息
 console.log("RightPanel 重新渲染");
@@ -1142,7 +1154,7 @@ h4.font-medium {
   font-weight: 500;
 }
 
-.dark h4.font-medium {
+h4.font-medium {
   color: #ccc;
 }
 
@@ -1154,8 +1166,8 @@ h4.font-medium {
   margin-bottom: 16px;
 }
 
-.dark .specific-props,
-.dark .style-props {
+.specific-props,
+.style-props {
   background-color: transparent;
 }
 
@@ -1179,7 +1191,7 @@ h4.font-medium {
   display: block;
 }
 
-.dark .color-preview-wrapper {
+.color-preview-wrapper {
   border-color: #444;
 }
 
@@ -1209,11 +1221,11 @@ h4.font-medium {
   background-color: #e0e0e0;
 }
 
-.dark .image-chip {
+.image-chip {
   background-color: #333;
 }
 
-.dark .image-chip:hover {
+.image-chip:hover {
   background-color: #444;
 }
 </style>
