@@ -52,7 +52,7 @@
 
     <!-- 消息展示区 -->
     <main
-      class="flex-1 overflow-y-auto py-6 px-6 flex flex-col custom-scrollbar bg-[url('/images/chat-bg-pattern.png')] bg-opacity-5"
+      class="flex-1 overflow-y-auto py-6 px-6 flex flex-col custom-scrollbar"
       ref="messagesContainer"
     >
       <!-- 欢迎消息 -->
@@ -176,9 +176,7 @@
             :disabled="!canSendMessage"
             @click="sendMessage"
           >
-            <Send
-              class="w-5 h-5 mt-0.5"
-            />
+            <Send class="w-5 h-5 mt-0.5" />
           </button>
         </div>
 

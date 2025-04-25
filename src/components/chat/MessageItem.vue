@@ -92,7 +92,6 @@ const props = defineProps<{
 
 // 尝试从消息内容中提取代码块中的JSON数据
 const extractJsonData = (content: string) => {
-  
   try {
     // 尝试匹配 $$$$ ... $$$$ 包裹的内容
     // 这里使用 $$$$ 作为代码块的标记符号
