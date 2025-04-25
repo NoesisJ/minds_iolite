@@ -133,9 +133,41 @@
             class="w-full min-h-[100px] max-h-[400px] border-0 text-white p-4 pr-12 outline-none custom-scrollbar resize-none bg-transparent"
             @keydown.enter.exact.prevent="sendMessage"
             @keydown.enter.shift.exact="newLine"
-            @input="adjustTextareaHeight"
+            @input="handleInput"
+            @keydown.down.prevent="navigateSuggestions(1)"
+            @keydown.up.prevent="navigateSuggestions(-1)"
+            @keydown.tab.prevent="selectSuggestion"
+            @keydown.escape="closeSuggestions"
             style="overflow-y: hidden"
           />
+
+          <!-- 提示词下拉菜单 -->
+          <div
+            v-if="showSuggestions && filteredPromptSuggestions.length > 0"
+            class="absolute bottom-full left-4 mb-2 w-72 max-h-64 overflow-y-auto bg-[#2a2a2a] rounded-lg border border-[#3a3a3a] shadow-xl z-50 custom-scrollbar"
+          >
+            <div class="py-1">
+              <div
+                v-for="(suggestion, index) in filteredPromptSuggestions"
+                :key="suggestion.id"
+                @click="applySuggestion(suggestion)"
+                class="px-3 py-2 flex items-center cursor-pointer transition-colors duration-200"
+                :class="{
+                  'bg-[#454545]': selectedSuggestionIndex === index,
+                  'hover:bg-[#404040]': selectedSuggestionIndex !== index,
+                }"
+              >
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-white">
+                    {{ suggestion.label }}
+                  </div>
+                  <div class="text-xs text-gray-400">
+                    {{ suggestion.description }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- 发送按钮 -->
           <button
@@ -186,6 +218,62 @@ const messagesContainer = ref<HTMLElement | null>(null);
 const userInput = ref<string>("");
 const isTyping = ref<boolean>(false);
 
+// 提示词相关状态
+const showSuggestions = ref(false);
+const promptSuggestions = ref([
+  {
+    id: 1,
+    label: "#表格",
+    description: "生成数据表格分析",
+    template: "#表格 {tableName}",
+  },
+  {
+    id: 2,
+    label: "#图表",
+    description: "生成数据可视化图表",
+    template: "#图表 {chartType} {dataSource}",
+  },
+  {
+    id: 3,
+    label: "#查询",
+    description: "执行SQL查询",
+    template: "#查询 {sqlQuery}",
+  },
+  {
+    id: 4,
+    label: "#趋势",
+    description: "分析数据趋势",
+    template: "#趋势 {metricName} {timeRange}",
+  },
+  {
+    id: 5,
+    label: "#对比",
+    description: "对比数据集",
+    template: "#对比 {dataset1} {dataset2}",
+  },
+  {
+    id: 6,
+    label: "#预测",
+    description: "预测未来趋势",
+    template: "#预测 {metric} {timeFrame}",
+  },
+  {
+    id: 7,
+    label: "#汇总",
+    description: "汇总数据统计",
+    template: "#汇总 {tableName} {fields}",
+  },
+  {
+    id: 8,
+    label: "#分组",
+    description: "按类别分组数据",
+    template: "#分组 {tableName} {groupByField}",
+  },
+]);
+const selectedSuggestionIndex = ref(0);
+const currentPromptFilter = ref("");
+const promptStartPosition = ref(0);
+
 // 常用问题建议
 const suggestions = ref([
   "推荐几本经典科幻小说",
@@ -211,6 +299,21 @@ const currentChatTitle = computed(() =>
 
 const canSendMessage = computed(() => userInput.value.trim().length > 0);
 
+// 根据输入筛选提示词
+const filteredPromptSuggestions = computed(() => {
+  if (!currentPromptFilter.value) return promptSuggestions.value;
+
+  return promptSuggestions.value.filter(
+    (suggestion) =>
+      suggestion.label
+        .toLowerCase()
+        .includes(currentPromptFilter.value.toLowerCase()) ||
+      suggestion.description
+        .toLowerCase()
+        .includes(currentPromptFilter.value.toLowerCase())
+  );
+});
+
 const sendButtonClass = computed(() =>
   canSendMessage.value
     ? "bg-[#c96442] text-white hover:bg-[#ff5100] hover:shadow-lg hover:shadow-[#c96442]/30"
@@ -227,6 +330,43 @@ const adjustTextareaHeight = () => {
   textareaRef.value.style.overflowY = newHeight >= 400 ? "auto" : "hidden";
 };
 
+const handleInput = () => {
+  adjustTextareaHeight();
+
+  if (!textareaRef.value) return;
+
+  const text = userInput.value;
+  const cursorPosition = textareaRef.value.selectionStart;
+
+  // 检查当前位置之前是否有 # 符号
+  let hashPosition = -1;
+  for (let i = cursorPosition - 1; i >= 0; i--) {
+    // 如果遇到空格或换行，说明不是一个完整的提示词标记
+    if (text[i] === " " || text[i] === "\n") {
+      break;
+    }
+    // 找到 # 符号
+    if (text[i] === "#") {
+      hashPosition = i;
+      break;
+    }
+  }
+
+  if (hashPosition !== -1) {
+    // 提取输入的过滤文本
+    currentPromptFilter.value = text.substring(
+      hashPosition + 1,
+      cursorPosition
+    );
+    promptStartPosition.value = hashPosition;
+    showSuggestions.value = true;
+    selectedSuggestionIndex.value = 0; // 重置选择索引
+  } else {
+    // 没有找到 # 符号，关闭建议
+    closeSuggestions();
+  }
+};
+
 const selectChat = async (item: { value: any }) => {
   chatStore.setSelectedChat(item.value);
   try {
@@ -235,6 +375,64 @@ const selectChat = async (item: { value: any }) => {
     showError("加载聊天记录失败，请稍后再试");
     console.error("Error loading chat messages:", error);
   }
+};
+
+// 上下导航提示词
+const navigateSuggestions = (direction: number) => {
+  if (!showSuggestions.value || filteredPromptSuggestions.value.length === 0)
+    return;
+
+  const maxIndex = filteredPromptSuggestions.value.length - 1;
+  let newIndex = selectedSuggestionIndex.value + direction;
+
+  // 循环导航
+  if (newIndex < 0) newIndex = maxIndex;
+  if (newIndex > maxIndex) newIndex = 0;
+
+  selectedSuggestionIndex.value = newIndex;
+};
+
+// 选择提示词
+const selectSuggestion = () => {
+  if (showSuggestions.value && filteredPromptSuggestions.value.length > 0) {
+    applySuggestion(
+      filteredPromptSuggestions.value[selectedSuggestionIndex.value]
+    );
+  }
+};
+
+// 应用选择的提示词
+const applySuggestion = (suggestion: any) => {
+  if (!textareaRef.value) return;
+
+  const cursorPosition = textareaRef.value.selectionStart;
+  const beforeText = userInput.value.substring(0, promptStartPosition.value);
+  const afterText = userInput.value.substring(cursorPosition);
+
+  // 应用模板而不是标签
+  const suggestionText = suggestion.label.split(" ")[0]; // 只取 #命令部分
+
+  // 替换文本
+  userInput.value = beforeText + suggestionText + " " + afterText;
+
+  // 关闭提示词菜单
+  closeSuggestions();
+
+  // 设置光标位置
+  nextTick(() => {
+    if (textareaRef.value) {
+      const newPosition = promptStartPosition.value + suggestionText.length + 1;
+      textareaRef.value.selectionStart = textareaRef.value.selectionEnd =
+        newPosition;
+      textareaRef.value.focus();
+    }
+  });
+};
+
+// 关闭提示词菜单
+const closeSuggestions = () => {
+  showSuggestions.value = false;
+  currentPromptFilter.value = "";
 };
 
 const sendMessage = async () => {
@@ -394,6 +592,13 @@ onMounted(() => {
       textareaRef.value.focus();
     }
   });
+
+  // 点击其他地方关闭提示词菜单
+  document.addEventListener("click", (e) => {
+    if (textareaRef.value && !textareaRef.value.contains(e.target as Node)) {
+      closeSuggestions();
+    }
+  });
 });
 
 // 监听器
@@ -413,6 +618,16 @@ watch(
     });
   },
   { deep: true }
+);
+
+// 监听光标位置变化
+watch(
+  () => textareaRef.value?.selectionStart,
+  () => {
+    if (showSuggestions.value) {
+      handleInput();
+    }
+  }
 );
 </script>
 
