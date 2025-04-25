@@ -2,7 +2,7 @@
 export interface Message {
   id: number;
   content: string;
-  sender: "user" | "ai" | "system";
+  sender: "user" | "assistant" | "system";
   timestamp: string;
   type?: "info" | "error";
 }

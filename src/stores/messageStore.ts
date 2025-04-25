@@ -38,7 +38,7 @@ export const useMessageStore = defineStore("messages", () => {
     const message: Message = {
       id: Date.now() + 1,
       content,
-      sender: "ai",
+      sender: "assistant",
       timestamp: new Date().toLocaleTimeString(),
     };
 
@@ -48,7 +48,7 @@ export const useMessageStore = defineStore("messages", () => {
 
   function removeLastAIMessage() {
     const lastAIMessageIndex = messages.value.findIndex(
-      (msg) => msg.sender === "ai"
+      (msg) => msg.sender === "assistant"
     );
     if (lastAIMessageIndex !== -1) {
       messages.value.splice(lastAIMessageIndex, 1);

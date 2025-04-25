@@ -88,6 +88,10 @@ const chartOptions = computed(() => ({
   legend: {
     data: props.seriesNames.slice(0, props.barData.length),
     bottom: 10,
+    textStyle: {
+      fontSize: 16,
+      color: "#fff",
+    },
   },
   grid: {
     left: "3%",
@@ -112,7 +116,7 @@ const chartOptions = computed(() => ({
   series: props.barData.map((data: number[], index: number) => ({
     name: props.seriesNames[index] || `系列${index + 1}`,
     type: "bar",
-    barWidth: "60%",
+    barWidth: "30%",
     data: data,
     itemStyle: {
       borderRadius: [4, 4, 0, 0],

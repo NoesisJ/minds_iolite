@@ -111,76 +111,6 @@ export const useChatStore = defineStore("chats", () => {
     }
   }
 
-  // 更新聊天标题
-  async function updateChatTitle(chatId: string, newTitle: string) {
-    const chat = chatHistory.value.find((chat) => chat.id === chatId);
-    if (!chat) {
-      console.error("找不到聊天会话:", chatId);
-      throw new Error("找不到聊天会话");
-    }
-
-    try {
-      // 发送更新请求到后端
-      const response = await axios.put(
-        `${API_URL}/api/sessions/${chatId}`,
-        { title: newTitle },
-        {
-          headers: {
-            "X-Forwarded-For": "user",
-          },
-        }
-      );
-
-      if (response.data.code !== 200) {
-        console.error("更新聊天标题失败:", response.statusText);
-        throw new Error("更新聊天标题失败");
-      }
-
-      // 更新本地状态
-      chat.title = newTitle;
-
-      return chat;
-    } catch (error) {
-      console.error("更新聊天标题时出错:", error);
-      throw new Error("更新聊天标题失败");
-    }
-  }
-
-  // 获取单个聊天详情
-  async function getChatDetail(chatId: string): Promise<ChatSession> {
-    try {
-      const response = await axios.get(`${API_URL}/api/sessions/${chatId}`);
-
-      if (response.data.code !== 200) {
-        console.error("获取聊天详情失败:", response.statusText);
-        throw new Error("获取聊天详情失败");
-      }
-
-      return {
-        id: response.data.data.session_id,
-        title: response.data.data.title,
-      };
-    } catch (error) {
-      console.error("获取聊天详情时出错:", error);
-      throw new Error("获取聊天详情失败");
-    }
-  }
-
-  // 将聊天从一个位置移动到另一个位置
-  function moveChatPosition(fromIndex: number, toIndex: number) {
-    if (
-      fromIndex < 0 ||
-      fromIndex >= chatHistory.value.length ||
-      toIndex < 0 ||
-      toIndex >= chatHistory.value.length
-    ) {
-      return;
-    }
-
-    const chat = chatHistory.value.splice(fromIndex, 1)[0];
-    chatHistory.value.splice(toIndex, 0, chat);
-  }
-
   return {
     chatHistory,
     selectedChat,
@@ -188,8 +118,5 @@ export const useChatStore = defineStore("chats", () => {
     setSelectedChat,
     createNewChat,
     deleteChat,
-    updateChatTitle,
-    getChatDetail,
-    moveChatPosition,
   };
 });

@@ -25,9 +25,9 @@
           />
           <SimpleBarChart
             v-else-if="chartData.chart_type === 'bar'"
-            :xAxisData="chartData.categories"
-            :barData="[chartData.values]"
-            :seriesNames="['数值']"
+            :xAxisData="chartData.xAxisData"
+            :barData="chartData.barData"
+            :seriesNames="chartData.seriesName"
             :title="chartData.title"
           />
           <SimpleAreaChart
@@ -91,16 +91,20 @@ const props = defineProps<{
 
 // 尝试从消息内容中提取代码块中的JSON数据
 const extractJsonData = (content: string) => {
+  
   try {
-    // 尝试匹配 ```...``` 代码块
-    const codeBlockRegex = /```([\s\S]*?)```/g;
+    // 尝试匹配 $$$$ ... $$$$ 包裹的内容
+    // 这里使用 $$$$ 作为代码块的标记符号
+    const codeBlockRegex = /\$\$\$\$([\s\S]*?)\$\$\$\$/g;
     const codeBlockMatch = content.match(codeBlockRegex);
 
     if (codeBlockMatch && codeBlockMatch[0]) {
+      console.log("Extracting JSON data from content:", content);
       // 提取第一个代码块的内容（去掉 ```）
-      const codeContent = codeBlockMatch[0].replace(/```/g, "").trim();
+      const codeContent = codeBlockMatch[0].replace(/\$\$\$\$/g, "").trim();
       // 处理单引号和双引号的转换
       const formattedCodeContent = codeContent.replace(/'/g, '"');
+      console.log("Formatted code content:", formattedCodeContent);
       // 尝试解析为 JSON
       return JSON.parse(formattedCodeContent);
     }
@@ -160,7 +164,7 @@ const formattedBracketJsonContent = computed(() => {
 const nonJsonContent = computed(() => {
   if (!hasChartData.value) return [props.message.content];
 
-  const codeBlockRegex = /```([\s\S]*?)```/;
+  const codeBlockRegex = /\$\$\$\$([\s\S]*?)\$\$\$\$/;
   const match = props.message.content.match(codeBlockRegex);
 
   if (!match) return [props.message.content];
@@ -190,12 +194,13 @@ const pieChartData = computed(() => {
 
 const messageClass = computed(() => {
   const sender = props.message.sender;
+  console.log("Sender:", sender);
 
   if (sender === "user") {
     return "bg-[#404040] text-white";
-  } else if (sender === "ai") {
+  } else if (sender === "assistant") {
     return "bg-[#353535] text-white";
-  } else {
+  } else if (sender === "system") {
     // 系统消息或错误消息
     return "bg-[#532f2f] text-white";
   }

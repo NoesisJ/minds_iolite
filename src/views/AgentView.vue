@@ -267,14 +267,6 @@ const sendMessage = async () => {
     // 处理响应
     isTyping.value = false;
     messageStore.addAIMessage(response.response);
-
-    // 如果是第一条消息，自动更新聊天标题
-    if (messages.value.length <= 2 && selectedChat.value) {
-      const title =
-        userMessage.content.slice(0, 20) +
-        (userMessage.content.length > 20 ? "..." : "");
-      chatStore.updateChatTitle(selectedChat.value.id, title);
-    }
   } catch (error) {
     isTyping.value = false;
     showError("发送消息失败，请稍后再试");
