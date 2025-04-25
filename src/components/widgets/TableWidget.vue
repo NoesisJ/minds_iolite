@@ -4,12 +4,12 @@
       <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
       <p class="mt-2 text-gray-600 dark:text-gray-300">加载数据中...</p>
     </div>
-    
+
     <div v-else-if="loadError" class="table-error">
       <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
       <p class="mt-2 text-gray-600 dark:text-gray-300">{{ loadError }}</p>
     </div>
-    
+
     <div v-else-if="tableType && tableData.length > 0" class="table-container">
       <div v-if="showTitle" class="table-title mb-4">
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -22,7 +22,6 @@
           {{ subtitle }}
         </p>
       </div>
-
 
       <Table
         :data="tableData"
@@ -233,7 +232,7 @@ const props = defineProps({
   // 新增数据源属性
   dataSource: {
     type: String,
-    default: "default" // 默认使用示例数据
+    default: "default", // 默认使用示例数据
   },
   // 数据库配置
   databaseConfig: {
@@ -243,9 +242,9 @@ const props = defineProps({
       collection: "",
       filter: {},
       sort: {},
-      fields: []
-    })
-  }
+      fields: [],
+    }),
+  },
 });
 
 const emit = defineEmits(["update:data"]);
@@ -261,178 +260,178 @@ const mockDatabaseData = [
     id: 1001,
     account: "瑞锋紧固件厂",
     type: "六角螺栓",
-    amount: 356.50,
+    amount: 356.5,
     date: "2024-05-01",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1002,
     account: "恒强五金制品有限公司",
     type: "不锈钢螺母",
-    amount: 298.00,
+    amount: 298.0,
     date: "2024-05-02",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1003,
     account: "德美机械配件厂",
     type: "内六角螺丝",
-    amount: 425.00,
+    amount: 425.0,
     date: "2024-05-05",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1004,
     account: "汇力紧固系统有限公司",
     type: "膨胀螺栓",
-    amount: 185.00,
+    amount: 185.0,
     date: "2024-05-07",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1005,
     account: "宇航标准件有限公司",
     type: "自攻螺丝",
-    amount: 153.80,
+    amount: 153.8,
     date: "2024-05-08",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1006,
     account: "金石机械零部件厂",
     type: "弹簧垫圈",
-    amount: 72.50,
+    amount: 72.5,
     date: "2024-05-10",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1007,
     account: "鑫辉标准件有限公司",
     type: "铆钉",
-    amount: 120.00,
+    amount: 120.0,
     date: "2024-05-12",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1008,
     account: "华迈机械配件有限公司",
     type: "梅花螺丝",
-    amount: 350.00,
+    amount: 350.0,
     date: "2024-05-13",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1009,
     account: "东升紧固件厂",
     type: "开口销",
-    amount: 80.00,
+    amount: 80.0,
     date: "2024-05-15",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1010,
     account: "奥力五金制品厂",
     type: "尼龙螺母",
-    amount: 270.50,
+    amount: 270.5,
     date: "2024-05-16",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1011,
     account: "豪特标准件有限公司",
     type: "圆柱销",
-    amount: 130.00,
+    amount: 130.0,
     date: "2024-05-18",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1012,
     account: "兴达紧固件配件厂",
     type: "木螺丝",
-    amount: 160.80,
+    amount: 160.8,
     date: "2024-05-19",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1013,
     account: "精锐五金制品公司",
     type: "T型螺栓",
-    amount: 420.00,
+    amount: 420.0,
     date: "2024-05-20",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1014,
     account: "航宇机械五金厂",
     type: "蝶形螺母",
-    amount: 95.00,
+    amount: 95.0,
     date: "2024-05-21",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1015,
     account: "联胜工业紧固件公司",
     type: "十字沉头螺丝",
-    amount: 680.00,
+    amount: 680.0,
     date: "2024-05-22",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1016,
     account: "正大标准件有限公司",
     type: "平垫圈",
-    amount: 65.50,
+    amount: 65.5,
     date: "2024-05-23",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1017,
     account: "宏德机械配件厂",
     type: "U型螺栓",
-    amount: 578.00,
+    amount: 578.0,
     date: "2024-05-25",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1018,
     account: "强盛五金制品厂",
     type: "扁头螺钉",
-    amount: 315.00,
+    amount: 315.0,
     date: "2024-05-26",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1019,
     account: "恒信紧固件有限公司",
     type: "锁紧螺母",
-    amount: 280.50,
+    amount: 280.5,
     date: "2024-05-28",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1020,
     account: "鑫隆标准件厂",
     type: "半圆头螺栓",
-    amount: 730.00,
+    amount: 730.0,
     date: "2024-05-29",
-    status: "待结算"
+    status: "待结算",
   },
   {
     id: 1021,
     account: "盛达机械零部件厂",
     type: "双头螺栓",
-    amount: 290.80,
+    amount: 290.8,
     date: "2024-05-30",
-    status: "已结算"
+    status: "已结算",
   },
   {
     id: 1022,
     account: "永固紧固系统有限公司",
     type: "止动垫圈",
-    amount: 165.00,
+    amount: 165.0,
     date: "2024-05-31",
-    status: "待结算"
-  }
+    status: "待结算",
+  },
 ];
 
 // 组合数据源
@@ -458,25 +457,28 @@ async function loadDataIfNeeded() {
   if (props.dataSource === "default") {
     return;
   }
-  
+
   // 显示加载状态
   isLoading.value = true;
   loadError.value = null;
-  
+
   try {
     // 模拟API调用延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // 使用模拟数据而不是真正调用数据库
     console.log("使用模拟数据代替真实数据库连接");
-    
+
     // 可以在这里根据过滤条件筛选模拟数据
     let filteredData = [...mockDatabaseData];
-    
+
     // 如果有过滤条件，模拟过滤
-    if (props.databaseConfig.filter && Object.keys(props.databaseConfig.filter).length > 0) {
+    if (
+      props.databaseConfig.filter &&
+      Object.keys(props.databaseConfig.filter).length > 0
+    ) {
       const filters = props.databaseConfig.filter;
-      filteredData = mockDatabaseData.filter(item => {
+      filteredData = mockDatabaseData.filter((item) => {
         for (const key in filters) {
           if (item[key] !== filters[key]) {
             return false;
@@ -485,46 +487,49 @@ async function loadDataIfNeeded() {
         return true;
       });
     }
-    
+
     // 如果有排序条件，模拟排序
-    if (props.databaseConfig.sort && Object.keys(props.databaseConfig.sort).length > 0) {
+    if (
+      props.databaseConfig.sort &&
+      Object.keys(props.databaseConfig.sort).length > 0
+    ) {
       const sortField = Object.keys(props.databaseConfig.sort)[0];
       const sortOrder = props.databaseConfig.sort[sortField]; // 1为升序，-1为降序
-      
+
       filteredData.sort((a, b) => {
         if (a[sortField] < b[sortField]) return sortOrder === 1 ? -1 : 1;
         if (a[sortField] > b[sortField]) return sortOrder === 1 ? 1 : -1;
         return 0;
       });
     }
-    
+
     // 更新本地数据
     localData.value = filteredData;
-    
+
     // 成功提示
     if (filteredData.length > 0) {
       toast.add({
-        severity: 'success',
-        summary: '数据加载成功',
+        severity: "success",
+        summary: "数据加载成功",
         detail: `已从数据库加载 ${filteredData.length} 条记录`,
-        life: 3000
+        life: 3000,
       });
     } else {
       toast.add({
-        severity: 'info',
-        summary: '数据加载完成',
-        detail: '没有找到符合条件的数据',
-        life: 3000
+        severity: "info",
+        summary: "数据加载完成",
+        detail: "没有找到符合条件的数据",
+        life: 3000,
       });
     }
   } catch (error) {
-    console.error('加载数据失败:', error);
-    loadError.value = error.message || '加载数据时出错';
+    console.error("加载数据失败:", error);
+    loadError.value = error.message || "加载数据时出错";
     toast.add({
-      severity: 'error',
-      summary: '数据加载失败',
+      severity: "error",
+      summary: "数据加载失败",
       detail: loadError.value,
-      life: 5000
+      life: 5000,
     });
   } finally {
     isLoading.value = false;
@@ -571,24 +576,24 @@ const saveItem = () => {
     // 创建新的数据数组
     const updatedData = [...props.data];
     updatedData[currentIndex.value] = { ...currentItem.value };
-    
+
     // 更新组件属性
     if (window.__DESIGNER_MODE__) {
       // 在设计器环境中
       const designerStore = window.$designerStore;
       if (designerStore && designerStore.selectedComponentId) {
         designerStore.updateComponentProps(designerStore.selectedComponentId, {
-          data: updatedData
+          data: updatedData,
         });
       }
     } else {
       // 常规环境中
       emit("update:data", updatedData);
     }
-    
+
     // 显示成功消息
     showToast("修改成功");
-    
+
     // 关闭对话框
     editDialog.value = false;
   }
@@ -601,29 +606,29 @@ const deleteConfirmed = () => {
     const updatedData = props.data.filter(
       (item) => item.id !== currentItem.value.id
     );
-    
+
     // 更新组件属性
     if (window.__DESIGNER_MODE__) {
       // 在设计器环境中
       const designerStore = window.$designerStore;
       if (designerStore && designerStore.selectedComponentId) {
         designerStore.updateComponentProps(designerStore.selectedComponentId, {
-          data: updatedData
+          data: updatedData,
         });
       }
     } else {
       // 常规环境中
       emit("update:data", updatedData);
     }
-    
+
     // 如果删除的是选中项，也从选中数据中移除
     selectedItems.value = selectedItems.value.filter(
       (item) => item.id !== currentItem.value.id
     );
-    
+
     // 显示成功消息
     showToast("删除成功");
-    
+
     // 关闭对话框
     deleteDialog.value = false;
   }
@@ -697,7 +702,8 @@ const getPrimaryField = (item) => {
   border-color: #36394a;
 }
 
-.table-loading, .table-error {
+.table-loading,
+.table-error {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -708,7 +714,8 @@ const getPrimaryField = (item) => {
   padding: 20px;
 }
 
-:global(.dark) .table-loading, :global(.dark) .table-error {
+:global(.dark) .table-loading,
+:global(.dark) .table-error {
   background-color: #1a1d2d;
 }
 
