@@ -27,12 +27,13 @@
             v-else-if="chartData.chart_type === 'bar'"
             :xAxisData="chartData.xAxisData"
             :barData="chartData.barData"
-            :seriesNames="chartData.seriesName"
+            :seriesNames="['totaltime1', 'totaltime2']"
             :title="chartData.title"
           />
           <SimpleAreaChart
             v-else-if="chartData.chart_type === 'line'"
-            :data="chartData.values"
+            :data="chartData.data"
+            :xAxisLabels="chartData.xAxisLabels"
             :title="chartData.title"
           />
         </div>

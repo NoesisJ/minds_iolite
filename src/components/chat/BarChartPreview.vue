@@ -86,7 +86,7 @@ const chartOptions = computed(() => ({
     },
   },
   legend: {
-    data: props.seriesNames.slice(0, props.barData.length),
+    data: props.seriesNames,
     bottom: 10,
     textStyle: {
       fontSize: 16,

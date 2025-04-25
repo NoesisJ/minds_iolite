@@ -145,8 +145,7 @@
             @click="sendMessage"
           >
             <Send
-              class="w-5 h-5"
-              :class="{ 'transform translate-x-0.5': canSendMessage }"
+              class="w-5 h-5 mt-0.5"
             />
           </button>
         </div>
