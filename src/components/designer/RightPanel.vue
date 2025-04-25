@@ -3,7 +3,7 @@
     class="bg-[var(--material-item-bg)] overflow-auto p-3 text-gray-200 border-l border-[var(--material-item-border)]"
   >
     <!-- 调试信息 - 临时启用以查看问题 -->
-    <!-- <div class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 text-xs rounded border">
+    <!-- <div class="mb-4 p-2 bg-gray-700 text-xs rounded border">
       <div>当前页面ID: {{ currentPageId || '无' }}</div>
       <div>有页面: {{ !!currentPage }}</div>
       <div>选中区域: {{ selectedRegionId || '无' }}</div>
@@ -387,13 +387,9 @@
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
 
           <!-- 状态指示器 -->
-          <div
-            class="mb-3 p-2 bg-green-100 dark:bg-green-900 rounded flex items-center"
-          >
-            <i
-              class="pi pi-check-circle text-green-600 dark:text-green-300 mr-2"
-            ></i>
-            <span class="text-xs text-green-700 dark:text-green-200"
+          <div class="mb-3 p-2 bg-green-900 rounded flex items-center">
+            <i class="pi pi-check-circle text-green-300 mr-2"></i>
+            <span class="text-xs text-green-200"
               >数据库连接已就绪（模拟模式）</span
             >
           </div>
@@ -403,7 +399,7 @@
             <input
               v-model="currentComponent.props.databaseConfig.sessionId"
               type="text"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder="输入数据库会话ID"
               disabled
             />
@@ -610,13 +606,9 @@
           <h3 class="text-sm font-medium mb-2">数据库连接配置</h3>
 
           <!-- 状态指示器 -->
-          <div
-            class="mb-3 p-2 bg-green-100 dark:bg-green-900 rounded flex items-center"
-          >
-            <i
-              class="pi pi-check-circle text-green-600 dark:text-green-300 mr-2"
-            ></i>
-            <span class="text-xs text-green-700 dark:text-green-200"
+          <div class="mb-3 p-2 bg-green-900 rounded flex items-center">
+            <i class="pi pi-check-circle text-green-300 mr-2"></i>
+            <span class="text-xs text-green-200"
               >数据库连接已就绪（模拟模式）</span
             >
           </div>
@@ -626,7 +618,7 @@
             <input
               v-model="currentComponent.props.databaseConfig.sessionId"
               type="text"
-              class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              class="w-full p-2 border rounded bg-gray-700 border-gray-600"
               placeholder="输入数据库会话ID"
               disabled
             />

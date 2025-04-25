@@ -33,7 +33,7 @@
         </svg>
       </span>
     </div>
-    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+    <span class="ml-2 text-sm text-gray-300">
       <slot></slot>
     </span>
   </label>
@@ -64,7 +64,7 @@ function getCheckboxStyles() {
   if (props.disabled) {
     return props.modelValue
       ? "bg-gray-400 border-gray-400"
-      : "bg-gray-100 border-gray-300 dark:bg-gray-800 dark:border-gray-600";
+      : "bg-gray-800 border-gray-600";
   }
 
   if (props.modelValue) {
@@ -83,13 +83,13 @@ function getCheckboxStyles() {
     // 未选中状态
     switch (props.status) {
       case "success":
-        return "border-green-600 hover:bg-green-100 dark:hover:bg-green-900/30";
+        return "border-green-600 hover:bg-green-900/30";
       case "warning":
-        return "border-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30";
+        return "border-yellow-600 hover:bg-yellow-900/30";
       case "danger":
-        return "border-red-600 hover:bg-red-100 dark:hover:bg-red-900/30";
+        return "border-red-600 hover:bg-red-900/30";
       default:
-        return "border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800";
+        return "border-gray-600 hover:bg-gray-800";
     }
   }
 }

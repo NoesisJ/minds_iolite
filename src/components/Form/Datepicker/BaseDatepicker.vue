@@ -9,14 +9,11 @@
       @click="togglePicker"
       :class="[
         'w-full transition-colors outline-none cursor-pointer',
-        'bg-white dark:bg-gray-700 border dark:border-gray-600',
-        'text-gray-900 dark:text-gray-100',
+        'bg-gray-700 border border-gray-600 text-gray-100',
         getShapeClasses(),
         getSizeClasses(),
         getStatusClasses(),
-        disabled
-          ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800'
-          : '',
+        disabled ? 'opacity-60 cursor-not-allowed bg-gray-800' : '',
       ]"
     />
 
@@ -43,15 +40,12 @@
     <teleport to="body">
       <div
         v-if="showPicker"
-        class="fixed calendar-popup bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg p-4 w-64 z-50"
+        class="fixed calendar-popup bg-gray-800 border border-gray-700 rounded-md shadow-lg p-4 w-64 z-50"
         :style="popupStyle"
         ref="calendarRef"
       >
         <div class="flex justify-between items-center mb-2">
-          <button
-            @click="prevMonth"
-            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-          >
+          <button @click="prevMonth" class="text-gray-400 hover:text-gray-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5"
@@ -70,10 +64,7 @@
           <span class="font-medium text-sm"
             >{{ currentMonthName }} {{ currentYear }}</span
           >
-          <button
-            @click="nextMonth"
-            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-          >
+          <button @click="nextMonth" class="text-gray-400 hover:text-gray-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5"
@@ -111,9 +102,7 @@
             :disabled="isDisabled(day)"
             :class="[
               'h-8 w-8 rounded-full flex items-center justify-center text-sm',
-              day.currentMonth
-                ? 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                : 'text-gray-400 dark:text-gray-600',
+              day.currentMonth ? 'hover:bg-gray-700' : 'text-gray-600',
               isSelected(day) ? 'bg-blue-500 text-white hover:bg-blue-600' : '',
               isToday(day) && !isSelected(day)
                 ? 'border border-blue-500 text-blue-500'
@@ -128,14 +117,14 @@
         <div class="mt-2 flex justify-between">
           <button
             @click="selectToday"
-            class="text-sm px-2 py-1 text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            class="text-sm px-2 py-1 text-blue-500 hover:bg-gray-700 rounded"
           >
             今天
           </button>
           <div>
             <button
               @click="cancelPicker"
-              class="text-sm px-2 py-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded mr-2"
+              class="text-sm px-2 py-1 text-gray-300 hover:bg-gray-700 rounded mr-2"
             >
               取消
             </button>
@@ -465,7 +454,7 @@ function getStatusClasses() {
     case "primary":
       return "border-2 border-purple-500 focus:ring-2 focus:ring-purple-500";
     default:
-      return "border border-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-400";
+      return "border border-gray-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-400";
   }
 }
 

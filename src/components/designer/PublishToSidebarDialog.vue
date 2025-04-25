@@ -2,12 +2,10 @@
   <div v-if="show" class="publish-dialog-overlay" @click="onClose">
     <div class="publish-dialog-container" @click.stop>
       <div class="dialog-header">
-        <h2 class="text-xl font-medium text-gray-800 dark:text-white">
-          发布到侧边栏
-        </h2>
+        <h2 class="text-xl font-medium text-white">发布到侧边栏</h2>
         <button
           @click="onClose"
-          class="close-btn text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          class="close-btn text-gray-400 hover:text-gray-200"
         >
           <i class="pi pi-times"></i>
         </button>
@@ -15,13 +13,12 @@
 
       <div class="dialog-content">
         <div class="form-group">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          <label class="block text-sm font-medium text-gray-300 mb-1"
             >选择页面</label
           >
           <select
             v-model="selectedPageId"
-            class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
+            class="form-select w-full rounded-md border border-gray-600 bg-gray-700 text-gray-200 px-3 py-2"
           >
             <option value="">选择要发布的页面</option>
             <option v-for="page in pages" :key="page.id" :value="page.id">
@@ -31,25 +28,23 @@
         </div>
 
         <div class="form-group">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          <label class="block text-sm font-medium text-gray-300 mb-1"
             >菜单标题</label
           >
           <input
             v-model="menuTitle"
-            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
+            class="form-input w-full rounded-md border border-gray-600 bg-gray-700 text-gray-200 px-3 py-2"
             placeholder="侧边栏显示的名称"
           />
         </div>
 
         <div class="form-group">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          <label class="block text-sm font-medium text-gray-300 mb-1"
             >菜单图标</label
           >
           <select
             v-model="menuIcon"
-            class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
+            class="form-select w-full rounded-md border border-gray-600 bg-gray-700 text-gray-200 px-3 py-2"
           >
             <option value="pi pi-file">文档图标</option>
             <option value="pi pi-users">用户图标</option>
@@ -65,28 +60,26 @@
         </div>
 
         <div class="form-group">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          <label class="block text-sm font-medium text-gray-300 mb-1"
             >路由路径</label
           >
           <input
             v-model="routePath"
-            class="form-input w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
+            class="form-input w-full rounded-md border border-gray-600 bg-gray-700 text-gray-200 px-3 py-2"
             placeholder="/my-page"
           />
-          <div class="form-hint text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <div class="form-hint text-xs text-gray-400 mt-1">
             路径必须以'/'开头，例如: /dashboard/analytics
           </div>
         </div>
 
         <div class="form-group">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          <label class="block text-sm font-medium text-gray-300 mb-1"
             >父菜单</label
           >
           <select
             v-model="parentMenu"
-            class="form-select w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2"
+            class="form-select w-full rounded-md border border-gray-600 bg-gray-700 text-gray-200 px-3 py-2"
           >
             <option value="">无 (顶级菜单)</option>
             <option value="finance">财务管理</option>
@@ -99,7 +92,7 @@
 
       <div class="dialog-footer">
         <button
-          class="btn-cancel px-4 py-2 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2"
+          class="btn-cancel px-4 py-2 rounded text-gray-300 hover:bg-gray-700 mr-2"
           @click="onClose"
         >
           取消

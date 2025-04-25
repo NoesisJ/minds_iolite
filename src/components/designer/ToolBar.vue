@@ -18,24 +18,20 @@
           @click="togglePageMenu"
           class="flex items-center min-w-[120px]"
         >
-          <span class="text-gray-700 dark:text-gray-200">{{
-            currentPageName || "选择页面"
-          }}</span>
-          <i
-            class="pi pi-chevron-down ml-1.5 text-gray-500 dark:text-gray-400"
-          ></i>
+          <span class="text-gray-200">{{ currentPageName || "选择页面" }}</span>
+          <i class="pi pi-chevron-down ml-1.5 text-gray-400"></i>
         </BaseButton>
 
         <div
           v-show="showPageMenu"
-          class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-10 w-48"
+          class="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-700 rounded shadow-lg z-10 w-48"
         >
           <div class="py-1 max-h-[250px] overflow-y-auto">
             <div
               v-for="page in designerStore.pages"
               :key="page.id"
               @click="handlePageSelection(page.id)"
-              class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between text-gray-700 dark:text-gray-200"
+              class="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center justify-between text-gray-200"
             >
               <span>{{ page.title }}</span>
               <i
@@ -45,7 +41,7 @@
             </div>
             <div
               v-if="designerStore.pages.length === 0"
-              class="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm italic"
+              class="px-4 py-2 text-gray-400 text-sm italic"
             >
               无可用页面
             </div>
@@ -60,7 +56,7 @@
         class="flex items-center"
       >
         <i class="pi pi-cog mr-1.5"></i>
-        <span class="text-gray-700 dark:text-gray-200">页面设置</span>
+        <span class="text-gray-200">页面设置</span>
       </BaseButton>
     </div>
 
@@ -91,7 +87,7 @@
         class="flex items-center"
       >
         <i class="pi pi-desktop mr-1.5"></i>
-        <span class="text-gray-700 dark:text-gray-200">阅览</span>
+        <span class="text-gray-200">阅览</span>
       </BaseButton>
 
       <BaseButton

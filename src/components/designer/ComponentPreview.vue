@@ -114,7 +114,7 @@
         </div>
         <div
           v-else
-          class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-100 bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
+          class="chart-placeholder flex flex-col items-center justify-center p-4 bg-gray-800 rounded border border-dashed border-gray-600"
           :style="{ height: componentProps.height || '300px' }"
         >
           <div class="text-3xl mb-2">
@@ -135,9 +135,9 @@
     <!-- 未知组件类型 -->
     <template v-else>
       <div
-        class="unknown-component p-4 bg-gray-100 dark:bg-gray-800 rounded border border-dashed border-gray-300 dark:border-gray-600"
+        class="unknown-component p-4 bg-gray-800 rounded border border-dashed border-gray-600"
       >
-        <div class="text-center text-gray-500 dark:text-gray-400">
+        <div class="text-center text-gray-400">
           <i class="pi pi-question-circle text-2xl mb-2"></i>
           <div>未知组件类型: {{ componentType }}</div>
         </div>

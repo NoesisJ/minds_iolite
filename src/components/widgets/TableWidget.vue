@@ -2,23 +2,20 @@
   <div class="table-widget" :style="styles">
     <div v-if="isLoading" class="table-loading">
       <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
-      <p class="mt-2 text-gray-600 dark:text-gray-300">加载数据中...</p>
+      <p class="mt-2 text-gray-300">加载数据中...</p>
     </div>
 
     <div v-else-if="loadError" class="table-error">
       <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
-      <p class="mt-2 text-gray-600 dark:text-gray-300">{{ loadError }}</p>
+      <p class="mt-2 text-gray-300">{{ loadError }}</p>
     </div>
 
     <div v-else-if="tableType && tableData.length > 0" class="table-container">
       <div v-if="showTitle" class="table-title mb-4">
-        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+        <h3 class="text-xl font-semibold text-gray-200">
           {{ title }}
         </h3>
-        <p
-          v-if="subtitle"
-          class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-        >
+        <p v-if="subtitle" class="text-sm text-gray-400 mt-1">
           {{ subtitle }}
         </p>
       </div>
@@ -36,19 +33,15 @@
       <!-- 选中数据展示 -->
       <div
         v-if="showSelection && selectedItems.length > 0"
-        class="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+        class="mt-4 p-3 bg-gray-800 rounded-lg"
       >
-        <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-2">
-          已选中数据
-        </h4>
-        <p class="dark:text-gray-300">
-          已选中 {{ selectedItems.length }} 条记录
-        </p>
+        <h4 class="text-md font-medium text-gray-300 mb-2">已选中数据</h4>
+        <p class="text-gray-300">已选中 {{ selectedItems.length }} 条记录</p>
         <div class="flex flex-wrap gap-2 mt-2">
           <span
             v-for="item in selectedItems"
             :key="item.id"
-            class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded-full text-xs"
+            class="px-3 py-1 bg-blue-900 text-blue-100 rounded-full text-xs"
           >
             {{ getPrimaryField(item) }}
           </span>
