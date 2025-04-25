@@ -3,7 +3,7 @@
     <button
       ref="buttonRef"
       type="button"
-      class="text-md flex items-center justify-center w-full rounded-lg border border-[#4a4a46] shadow-sm px-3 py-2 bg-[#454545] font-medium text-white hover:bg-[#262624] transition-colors duration-200 ease-in-out"
+      class="text-md flex items-center justify-between w-full rounded-lg border border-[#4a4a46] shadow-sm px-3 py-2 bg-[#454545] font-medium text-white hover:bg-[#262624] transition-colors duration-200 ease-in-out"
       @click="toggleOpen"
     >
       <slot></slot>

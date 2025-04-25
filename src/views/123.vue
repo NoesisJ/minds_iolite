@@ -4,14 +4,6 @@
       :data="[120, 200, 150, 80, 70, 110, 130]"
       title="销售趋势"
     />
-    <SimplePieChart
-      :pieData="[
-        { value: 1048, name: '搜索引擎' },
-        { value: 735, name: '直接访问' },
-        { value: 580, name: '邮件营销' },
-      ]"
-      title="访问来源分布"
-    />
     <SimpleRadarChart
       :indicators="[
         { name: '销售', max: 6500 },
@@ -39,7 +31,6 @@
 
 <script setup lang="ts">
 import SimpleAreaChart from "@/components/chat/AreaLineChartPreview.vue";
-import SimplePieChart from "@/components/chat/BasicPieChartPreview.vue";
 import SimpleRadarChart from "@/components/chat/RadarChartPreview.vue";
 import SimpleBarChart from "@/components/chat/BarChartPreview.vue";
 </script>

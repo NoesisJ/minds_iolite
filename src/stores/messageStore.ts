@@ -46,6 +46,15 @@ export const useMessageStore = defineStore("messages", () => {
     return message;
   }
 
+  function removeLastAIMessage() {
+    const lastAIMessageIndex = messages.value.findIndex(
+      (msg) => msg.sender === "ai"
+    );
+    if (lastAIMessageIndex !== -1) {
+      messages.value.splice(lastAIMessageIndex, 1);
+    }
+  }
+
   // 添加系统消息（如错误提示）
   function addSystemMessage(
     content: string,
@@ -98,6 +107,7 @@ export const useMessageStore = defineStore("messages", () => {
     messages,
     addUserMessage,
     addAIMessage,
+    removeLastAIMessage,
     addSystemMessage,
     loadMessages,
     clearMessages,
