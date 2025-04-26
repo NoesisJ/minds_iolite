@@ -130,7 +130,7 @@
             ref="textareaRef"
             v-model="userInput"
             placeholder="询问任何问题..."
-            class="w-full min-h-[100px] max-h-[400px] border-0 text-white p-4 pr-12 outline-none custom-scrollbar resize-none bg-transparent"
+            class="w-full min-h-[80px] max-h-[400px] border-0 text-white p-4 pr-12 outline-none custom-scrollbar resize-none bg-transparent"
             @keydown.enter.exact.prevent="sendMessage"
             @keydown.enter.shift.exact="newLine"
             @input="handleInput"
@@ -140,6 +140,22 @@
             @keydown.escape="closeSuggestions"
             style="overflow-y: hidden"
           />
+
+          <div class="flex items-center mb-2 ml-2 space-x-3">
+            <!-- 联网搜索按钮 -->
+            <button
+              class="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-200"
+              :class="
+                isSearchEnabled
+                  ? 'bg-[#c964428d] text-white'
+                  : 'text-gray-400 hover:text-gray-300 bg-[#2f2f2f]'
+              "
+              @click="toggleSearch"
+            >
+              <Globe class="w-5 h-5 mr-2" />
+              <span>联网搜索</span>
+            </button>
+          </div>
 
           <!-- 提示词下拉菜单 -->
           <div
@@ -201,6 +217,7 @@ import {
   Plus,
   Send,
   Settings,
+  Globe,
   Bot,
 } from "lucide-vue-next";
 import { useMessageStore } from "@/stores/messageStore";
@@ -215,6 +232,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const messagesContainer = ref<HTMLElement | null>(null);
 const userInput = ref<string>("");
 const isTyping = ref<boolean>(false);
+const isSearchEnabled = ref<boolean>(false); // 联网搜索状态
 
 // 提示词相关状态
 const showSuggestions = ref(false);
@@ -453,10 +471,14 @@ const sendMessage = async () => {
     isTyping.value = true;
 
     // 发送消息到服务器
+    const message2Send = isSearchEnabled.value
+      ? userMessage.content + " /联网搜索"
+      : userMessage.content;
+
     const response = await chatService.sendMessage({
       stream: false,
       session_id: selectedChat.value?.id ?? "default",
-      message: userMessage.content,
+      message: message2Send,
     });
 
     // 处理响应
@@ -561,6 +583,25 @@ const copyMessage = (message: any) => {
       console.error("无法复制文本: ", err);
       showError("复制失败");
     });
+};
+
+const toggleSearch = () => {
+  isSearchEnabled.value = !isSearchEnabled.value;
+  if (isSearchEnabled.value) {
+    toast.value?.add({
+      severity: "info",
+      summary: "联网搜索已启用",
+      detail: "可以使用联网搜索功能",
+      life: 3000,
+    });
+  } else {
+    toast.value?.add({
+      severity: "warn",
+      summary: "联网搜索已禁用",
+      detail: "联网搜索功能已关闭",
+      life: 3000,
+    });
+  }
 };
 
 const showError = (message: string) => {

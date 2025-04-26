@@ -4,61 +4,70 @@
     :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
   >
     <div class="max-w-[80%] rounded-lg p-4 relative" :class="messageClass">
-      <!-- 普通文本内容 -->
-      <template v-if="!hasChartData && !hasBracketData">
-        {{ message.content }}
+      <template v-if="!hasSearchResults">
+        <!-- 普通文本内容 -->
+        <template v-if="!hasChartData && !hasBracketData">
+          {{ message.content }}
+        </template>
+
+        <!-- 图表内容 (代码块格式) -->
+        <template v-else-if="hasChartData">
+          <!-- 提取非JSON部分的文本 -->
+          <div v-if="nonJsonContent" class="mb-4">
+            {{ nonJsonContent[0] }}
+          </div>
+
+          <!-- 渲染对应的图表 -->
+          <div v-if="chartData">
+            <SimplePieChart
+              v-if="chartData.chart_type === 'pie'"
+              :pieData="pieChartData"
+              :title="chartData.title"
+            />
+            <SimpleBarChart
+              v-else-if="chartData.chart_type === 'bar'"
+              :xAxisData="chartData.xAxisData"
+              :barData="chartData.barData"
+              :seriesNames="['totaltime1', 'totaltime2']"
+              :title="chartData.title"
+            />
+            <SimpleAreaChart
+              v-else-if="chartData.chart_type === 'line'"
+              :data="chartData.data"
+              :xAxisLabels="chartData.xAxisLabels"
+              :title="chartData.title"
+            />
+          </div>
+
+          <div v-if="nonJsonContent" class="mb-4">
+            {{ nonJsonContent[1] }}
+          </div>
+        </template>
+
+        <!-- 中括号JSON内容显示为代码块 -->
+        <template v-else-if="hasBracketData">
+          <!-- 提取中括号前面的文本 -->
+          <div v-if="bracketNonJsonContent[0]" class="mb-4">
+            {{ bracketNonJsonContent[0] }}
+          </div>
+
+          <!-- 显示JSON格式的代码块 -->
+          <pre
+            class="bg-[#2d2d2d] p-3 rounded-md overflow-x-auto"
+          ><code>{{ formattedBracketJsonContent }}</code></pre>
+
+          <!-- 提取中括号后面的文本 -->
+          <div v-if="bracketNonJsonContent[1]" class="mt-4">
+            {{ bracketNonJsonContent[1] }}
+          </div>
+        </template>
       </template>
 
-      <!-- 图表内容 (代码块格式) -->
-      <template v-else-if="hasChartData">
-        <!-- 提取非JSON部分的文本 -->
-        <div v-if="nonJsonContent" class="mb-4">
-          {{ nonJsonContent[0] }}
+      <template v-else>
+        <div v-if="nonSearchContent" class="mb-4">
+          {{ nonSearchContent }}
         </div>
-
-        <!-- 渲染对应的图表 -->
-        <div v-if="chartData">
-          <SimplePieChart
-            v-if="chartData.chart_type === 'pie'"
-            :pieData="pieChartData"
-            :title="chartData.title"
-          />
-          <SimpleBarChart
-            v-else-if="chartData.chart_type === 'bar'"
-            :xAxisData="chartData.xAxisData"
-            :barData="chartData.barData"
-            :seriesNames="['totaltime1', 'totaltime2']"
-            :title="chartData.title"
-          />
-          <SimpleAreaChart
-            v-else-if="chartData.chart_type === 'line'"
-            :data="chartData.data"
-            :xAxisLabels="chartData.xAxisLabels"
-            :title="chartData.title"
-          />
-        </div>
-
-        <div v-if="nonJsonContent" class="mb-4">
-          {{ nonJsonContent[1] }}
-        </div>
-      </template>
-
-      <!-- 中括号JSON内容显示为代码块 -->
-      <template v-else-if="hasBracketData">
-        <!-- 提取中括号前面的文本 -->
-        <div v-if="bracketNonJsonContent[0]" class="mb-4">
-          {{ bracketNonJsonContent[0] }}
-        </div>
-
-        <!-- 显示JSON格式的代码块 -->
-        <pre
-          class="bg-[#2d2d2d] p-3 rounded-md overflow-x-auto"
-        ><code>{{ formattedBracketJsonContent }}</code></pre>
-
-        <!-- 提取中括号后面的文本 -->
-        <div v-if="bracketNonJsonContent[1]" class="mt-4">
-          {{ bracketNonJsonContent[1] }}
-        </div>
+        <SearchResults :results="searchResults" />
       </template>
 
       <!-- 小复制按钮 -->
@@ -82,6 +91,7 @@
 import { computed } from "vue";
 import { Copy } from "lucide-vue-next";
 import type { Message } from "@/types/chat";
+import SearchResults from "./SearchResults.vue";
 import SimpleAreaChart from "@/components/chat/AreaLineChartPreview.vue";
 import SimplePieChart from "@/components/chat/BasicPieChartPreview.vue";
 import SimpleBarChart from "@/components/chat/BarChartPreview.vue";
@@ -134,6 +144,31 @@ const extractBracketData = (content: string) => {
     return null;
   }
 };
+
+const extractSearchResults = (content: string) => {
+  const match = content.match(/\%{4}\[([\s\S]*?)\]\%{4}/);
+  if (!match) return null;
+
+  try {
+    // 处理单引号问题并解析
+    const formatted = match[1].replace(/'/g, '"');
+    return JSON.parse(formatted);
+  } catch (e) {
+    console.error("解析搜索结果失败:", e);
+    return null;
+  }
+};
+
+const searchResults = computed(
+  () => extractSearchResults(props.message.content) || []
+);
+
+const hasSearchResults = computed(() => searchResults.value.length > 0);
+
+const nonSearchContent = computed(() => {
+  if (!hasSearchResults.value) return props.message.content;
+  return props.message.content.replace(/\%{4}[\s\S]*?\%{4}/g, "").trim();
+});
 
 // 从代码块中提取JSON数据
 const chartData = computed(() => extractJsonData(props.message.content));
