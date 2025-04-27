@@ -1,6 +1,6 @@
 <!-- components/chat/SearchResults.vue -->
 <template>
-  <div class="mt-4 border-l-4 border-[#c96442] pl-4 bg-[#2a2a2a]/50 rounded-lg">
+  <div class="mt-4 border-l-4 border-[#c96442] p-4 bg-[#2a2a2a]/50 rounded-lg">
     <div class="flex items-center gap-2 mb-3">
       <Globe class="w-5 h-5 text-[#c96442]" />
       <span class="font-medium">联网搜索结果</span>
@@ -16,16 +16,20 @@
       <div
         v-for="(result, index) in results"
         :key="index"
-        class="p-3 rounded-lg bg-[#353535] hover:bg-[#404040] transition-colors"
+        class="p-3 rounded-lg bg-[#353535] hover:bg-[#404040] transition-colors overflow-hidden"
       >
-        <a :href="result.url" target="_blank" class="block group">
+        <a :href="result.url" target="_blank" class="block group/search">
           <div class="flex items-start gap-2">
-            <span class="text-xs text-[#c96442]">{{ result.rank }}.</span>
+            <span class="text-xs text-[#c96442] truncate"
+              >{{ result.rank }}.</span
+            >
             <div>
-              <h3 class="font-medium group-hover:text-[#c96442]">
+              <h3
+                class="font-medium group-hover/search:text-[#c96442] duration-200 truncate max-w-lg"
+              >
                 {{ result.title }}
               </h3>
-              <p class="text-sm text-gray-400 mt-1 line-clamp-2">
+              <p class="text-sm text-gray-400 mt-1 line-clamp-2 truncate">
                 {{ result.abstract }}
               </p>
               <div class="mt-2 text-xs text-gray-500 truncate">

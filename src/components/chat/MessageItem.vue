@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex select-text group"
+    class="flex select-text group/message"
     :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
   >
     <div
@@ -79,8 +79,8 @@
         class="absolute flex items-center justify-center rounded-md bg-[#7d4a38] w-10 h-8 p-2 text-white hover:bg-[#c96442] border border-[#404040] cursor-pointer opacity-0 group-hover:opacity-100 group-hover:transition-all group-hover:duration-100"
         :class="
           message.sender === 'user'
-            ? 'left-[-40px] bottom-[10px] group-hover:left-[-60px]'
-            : 'bottom-[10px] right-[-40px] group-hover:right-[-60px]'
+            ? 'left-[-40px] bottom-[10px] group-hover/message:left-[-60px]'
+            : 'bottom-[10px] right-[-40px] group-hover/message:right-[-60px]'
         "
         @click="copyToClipboard(message.content)"
       >
@@ -149,14 +149,14 @@ const extractBracketData = (content: string) => {
 };
 
 const extractSearchResults = (content: string) => {
-  console.log("Extracting search results from content:", content);
-  const match = content.match(/\%{4}\[([\s\S]*?)\]\%{4}/);
+  const match = content.match(/\%{4}([\s\S]*?)\%{4}/);
   if (!match) return null;
 
   try {
     // 处理单引号问题并解析
     const formatted = match[1].replace(/'/g, '"');
-    return JSON.parse(formatted);
+    const fixedJson = formatted.replace(/\\([ux])/g, "\\\\$1");
+    return JSON.parse(fixedJson);
   } catch (e) {
     console.error("解析搜索结果失败:", e);
     return null;
