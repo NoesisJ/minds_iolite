@@ -79,58 +79,58 @@ const navMenus: NavItem[] = [
     icon: "pi pi-pencil",
     route: "/designer",
   },
-  {
-    label: "图表",
-    icon: "pi pi-chart-bar",
-    items: [
-      {
-        label: "ECharts",
-        icon: "pi pi-chart-bar",
-        route: "/charts/echarts",
-      },
-      {
-        label: "HighCharts",
-        icon: "pi pi-chart-bar",
-        route: "/charts/highcharts",
-      },
-    ],
-  },
-  {
-    label: "表单",
-    icon: "pi pi-pencil",
-    items: [
-      {
-        label: "输入框",
-        icon: "pi pi-pencil",
-        route: "/forms/inputs",
-      },
-      {
-        label: "日期选择器",
-        icon: "pi pi-pencil",
-        route: "/forms/datepicker",
-      },
-      {
-        label: "按钮",
-        icon: "pi pi-pencil",
-        route: "/forms/buttons",
-      },
-      {
-        label: "表单布局",
-        icon: "pi pi-pencil",
-        route: "/forms/layouts",
-      },
-    ],
-  },
-  {
-    label: "表格",
-    icon: "pi pi-table",
-    route: "/table",
-  },
-  {
-    label: "ECharts渲染",
-    icon: "pi pi-upload",
-    route: "/123",
-  },
+  // {
+  //   label: "图表",
+  //   icon: "pi pi-chart-bar",
+  //   items: [
+  //     {
+  //       label: "ECharts",
+  //       icon: "pi pi-chart-bar",
+  //       route: "/charts/echarts",
+  //     },
+  //     {
+  //       label: "HighCharts",
+  //       icon: "pi pi-chart-bar",
+  //       route: "/charts/highcharts",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "表单",
+  //   icon: "pi pi-pencil",
+  //   items: [
+  //     {
+  //       label: "输入框",
+  //       icon: "pi pi-pencil",
+  //       route: "/forms/inputs",
+  //     },
+  //     {
+  //       label: "日期选择器",
+  //       icon: "pi pi-pencil",
+  //       route: "/forms/datepicker",
+  //     },
+  //     {
+  //       label: "按钮",
+  //       icon: "pi pi-pencil",
+  //       route: "/forms/buttons",
+  //     },
+  //     {
+  //       label: "表单布局",
+  //       icon: "pi pi-pencil",
+  //       route: "/forms/layouts",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "表格",
+  //   icon: "pi pi-table",
+  //   route: "/table",
+  // },
+  // {
+  //   label: "ECharts渲染",
+  //   icon: "pi pi-upload",
+  //   route: "/123",
+  // },
 ];
 
 // 合并静态和动态菜单
