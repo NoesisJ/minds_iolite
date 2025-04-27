@@ -52,7 +52,7 @@
 
     <!-- 消息展示区 -->
     <main
-      class="flex-1 overflow-y-auto py-6 px-6 flex flex-col custom-scrollbar"
+      class="flex-1 py-6 px-6 flex flex-col custom-scrollbar overflow-x-hidden overflow-y-auto"
       ref="messagesContainer"
     >
       <!-- 欢迎消息 -->
@@ -82,7 +82,7 @@
       </div>
 
       <!-- 消息列表区域 -->
-      <div v-else class="w-full max-w-3xl mx-auto space-y-6">
+      <div v-else class="w-full mx-auto space-y-6">
         <TransitionGroup name="message-fade">
           <MessageItem
             v-for="message in messages"
@@ -90,6 +90,7 @@
             :message="message"
             @retry="retryMessage()"
             @copy="copyMessage(message)"
+            class="w-[80%] max-w-[800px] mx-auto"
           />
         </TransitionGroup>
 

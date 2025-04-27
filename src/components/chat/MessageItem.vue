@@ -1,9 +1,12 @@
 <template>
   <div
-    class="flex w-full select-text group"
+    class="flex select-text group"
     :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
   >
-    <div class="max-w-[80%] rounded-lg p-4 relative" :class="messageClass">
+    <div
+      class="max-w-[80%] w-fit rounded-lg p-4 relative break-words"
+      :class="messageClass"
+    >
       <template v-if="!hasSearchResults">
         <!-- 普通文本内容 -->
         <template v-if="!hasChartData && !hasBracketData">
@@ -146,6 +149,7 @@ const extractBracketData = (content: string) => {
 };
 
 const extractSearchResults = (content: string) => {
+  console.log("Extracting search results from content:", content);
   const match = content.match(/\%{4}\[([\s\S]*?)\]\%{4}/);
   if (!match) return null;
 
