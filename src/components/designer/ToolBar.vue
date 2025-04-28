@@ -120,6 +120,8 @@
       :type="messageDialogContent.type"
       :button-label="messageDialogContent.buttonLabel"
     />
+
+    <Toast ref="toast" />
   </div>
 </template>
 
@@ -132,7 +134,9 @@ import PublishToSidebarDialog from "./PublishToSidebarDialog.vue";
 import ManagePublishedPagesDialog from "./ManagePublishedPagesDialog.vue";
 import { useRouter } from "vue-router";
 import MessageDialog from "@/components/information/MessageDialog.vue";
+import Toast from "@/components/ui/Toast.vue";
 
+const toast = ref<InstanceType<typeof Toast> | null>(null);
 const designerStore = useDesignerStore();
 const router = useRouter();
 
@@ -198,9 +202,19 @@ const savePage = () => {
   const success = designerStore.saveToLocalStorage();
 
   if (success) {
-    showMessage("页面已保存到本地存储", { type: "success" });
+    toast.value?.add({
+      severity: "success",
+      summary: "成功",
+      detail: "保存成功",
+      life: 3000,
+    });
   } else {
-    showMessage("保存失败，请检查浏览器存储权限", { type: "error" });
+    toast.value?.add({
+    severity: "error",
+    summary: "错误",
+    detail: "保存失败，请检查浏览器存储权限",
+    life: 3000,
+  });
   }
 };
 
