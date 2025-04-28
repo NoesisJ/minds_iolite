@@ -62,6 +62,7 @@
             class="component-item p-2 bg-gray-700 rounded border border-gray-600 cursor-move hover:border-blue-400 transition-colors"
             draggable="true"
             @dragstart="onDragStart($event, component)"
+            @click.stop="previewComponent(component)"
           >
             <div class="flex items-center">
               <div
@@ -256,6 +257,18 @@ const deletePage = (pageId: string) => {
   showConfirm("确定要删除此页面吗?", () => {
     designerStore.deletePage(pageId);
   });
+};
+
+// 预览组件 - 新增方法
+const previewComponent = (component: any) => {
+  console.log("预览组件:", component.id);
+  window.dispatchEvent(
+    new CustomEvent("preview-component", {
+      detail: {
+        component: component
+      }
+    })
+  );
 };
 </script>
 
