@@ -1,6 +1,6 @@
 <template>
   <div v-if="show" class="publish-dialog-overlay" @click="onClose">
-    <div class="publish-dialog-container" @click.stop>
+    <div class="publish-dialog-container bg-gray-700"  @click.stop >
       <div class="dialog-header">
         <h2 class="text-xl font-medium text-white">发布到侧边栏</h2>
         <button
@@ -283,7 +283,7 @@ async function handleOverwriteConfirm() {
 .publish-dialog-container {
   width: 95%;
   max-width: 500px;
-  background-color: white;
+  background-color: #303030;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -308,7 +308,6 @@ async function handleOverwriteConfirm() {
 
 .dialog-footer {
   padding: 16px 20px;
-  border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: flex-end;
 }

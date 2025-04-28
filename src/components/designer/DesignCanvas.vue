@@ -9,9 +9,7 @@
         <div class="text-5xl mb-4"><i class="pi pi-columns"></i></div>
         <h3 class="text-xl font-medium mb-2">请选择页面布局</h3>
         <p class="mb-4">在右侧面板中选择一个布局模板开始设计</p>
-        <base-button status="primary" @click="openLayoutSelector" size="medium">
-          选择布局
-        </base-button>
+
       </div>
     </div>
 
@@ -54,7 +52,6 @@
                   class="p-1 text-gray-400 hover:text-blue-400"
                   @click.stop="openRegionSettings(region.id)"
                 >
-                  <i class="pi pi-cog text-xs"></i>
                 </button>
               </div>
             </div>
@@ -88,7 +85,6 @@
                     class="p-1 bg-gray-800 rounded-full shadow text-gray-400 hover:text-blue-400"
                     @click.stop="openComponentSettings(component.id)"
                   >
-                    <i class="pi pi-cog text-xs"></i>
                   </button>
                   <button
                     class="p-1 bg-gray-800 rounded-full shadow text-gray-400 hover:text-red-400"

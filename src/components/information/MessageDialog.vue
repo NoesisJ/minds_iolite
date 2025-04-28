@@ -97,3 +97,27 @@ const handleConfirm = () => {
   emit("confirm");
 };
 </script>
+
+<style>
+.p-dialog {
+  box-shadow: none !important;
+  border: none !important;
+}
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-footer {
+  border: none !important;
+}
+.p-dialog .p-dialog-content {
+  background: #353535;
+  color: #fff;
+}
+.p-dialog .p-dialog-header {
+  background: #353535;
+  color: #fff;
+}
+.p-dialog .p-dialog-footer {
+  background: #353535;
+  color: #fff;
+}
+</style>

@@ -13,9 +13,9 @@
 
       <div class="dialog-content">
         <div v-if="publishedPages.length === 0" class="empty-state">
-          <i class="pi pi-info-circle text-3xl mb-3 text-gray-400"></i>
-          <div class="text-gray-400">暂无已发布页面</div>
-          <div class="text-sm text-gray-400 mt-2">
+          <i class="pi pi-info-circle text-3xl mb-3 text-white"></i>
+          <div class="text-white">暂无已发布页面</div>
+          <div class="text-sm text-white mt-2">
             使用"发布到侧边栏"功能将设计器页面发布到侧边栏
           </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="page-info">
               <div class="flex items-center">
                 <i :class="[page.icon, 'page-icon']"></i>
-                <div class="page-title">{{ page.title }}</div>
+                <div class="page-title text-white">{{ page.title }}</div>
               </div>
               <div class="page-meta">
                 <div class="page-route">路径: {{ page.route }}</div>
@@ -75,16 +75,16 @@
       @click.stop="showConfirmDelete = false"
     >
       <div class="confirm-dialog-container">
-        <div class="confirm-dialog-header">
-          <h3 class="text-lg font-medium text-white">确认取消发布</h3>
+        <div class="confirm-dialog-header bg-gray-700">
+          <h3 class="text-lg font-medium text-white ">确认取消发布</h3>
         </div>
-        <div class="confirm-dialog-content">
-          <p class="text-gray-300">
+        <div class="confirm-dialog-content bg-gray-700">
+          <p class="text-white">
             确定要取消发布页面 "{{ pageToDelete?.title }}"
             吗？此操作将从侧边栏中移除该页面。
           </p>
         </div>
-        <div class="confirm-dialog-footer">
+        <div class="confirm-dialog-footer bg-gray-700">
           <button
             class="btn-cancel px-3 py-1 rounded text-gray-300 hover:bg-gray-700"
             @click="showConfirmDelete = false"
@@ -225,7 +225,7 @@ onMounted(() => {
 .manage-dialog-container {
   width: 95%;
   max-width: 700px;
-  background-color: white;
+  background-color: #303030;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -247,6 +247,7 @@ onMounted(() => {
   overflow-y: auto;
   flex-grow: 1;
   max-height: 60vh;
+  color: #fff;
 }
 
 .dialog-footer {
@@ -284,10 +285,11 @@ onMounted(() => {
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s;
+  border-radius: 8px;
 }
 
 .published-page-item:hover {
-  background-color: #f9fafb;
+  background-color: #1f1f1f;
 }
 
 .published-page-item:last-child {
@@ -307,7 +309,6 @@ onMounted(() => {
 .page-title {
   font-weight: 500;
   font-size: 16px;
-  color: #111827;
   margin-bottom: 4px;
 }
 
@@ -381,7 +382,6 @@ onMounted(() => {
 
 .confirm-dialog-header {
   padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .confirm-dialog-content {
@@ -390,42 +390,9 @@ onMounted(() => {
 
 .confirm-dialog-footer {
   padding: 12px 20px;
-  border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: flex-end;
 }
 
-/* 深色模式 */
-:global(.dark) .manage-dialog-container,
-:global(.dark) .confirm-dialog-container {
-  background-color: #1f2937;
-  color: #f9fafb;
-}
 
-:global(.dark) .dialog-header,
-:global(.dark) .dialog-footer,
-:global(.dark) .confirm-dialog-header,
-:global(.dark) .confirm-dialog-footer {
-  border-color: #374151;
-}
-
-:global(.dark) .published-page-item {
-  border-color: #374151;
-}
-
-:global(.dark) .published-page-item:hover {
-  background-color: #111827;
-}
-
-:global(.dark) .page-title {
-  color: #f9fafb;
-}
-
-:global(.dark) .page-meta {
-  color: #9ca3af;
-}
-
-:global(.dark) .page-icon {
-  color: #d1d5db;
-}
 </style>
