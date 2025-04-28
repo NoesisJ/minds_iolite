@@ -261,7 +261,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
+import { computed, defineProps } from "vue";
 import { getComponentDefinition } from "@/data/componentLibrary";
 import { getImageUrl } from "@/assets/imageImports";
 // 导入图表组件
@@ -284,9 +284,6 @@ const props = defineProps({
   },
 });
 
-// 图表加载状态
-const chartLoaded = ref(true);
-
 // 组件类型
 const componentType = computed(() => {
   const definition = getComponentDefinition(props.component.componentId);
@@ -300,11 +297,6 @@ const componentProps = computed(() => {
 
 // 组件样式
 const styles = computed(() => {
-  return props.component.styles || {};
-});
-
-// 组件样式 - 添加这个计算属性
-const componentStyles = computed(() => {
   return props.component.styles || {};
 });
 
@@ -377,86 +369,6 @@ function getChartComponent(chartType: string) {
   }
 }
 
-// 获取图表图标
-function getChartIcon(chartType: string): string {
-  switch (chartType) {
-    case "line":
-      return "pi pi-chart-line";
-    case "bar":
-      return "pi pi-chart-bar";
-    case "pie":
-      return "pi pi-chart-pie";
-    case "radar":
-      return "pi pi-chart-pie";
-    case "smoothLine":
-      return "pi pi-chart-line";
-    case "area":
-      return "pi pi-chart-line";
-    case "mixBarLine":
-      return "pi pi-chart-bar";
-    case "interactivePieLine":
-      return "pi pi-chart-pie";
-    case "highchartsColumn":
-      return "pi pi-chart-bar";
-    case "highchartsLine":
-      return "pi pi-chart-line";
-    default:
-      return "pi pi-chart-bar";
-  }
-}
-
-// 获取图表名称
-function getChartName(chartType: string): string {
-  switch (chartType) {
-    case "line":
-      return "折线图";
-    case "bar":
-      return "柱状图";
-    case "pie":
-      return "饼图";
-    case "radar":
-      return "雷达图";
-    case "smoothLine":
-      return "平滑折线图";
-    case "area":
-      return "面积图";
-    case "mixBarLine":
-      return "柱状折线混合图";
-    case "interactivePieLine":
-      return "交互式饼图折线图";
-    case "highchartsColumn":
-      return "Highcharts柱状图";
-    case "highchartsLine":
-      return "Highcharts折线图";
-    default:
-      return "图表";
-  }
-}
-
-// 获取图表描述
-function getChartDescription(chartType: string): string {
-  switch (chartType) {
-    case "line":
-      return "用于展示数据变化趋势";
-    case "bar":
-      return "用于展示分类数据对比";
-    case "pie":
-      return "用于展示数据占比分布";
-    case "radar":
-      return "用于多维数据比较分析";
-    case "smoothLine":
-      return "用于平滑展示数据趋势变化";
-    case "area":
-      return "用于展示数据范围及趋势";
-    case "mixBarLine":
-      return "用于展示对比数据及趋势";
-    case "interactivePieLine":
-      return "用于展示关联数据的交互分析";
-    default:
-      return "各类数据可视化图表";
-  }
-}
-
 // 获取表格示例数据
 function getPreviewTableData() {
   if (!componentProps.value || !componentProps.value.columns) {
@@ -511,22 +423,6 @@ function getSelectOptions() {
     { label: "选项 4", value: "4" },
     { label: "选项 5", value: "5" },
   ];
-}
-
-// 获取下拉框显示值
-function getSelectDisplayValue() {
-  const options = getSelectOptions();
-
-  if (componentProps.value && componentProps.value.value) {
-    const selectedOption = options.find(
-      (option: any) => option.value === componentProps.value.value
-    );
-    if (selectedOption) {
-      return selectedOption.label;
-    }
-  }
-
-  return componentProps.value?.placeholder || "请选择...";
 }
 
 // 获取图表组件的props

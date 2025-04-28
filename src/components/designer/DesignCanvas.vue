@@ -127,7 +127,6 @@
 import { computed, onMounted, ref } from "vue";
 import { useDesignerStore } from "@/stores/designerStore";
 import { getComponentType } from "@/utils/componentUtils";
-import BaseButton from "@/components/Form/Buttons/BaseButton.vue";
 import ConfirmDialog from "@/components/information/ConfirmDialog.vue";
 
 const designerStore = useDesignerStore();
@@ -199,11 +198,6 @@ const selectRegion = (regionId: string) => {
   designerStore.selectedComponentId = "";
 };
 
-const openComponentSettings = (componentId: string) => {
-  designerStore.selectedComponentId = componentId;
-  // 可以在此处添加打开右侧面板的逻辑
-};
-
 const removeComponent = (componentId: string) => {
   showConfirm(
     "确定要删除此组件吗？",
@@ -212,11 +206,6 @@ const removeComponent = (componentId: string) => {
     },
     { type: "danger" }
   );
-};
-
-// 打开布局选择器
-const openLayoutSelector = () => {
-  // 可以弹出布局选择对话框，或者自动切换到右侧面板
 };
 
 // 处理拖拽事件

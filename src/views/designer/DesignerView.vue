@@ -72,18 +72,6 @@ const designerStore = useDesignerStore();
 const showPreview = ref(false);
 const previewComponentData = ref<any>(null);
 
-// 根据组件类型获取预览尺寸
-const getPreviewSize = (type: string) => {
-  switch (type) {
-    case "chart":
-      return { width: "600px", height: "400px" };
-    case "table":
-      return { width: "700px", height: "500px" };
-    default:
-      return { width: "400px", minHeight: "200px" };
-  }
-};
-
 // 处理组件预览
 const handlePreviewComponent = (event: CustomEvent) => {
   previewComponentData.value = event.detail.component;
