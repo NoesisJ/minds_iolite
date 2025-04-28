@@ -184,37 +184,49 @@ function getChartOptions() {
         style: {
           fontSize: "13px",
           fontFamily: "Verdana, sans-serif",
-          color: textColor,
+          color: "#ffffff"
         },
       },
+      lineColor: "#555",
+      tickColor: "#555"
     },
     yAxis: {
       min: 0,
       title: {
         text: props.yAxisTitle,
         style: {
-          color: textColor,
-        },
+          color: "#ffffff"
+        }
       },
       labels: {
         style: {
-          color: textColor,
-        },
+          color: "#ffffff"
+        }
       },
-      gridLineColor: gridColor,
+      gridLineColor: "#333",
+      lineColor: "#555",
+      tickColor: "#555"
     },
     legend: {
       enabled: props.showLegend,
       itemStyle: {
-        color: textColor,
+        color: "#ffffff"
       },
+      backgroundColor: "#364153",
+      padding: 10,
+      borderRadius: 5,
+      itemHoverStyle: {
+        color: "#cccccc"
+      }
     },
     tooltip: {
       pointFormat: props.tooltipFormat,
-      backgroundColor: isDarkMode ? "#1a1a1a" : "#ffffff",
+      backgroundColor: "#364153",
       style: {
-        color: textColor,
+        color: "#ffffff"
       },
+      borderColor: "#555",
+      borderWidth: 1
     },
     plotOptions: {
       column: {

@@ -119,16 +119,46 @@ function updateChartOption() {
   const option = {
     tooltip: {
       trigger: "item",
+      backgroundColor: "#364153",
+      textStyle: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     legend: {
       show: props.showLegend,
       top: "bottom",
       data: seriesData.map((item) => item.name),
+      textStyle: {
+        color: "#ffffff"
+      },
+      backgroundColor: "#364153",
+      padding: 10,
+      borderRadius: 5
     },
     color: props.colorPalette,
     radar: {
       shape: props.shape,
       indicator: indicatorsData,
+      axisName: {
+        color: "#ffffff"
+      },
+      splitLine: {
+        lineStyle: {
+          color: "#444"
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: "#444"
+        }
+      },
+      splitArea: {
+        areaStyle: {
+          color: ["#26304a", "#293753"]
+        }
+      }
     },
     series: [
       {

@@ -168,36 +168,46 @@ function getChartOptions() {
       title: {
         text: props.yAxisTitle,
         style: {
-          color: textColor,
-        },
+          color: "#ffffff"
+        }
       },
       labels: {
         style: {
-          color: textColor,
-        },
+          color: "#ffffff"
+        }
       },
-      gridLineColor: gridColor,
+      gridLineColor: "#333",
+      lineColor: "#555",
+      tickColor: "#555"
     },
     xAxis: {
       categories: categories.value,
       labels: {
         style: {
-          color: textColor,
+          color: "#ffffff"
         },
         // 如果有很多标签，只显示部分
         step: categories.value
           ? Math.max(1, Math.floor(categories.value.length / 20))
           : 1,
       },
+      lineColor: "#555",
+      tickColor: "#555"
     },
     legend: {
       enabled: props.showLegend,
       layout: "horizontal",
       align: "center",
       verticalAlign: "bottom",
+      backgroundColor: "#364153",
       itemStyle: {
-        color: textColor,
+        color: "#ffffff"
       },
+      itemHoverStyle: {
+        color: "#cccccc"
+      },
+      padding: 10,
+      borderRadius: 5
     },
     plotOptions: {
       series: {
@@ -235,6 +245,14 @@ function getChartOptions() {
     boost: {
       useGPUTranslations: true,
       seriesThreshold: 1,
+    },
+    tooltip: {
+      backgroundColor: "#364153",
+      style: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
   };
 }

@@ -104,12 +104,24 @@ function updateChartOption() {
     tooltip: {
       trigger: "item",
       formatter: "{b}: {c} ({d}%)",
+      backgroundColor: "#364153",
+      textStyle: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     legend: {
       show: props.showLegend,
       orient: "horizontal",
       top: "bottom",
       data: chartData.map((item) => item.name),
+      textStyle: {
+        color: "#ffffff"
+      },
+      backgroundColor: "#364153",
+      padding: 10,
+      borderRadius: 5
     },
     color: props.colorPalette,
     series: [
@@ -181,12 +193,5 @@ watch(
   width: 100%;
 }
 
-/* 暗色模式适配 */
-:deep(.dark) .chart-title {
-  color: #e5e7eb;
-}
 
-:deep(.dark) .chart-subtitle {
-  color: #9ca3af;
-}
 </style>

@@ -23,7 +23,7 @@
       @mousedown.self="closePreview"
     >
       <div
-        class="preview-container rounded-lg shadow-lg p-6 max-w-3xl max-h-[80vh] overflow-auto"
+        class="preview-container rounded-lg shadow-lg p-6 overflow-auto"
         style="background-color: rgb(53, 53, 53)"
       >
         <div
@@ -41,8 +41,7 @@
         </div>
 
         <div
-          class="preview-content p-4 flex justify-center"
-          :style="getPreviewSize(previewComponentData?.type)"
+          class="preview-content p-4 flex justify-center w-fit h-fit"
         >
           <component-preview
             v-if="previewComponentData"

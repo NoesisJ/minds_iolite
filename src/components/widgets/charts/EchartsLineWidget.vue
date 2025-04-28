@@ -173,11 +173,23 @@ function updateChartOption() {
   const option = {
     tooltip: {
       trigger: "axis",
+      backgroundColor: "#364153",
+      textStyle: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     legend: {
       show: props.showLegend,
       top: "bottom",
       data: chartData.series.map((item) => item.name),
+      textStyle: {
+        color: "#ffffff"
+      },
+      backgroundColor: "#364153",
+      padding: 10,
+      borderRadius: 5
     },
     grid: {
       left: "3%",
@@ -190,10 +202,34 @@ function updateChartOption() {
       type: props.xAxisType,
       data: chartData.xAxisData,
       boundaryGap: false,
+      axisLine: {
+        lineStyle: {
+          color: "#555"
+        }
+      },
+      axisLabel: {
+        color: "#ffffff"
+      }
     },
     yAxis: {
       type: "value",
       name: props.yAxisTitle,
+      nameTextStyle: {
+        color: "#ffffff"
+      },
+      axisLine: {
+        lineStyle: {
+          color: "#555"
+        }
+      },
+      axisLabel: {
+        color: "#ffffff"
+      },
+      splitLine: {
+        lineStyle: {
+          color: "#333"
+        }
+      }
     },
     series: chartData.series.map((item) => ({
       name: item.name,

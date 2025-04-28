@@ -82,6 +82,12 @@ function getChartOptions() {
     },
     tooltip: {
       pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+      backgroundColor: "#364153",
+      style: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     accessibility: {
       point: {
@@ -95,6 +101,9 @@ function getChartOptions() {
         dataLabels: {
           enabled: props.enableDataLabels,
           format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+          style: {
+            color: "#ffffff"
+          }
         },
         showInLegend: props.showLegend,
       },
@@ -104,6 +113,15 @@ function getChartOptions() {
       layout: "horizontal",
       align: "center",
       verticalAlign: "bottom",
+      backgroundColor: "#364153",
+      itemStyle: {
+        color: "#ffffff"
+      },
+      itemHoverStyle: {
+        color: "#cccccc"
+      },
+      padding: 10,
+      borderRadius: 5
     },
     series: [
       {

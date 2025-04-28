@@ -22,6 +22,25 @@ export const baseComponents: ComponentDefinition[] = [
     },
   },
   {
+    id: "textarea",
+    type: "textarea",
+    name: "多行文本",
+    icon: "pi pi-align-left",
+    category: "basic",
+    defaultProps: {
+      placeholder: "请输入内容",
+      rows: 4,
+      shape: "rectangle",
+      size: "medium",
+      status: "",
+      value: "",
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "8px 0",
+    },
+  },
+  {
     id: "image",
     type: "image",
     name: "图片",
@@ -50,6 +69,31 @@ export const baseComponents: ComponentDefinition[] = [
     },
     defaultStyles: {
       margin: "8px 0",
+    },
+  },
+  {
+    id: "calendar",
+    type: "calendar",
+    name: "日历",
+    icon: "pi pi-calendar",
+    category: "basic",
+    defaultProps: {
+      value: null,
+      selectionMode: "single",
+      inline: true,
+      showWeek: false,
+      showOtherMonths: true,
+      selectOtherMonths: false,
+      monthNavigator: true,
+      yearNavigator: true,
+      yearRange: "2020:2030",
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "8px 0",
+      padding: "8px",
+      backgroundColor: "#ffffff",
+      borderRadius: "4px",
     },
   },
 ];
@@ -86,6 +130,60 @@ export const formComponents: ComponentDefinition[] = [
         { label: "选项2", value: "2" },
       ],
       required: false,
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "8px 0",
+    },
+  },
+  {
+    id: "checkbox",
+    type: "checkbox",
+    name: "复选框",
+    icon: "pi pi-check-square",
+    category: "form",
+    defaultProps: {
+      label: "复选框选项",
+      disabled: false,
+      size: "medium",
+      status: "",
+      value: false,
+    },
+    defaultStyles: {
+      margin: "8px 0",
+    },
+  },
+  {
+    id: "radio",
+    type: "radio",
+    name: "单选按钮",
+    icon: "pi pi-circle-on",
+    category: "form",
+    defaultProps: {
+      label: "单选按钮选项",
+      radioValue: true,
+      disabled: false,
+      size: "medium",
+      status: "",
+      value: null,
+    },
+    defaultStyles: {
+      margin: "8px 0",
+    },
+  },
+  {
+    id: "datepicker",
+    type: "datepicker",
+    name: "日期选择器",
+    icon: "pi pi-calendar",
+    category: "form",
+    defaultProps: {
+      placeholder: "选择日期",
+      disabled: false,
+      shape: "semi-round",
+      size: "medium",
+      status: "",
+      value: null,
     },
     defaultStyles: {
       width: "100%",
@@ -246,6 +344,119 @@ export const dataComponents: ComponentDefinition[] = [
         type: ["收入", "支出"],
         status: ["已结算", "待结算"],
       },
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "12px 0",
+      borderRadius: "8px",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    },
+  },
+  {
+    id: "basic-table",
+    type: "table",
+    name: "基础表格",
+    icon: "pi pi-table",
+    category: "data",
+    defaultProps: {
+      tableType: "basic",
+      title: "基础数据表",
+      subtitle: "基础数据展示",
+      showTitle: true,
+      rows: 5,
+      showSelection: false,
+      primaryField: "name",
+      dataSource: "default",
+      columns: [
+        { field: "id", header: "ID", sortable: true },
+        { field: "name", header: "名称", sortable: true },
+        { field: "category", header: "分类", sortable: true },
+        { field: "value", header: "数值", sortable: true },
+      ],
+      data: [],
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "12px 0",
+      borderRadius: "8px",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    },
+  },
+  {
+    id: "search-table",
+    type: "table",
+    name: "检索表格",
+    icon: "pi pi-search",
+    category: "data",
+    defaultProps: {
+      tableType: "search",
+      title: "检索数据表",
+      subtitle: "带检索功能的数据表",
+      showTitle: true,
+      rows: 10,
+      showSelection: true,
+      primaryField: "name",
+      searchFields: ["name", "category", "description"],
+      filters: {},
+      dataSource: "default",
+      columns: [
+        { field: "id", header: "ID", sortable: true },
+        { field: "name", header: "名称", sortable: true },
+        { field: "category", header: "分类", sortable: true },
+        { field: "description", header: "描述", sortable: true },
+        { field: "status", header: "状态", sortable: true },
+      ],
+      data: [],
+    },
+    defaultStyles: {
+      width: "100%",
+      margin: "12px 0",
+      borderRadius: "8px",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    },
+  },
+  {
+    id: "column-transform-table",
+    type: "table",
+    name: "列转换表格",
+    icon: "pi pi-sync",
+    category: "data",
+    defaultProps: {
+      tableType: "columnTransform",
+      title: "列转换数据表",
+      subtitle: "支持列数据转换的表格",
+      showTitle: true,
+      rows: 8,
+      showSelection: false,
+      primaryField: "name",
+      transformRules: {
+        status: {
+          type: "tag",
+          options: {
+            "进行中": { color: "blue" },
+            "已完成": { color: "green" },
+            "已取消": { color: "red" },
+          }
+        },
+        progress: {
+          type: "progress",
+        },
+        price: {
+          type: "currency",
+          options: {
+            symbol: "¥",
+            decimals: 2,
+          }
+        }
+      },
+      columns: [
+        { field: "id", header: "ID", sortable: true },
+        { field: "name", header: "名称", sortable: true },
+        { field: "status", header: "状态", sortable: true, transform: true },
+        { field: "progress", header: "进度", sortable: true, transform: true },
+        { field: "price", header: "价格", sortable: true, transform: true },
+      ],
+      data: [],
     },
     defaultStyles: {
       width: "100%",
@@ -489,6 +700,138 @@ export const echartsComponents: ComponentDefinition[] = [
       borderRadius: "4px",
     },
   },
+  {
+    id: "echarts-calendar",
+    type: "chart",
+    name: "日历图",
+    icon: "pi pi-calendar",
+    category: "echarts",
+    defaultProps: {
+      chartType: "calendar",
+      title: "日历图示例",
+      subtitle: "日期数据分布",
+      height: "350px",
+      year: new Date().getFullYear(),
+      showLegend: true,
+      visualMap: {
+        min: 0,
+        max: 10000,
+        calculable: true,
+        orient: 'horizontal',
+        left: 'center',
+        top: 'top'
+      },
+      data: [
+        ['2023-01-01', 1234],
+        ['2023-01-02', 2345],
+        ['2023-01-03', 3456],
+        ['2023-01-04', 4567],
+        ['2023-01-05', 5678],
+        ['2023-01-06', 6789],
+        ['2023-01-07', 7890],
+        ['2023-01-08', 8901],
+        ['2023-01-09', 9012],
+        ['2023-01-10', 1023],
+      ],
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
+  {
+    id: "echarts-scatter",
+    type: "chart",
+    name: "散点图",
+    icon: "pi pi-chart-scatter",
+    category: "echarts",
+    defaultProps: {
+      chartType: "scatter",
+      title: "散点图示例",
+      subtitle: "数据分布分析",
+      height: "350px",
+      showLegend: true,
+      xAxisName: "X轴",
+      yAxisName: "Y轴",
+      data: [
+        {
+          name: "系列1",
+          data: [
+            [10.0, 8.04],
+            [8.07, 6.95],
+            [13.0, 7.58],
+            [9.05, 8.81],
+            [11.0, 8.33],
+            [14.0, 7.66],
+            [13.4, 6.81],
+            [10.0, 6.33],
+          ],
+        },
+        {
+          name: "系列2",
+          data: [
+            [8.0, 5.04],
+            [6.95, 3.99],
+            [11.0, 8.01],
+            [9.05, 8.10],
+            [10.8, 6.33],
+            [13.0, 7.26],
+            [12.5, 5.73],
+            [7.08, 4.33],
+          ],
+        },
+      ],
+      symbolSize: 10,
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
+  {
+    id: "echarts-gauge",
+    type: "chart",
+    name: "仪表盘",
+    icon: "pi pi-compass",
+    category: "echarts",
+    defaultProps: {
+      chartType: "gauge",
+      title: "仪表盘示例",
+      subtitle: "指标完成情况",
+      height: "350px",
+      min: 0,
+      max: 100,
+      progress: true,
+      axisLine: {
+        lineStyle: {
+          width: 30,
+          color: [
+            [0.3, '#67e0e3'],
+            [0.7, '#37a2da'],
+            [1, '#fd666d']
+          ]
+        }
+      },
+      pointer: {
+        itemStyle: {
+          color: 'auto'
+        }
+      },
+      data: [
+        {
+          value: 75.6,
+          name: '完成率',
+        }
+      ],
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
 ];
 
 // Highcharts 图表组件
@@ -602,6 +945,120 @@ export const highchartsComponents: ComponentDefinition[] = [
         ["上海", 27.79],
         ["圣保罗", 22.23],
         ["墨西哥城", 21.91],
+      ],
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
+  {
+    id: "highcharts-3d-pie",
+    type: "chart",
+    name: "3D饼图",
+    icon: "pi pi-chart-pie",
+    category: "highcharts",
+    defaultProps: {
+      chartType: "highcharts3DPie",
+      title: "3D饼图示例",
+      subtitle: "立体数据占比分析",
+      height: "350px",
+      showLegend: true,
+      enableDataLabels: true,
+      options3d: {
+        enabled: true,
+        alpha: 45,
+        beta: 0
+      },
+      depth: 35,
+      data: [
+        { name: "类别A", y: 41.41 },
+        { name: "类别B", y: 21.84 },
+        { name: "类别C", y: 15.85 },
+        { name: "类别D", y: 12.67 },
+        { name: "类别E", y: 8.18 },
+      ],
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
+  {
+    id: "highcharts-3d-column",
+    type: "chart",
+    name: "3D柱状图",
+    icon: "pi pi-chart-bar",
+    category: "highcharts",
+    defaultProps: {
+      chartType: "highcharts3DColumn",
+      title: "3D柱状图示例",
+      subtitle: "立体数据对比",
+      height: "350px",
+      showLegend: true,
+      yAxisTitle: "数值",
+      options3d: {
+        enabled: true,
+        alpha: 15,
+        beta: 15,
+        depth: 50,
+        viewDistance: 25
+      },
+      data: [
+        { name: "系列1", data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6] },
+        { name: "系列2", data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0] },
+      ],
+      xAxisData: ["一月", "二月", "三月", "四月", "五月", "六月", "七月"],
+    },
+    defaultStyles: {
+      margin: "10px 0",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      borderRadius: "4px",
+    },
+  },
+  {
+    id: "highcharts-gauge",
+    type: "chart",
+    name: "仪表盘",
+    icon: "pi pi-compass",
+    category: "highcharts",
+    defaultProps: {
+      chartType: "highchartsGauge",
+      title: "仪表盘示例",
+      subtitle: "指标完成情况",
+      height: "350px",
+      minValue: 0,
+      maxValue: 100,
+      tooltipEnabled: true,
+      seriesName: "当前值",
+      dial: {
+        radius: "80%",
+        backgroundColor: "gray",
+        borderColor: "silver",
+        borderWidth: 0,
+        baseWidth: 5,
+        baseLength: "90%",
+        rearLength: "10%"
+      },
+      data: [76.5],
+      plotBands: [
+        {
+          from: 0,
+          to: 50,
+          color: "#DF5353" // red
+        },
+        {
+          from: 50,
+          to: 75,
+          color: "#DDDF0D" // yellow
+        },
+        {
+          from: 75,
+          to: 100,
+          color: "#55BF3B" // green
+        }
       ],
     },
     defaultStyles: {

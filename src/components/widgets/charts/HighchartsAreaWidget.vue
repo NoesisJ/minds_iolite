@@ -162,16 +162,38 @@ function getChartOptions() {
       labels: {
         // 如果有很多标签，只显示部分
         step: Math.max(1, Math.floor(categories.value.length / 20)),
+        style: {
+          color: "#ffffff"
+        }
       },
+      lineColor: "#555",
+      tickColor: "#555"
     },
     yAxis: {
       title: {
         text: "数值",
+        style: {
+          color: "#ffffff"
+        }
       },
+      labels: {
+        style: {
+          color: "#ffffff"
+        }
+      },
+      gridLineColor: "#333",
+      lineColor: "#555",
+      tickColor: "#555"
     },
     tooltip: {
       shared: true,
       valueSuffix: " 单位",
+      backgroundColor: "#364153",
+      style: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     plotOptions: {
       area: {
@@ -194,6 +216,15 @@ function getChartOptions() {
       layout: "horizontal",
       align: "center",
       verticalAlign: "bottom",
+      backgroundColor: "#364153",
+      itemStyle: {
+        color: "#ffffff"
+      },
+      itemHoverStyle: {
+        color: "#cccccc"
+      },
+      padding: 10,
+      borderRadius: 5
     },
     series: processedData.value,
     credits: {

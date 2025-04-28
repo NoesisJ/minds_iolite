@@ -158,6 +158,12 @@ function updateChartOption() {
       position: function (pt) {
         return [pt[0], "10%"];
       },
+      backgroundColor: "#364153",
+      textStyle: {
+        color: "#ffffff"
+      },
+      borderColor: "#555",
+      borderWidth: 1
     },
     toolbox: {
       feature: {
@@ -167,15 +173,44 @@ function updateChartOption() {
         restore: {},
         saveAsImage: {},
       },
+      iconStyle: {
+        borderColor: "#ffffff"
+      },
+      emphasis: {
+        iconStyle: {
+          borderColor: "#ffffff"
+        }
+      }
     },
     xAxis: {
       type: "category",
       boundaryGap: false,
       data: xData,
+      axisLine: {
+        lineStyle: {
+          color: "#555"
+        }
+      },
+      axisLabel: {
+        color: "#ffffff"
+      }
     },
     yAxis: {
       type: "value",
       boundaryGap: [0, "100%"],
+      axisLine: {
+        lineStyle: {
+          color: "#555"
+        }
+      },
+      axisLabel: {
+        color: "#ffffff"
+      },
+      splitLine: {
+        lineStyle: {
+          color: "#333"
+        }
+      }
     },
     dataZoom: props.showZoom
       ? [
@@ -187,6 +222,10 @@ function updateChartOption() {
           {
             start: props.zoomRange.start,
             end: props.zoomRange.end,
+            textStyle: {
+              color: "#ffffff"
+            },
+            backgroundColor: "#364153"
           },
         ]
       : [],

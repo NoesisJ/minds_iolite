@@ -1,5 +1,5 @@
 <template>
-  <div class="component-preview" :style="styles">
+  <div class="component-preview w-fit h-fit min-w-xl min-h-xl" :style="styles">
     <!-- 文本组件 -->
     <template v-if="componentType === 'text'">
       <div
@@ -168,8 +168,7 @@
     <!-- 图表组件 -->
     <template v-else-if="componentType === 'chart'">
       <div
-        class="chart-preview bg-white p-2 rounded-md shadow"
-        style="min-height: 360px; width: 100%; max-width: 100%"
+        class="chart-preview bg-gray-800 p-2 rounded-md shadow w-[600px] h-fit"
       >
         <div class="chart-header mb-2">
           <div
@@ -184,18 +183,12 @@
         </div>
         <div
           class="chart-placeholder flex items-center justify-center"
-          :style="{
-            height: componentProps?.height || '320px',
-            minHeight: '320px',
-            width: '100%',
-          }"
         >
           <component
             v-if="getChartComponent(componentProps?.chartType)"
             :is="getChartComponent(componentProps?.chartType)"
             v-bind="getChartProps(componentProps || {})"
             class="w-full h-full"
-            style="width: 100% !important"
           />
           <div
             v-else
@@ -203,6 +196,51 @@
           >
             <div class="text-3xl mb-2">📊</div>
             <div>{{ componentProps?.chartType || "图表" }}预览</div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- 多行文本组件 -->
+    <template v-else-if="componentType === 'textarea'">
+      <div class="form-field w-full">
+        <div
+          class="textarea-preview px-3 py-2 border border-gray-600 bg-gray-700 rounded w-full text-sm text-gray-400 min-h-[100px]"
+        >
+          {{ componentProps.placeholder || "请输入内容" }}
+        </div>
+      </div>
+    </template>
+
+    <!-- 复选框组件 -->
+    <template v-else-if="componentType === 'checkbox'">
+      <div class="checkbox-preview flex items-center">
+        <div class="w-5 h-5 rounded border border-gray-600 bg-gray-700 flex items-center justify-center mr-2">
+          <i v-if="componentProps.value" class="pi pi-check text-sm text-blue-500"></i>
+        </div>
+        <span class="text-gray-300">{{ componentProps.label || "复选框选项" }}</span>
+      </div>
+    </template>
+
+    <!-- 单选按钮组件 -->
+    <template v-else-if="componentType === 'radio'">
+      <div class="radio-preview flex items-center">
+        <div class="w-5 h-5 rounded-full border border-gray-600 bg-gray-700 flex items-center justify-center mr-2">
+          <div v-if="componentProps.value === componentProps.radioValue" class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+        </div>
+        <span class="text-gray-300">{{ componentProps.label || "单选按钮选项" }}</span>
+      </div>
+    </template>
+
+    <!-- 日期选择器组件 -->
+    <template v-else-if="componentType === 'datepicker'">
+      <div class="form-field w-full">
+        <div class="datepicker-preview relative">
+          <div
+            class="px-3 py-2 border border-gray-600 bg-gray-700 rounded text-sm text-gray-400 cursor-default flex justify-between items-center"
+          >
+            <span>{{ componentProps.placeholder || "选择日期" }}</span>
+            <i class="pi pi-calendar text-gray-400"></i>
           </div>
         </div>
       </div>
@@ -236,6 +274,8 @@ import EchartsMixBarLineWidget from "@/components/widgets/charts/EchartsMixBarLi
 import EchartsInteractivePieLineWidget from "@/components/widgets/charts/EchartsInteractivePieLineWidget.vue";
 import HighchartsPieWidget from "@/components/widgets/charts/HighchartsPieWidget.vue";
 import HighchartsAreaWidget from "@/components/widgets/charts/HighchartsAreaWidget.vue";
+import HighchartsColumnWidget from "@/components/widgets/charts/HighchartsColumnWidget.vue";
+import HighchartsLineWidget from "@/components/widgets/charts/HighchartsLineWidget.vue";
 
 const props = defineProps({
   component: {
@@ -328,6 +368,10 @@ function getChartComponent(chartType: string) {
       return HighchartsPieWidget;
     case "area":
       return HighchartsAreaWidget;
+    case "highchartsColumn":
+      return HighchartsColumnWidget;
+    case "highchartsLine":
+      return HighchartsLineWidget;
     default:
       return null;
   }
@@ -352,6 +396,10 @@ function getChartIcon(chartType: string): string {
       return "pi pi-chart-bar";
     case "interactivePieLine":
       return "pi pi-chart-pie";
+    case "highchartsColumn":
+      return "pi pi-chart-bar";
+    case "highchartsLine":
+      return "pi pi-chart-line";
     default:
       return "pi pi-chart-bar";
   }
@@ -376,6 +424,10 @@ function getChartName(chartType: string): string {
       return "柱状折线混合图";
     case "interactivePieLine":
       return "交互式饼图折线图";
+    case "highchartsColumn":
+      return "Highcharts柱状图";
+    case "highchartsLine":
+      return "Highcharts折线图";
     default:
       return "图表";
   }
@@ -948,7 +1000,7 @@ function getSelectDefaultText() {
 }
 
 .chart-preview {
-  width: 100% !important;
+  width: 100% ;
   min-height: 200px;
   position: relative;
   overflow: hidden;
@@ -957,7 +1009,7 @@ function getSelectDefaultText() {
 
 .chart-placeholder {
   position: relative;
-  width: 100% !important;
+  width: 100% ;
   min-height: 320px;
   box-sizing: border-box;
 }
