@@ -9,7 +9,7 @@
       <LeftPanel class="w-64" />
 
       <!-- 中间画布 -->
-      <DesignCanvas class="flex-1 overflow-auto" />
+      <DesignCanvas class="flex-1 overflow-auto custom-scrollbar" />
 
       <!-- 右侧面板：属性配置 -->
       <RightPanel class="w-64" />
