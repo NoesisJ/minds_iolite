@@ -100,13 +100,15 @@
       <!-- 布局设置 -->
       <div class="form-group mb-3">
         <label class="block text-sm font-medium mb-1 text-gray-300"
-          >布局方向</label
+          >布局类型</label
         >
         <base-select
           v-model="layoutDirection"
           :options="[
             { label: '垂直排列', value: 'vertical' },
             { label: '水平排列', value: 'horizontal' },
+            { label: 'Flex布局', value: 'flex' },
+            { label: 'Grid布局', value: 'grid' },
           ]"
           @update:modelValue="updateLayoutDirection"
           class="w-full"
@@ -965,7 +967,7 @@ const updateLayoutType = (value: string) => {
   }
 };
 
-// 更新布局方向
+// 更新布局类型
 const updateLayoutDirection = (value: string) => {
   if (!selectedRegion.value) return;
   const region = selectedRegion.value;
@@ -976,7 +978,7 @@ const updateLayoutDirection = (value: string) => {
       padding: 0,
     };
   }
-  region.layout.direction = value as "vertical" | "horizontal";
+  region.layout.direction = value as "vertical" | "horizontal" | "flex" | "grid";
   designerStore.updateRegion(region);
 };
 

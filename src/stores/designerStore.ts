@@ -25,7 +25,7 @@ export const useDesignerStore = defineStore("designer", {
     layoutTemplates: [
       {
         id: "table-layout",
-        name: "数据表格布局",
+        name: "数据图表布局",
         thumbnail: "/layouts/table-layout.png",
         regions: [
           {
@@ -39,7 +39,7 @@ export const useDesignerStore = defineStore("designer", {
       },
       {
         id: "dashboard-layout",
-        name: "仪表盘布局",
+        name: "自由布局",
         thumbnail: "/layouts/dashboard-layout.png",
         regions: [
           {

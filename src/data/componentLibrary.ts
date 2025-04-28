@@ -24,7 +24,7 @@ export const baseComponents: ComponentDefinition[] = [
   {
     id: "textarea",
     type: "textarea",
-    name: "多行文本",
+    name: "文本域",
     icon: "pi pi-align-left",
     category: "basic",
     defaultProps: {

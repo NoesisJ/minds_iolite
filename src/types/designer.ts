@@ -26,7 +26,7 @@ export interface Region {
   name: string; // 区域名称
   components: ComponentInstance[]; // 区域内的组件
   layout: {
-    direction: "vertical" | "horizontal"; // 布局方向
+    direction: "vertical" | "horizontal" | "flex" | "grid"; // 布局类型
     gap: number; // 组件间距
     padding: number; // 区域内边距
   };
