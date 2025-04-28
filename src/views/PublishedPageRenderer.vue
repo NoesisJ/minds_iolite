@@ -1,5 +1,5 @@
 <template>
-  <div class="published-page-container">
+  <div class="p-6 overflow-auto custom-scrollbar">
     <div v-if="pageData" class="page-content">
       <div
         v-for="(region, index) in pageData.regions"
@@ -107,10 +107,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.published-page-container {
-  min-height: calc(100vh - 56px);
-  background-color: #111827;
-}
 
 .page-content {
   max-width: 1200px;
@@ -124,10 +120,6 @@ onMounted(() => {
 
 .region-wrapper {
   margin-bottom: 16px;
-}
-
-.component-wrapper {
-  /* 无需margin-bottom，使用flex gap代替 */
 }
 
 .error-message {

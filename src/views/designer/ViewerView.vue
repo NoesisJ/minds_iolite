@@ -48,15 +48,6 @@
           <i class="pi pi-pencil mr-1.5"></i>
           <span>返回设计器</span>
         </base-button>
-
-        <base-button
-          status="default"
-          size="small"
-          @click="toggleTheme"
-          class="flex items-center"
-        >
-          <i :class="[isDarkMode ? 'pi pi-sun' : 'pi pi-moon']"></i>
-        </base-button>
       </div>
     </div>
 
@@ -85,7 +76,7 @@
             <div
               v-for="component in region.components"
               :key="component.id"
-              class="component-wrapper"
+              class="relative"
             >
               <component
                 :is="getComponentType(component.type)"
@@ -130,7 +121,6 @@ const STORAGE_KEY = "minds_iolite_designer_data";
 const pages = ref([]);
 const currentPageId = ref("");
 const showPageMenu = ref(false);
-const isDarkMode = ref(false);
 
 // 路由
 const router = useRouter();
@@ -148,13 +138,6 @@ onMounted(() => {
   // 检查路由参数中是否有页面ID
   if (route.params.id) {
     currentPageId.value = route.params.id;
-  }
-
-  // 设置主题
-  const savedTheme = localStorage.getItem("darkMode");
-  if (savedTheme === "true") {
-    isDarkMode.value = true;
-    document.documentElement.classList.add("dark");
   }
 
   // 点击外部关闭下拉菜单
@@ -215,13 +198,6 @@ function returnToDesigner() {
   router.push({ name: "Designer" });
 }
 
-// 切换主题
-function toggleTheme() {
-  isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle("dark", isDarkMode.value);
-  localStorage.setItem("darkMode", isDarkMode.value ? "true" : "false");
-}
-
 // 监听路由参数变化
 watch(
   () => route.params.id,
@@ -236,9 +212,5 @@ watch(
 <style scoped>
 .viewer-header {
   height: 56px;
-}
-
-.component-wrapper {
-  position: relative;
 }
 </style>

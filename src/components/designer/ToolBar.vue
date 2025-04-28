@@ -16,7 +16,7 @@
         <BaseButton
           status="primary"
           @click="togglePageMenu"
-          class="flex items-center min-w-[120px]"
+          class="flex items-center min-w-[90px]"
         >
           <span class="text-gray-200">{{ currentPageName || "选择页面" }}</span>
           <i class="pi pi-chevron-down ml-1.5 text-gray-400"></i>
@@ -51,18 +51,17 @@
 
       <BaseButton
         status="primary"
-        @click="openPageSettings"
-        :disabled="!currentPageId"
+        @click="openManagePublishedPagesDialog"
         class="flex items-center"
       >
-        <i class="pi pi-cog mr-1.5"></i>
-        <span class="text-gray-200">页面设置</span>
+        <i class="pi pi-list mr-1.5"></i>
+        <span class="text-white">管理已发布页面</span>
       </BaseButton>
     </div>
 
     <div class="right-section flex items-center space-x-4">
       <BaseButton
-        status="success"
+        status="danger"
         @click="openPublishToSidebarDialog"
         :disabled="!currentPageId"
         class="flex items-center"
@@ -72,32 +71,13 @@
       </BaseButton>
 
       <BaseButton
-        status="info"
-        @click="openManagePublishedPagesDialog"
-        class="flex items-center"
-      >
-        <i class="pi pi-list mr-1.5"></i>
-        <span class="text-white">管理已发布页面</span>
-      </BaseButton>
-
-      <BaseButton
-        status="primary"
+        status="danger"
         @click="openViewer"
         :disabled="!currentPageId"
         class="flex items-center"
       >
         <i class="pi pi-desktop mr-1.5"></i>
-        <span class="text-gray-200">阅览</span>
-      </BaseButton>
-
-      <BaseButton
-        status="info"
-        @click="previewPage"
-        :disabled="!currentPageId"
-        class="flex items-center"
-      >
-        <i class="pi pi-eye mr-1.5"></i>
-        <span class="text-white">预览</span>
+        <span class="text-white">阅览</span>
       </BaseButton>
 
       <BaseButton
@@ -109,15 +89,6 @@
         <i class="pi pi-save mr-1.5"></i>
         <span class="text-white">保存</span>
       </BaseButton>
-
-      <div class="theme-toggle cursor-pointer p-2" @click="toggleTheme">
-        <i
-          class="pi"
-          :class="[
-            isDarkMode ? 'pi-sun text-yellow-400' : 'pi-moon text-indigo-600',
-          ]"
-        ></i>
-      </div>
     </div>
 
     <!-- 预览模态框 -->
@@ -167,7 +138,6 @@ const router = useRouter();
 
 // 状态管理
 const showPageMenu = ref(false);
-const isDarkMode = ref(false);
 const showPreview = ref(false);
 const showPublishToSidebarDialog = ref(false);
 const showManagePublishedPagesDialog = ref(false);
@@ -213,11 +183,6 @@ const handlePageSelection = (pageId: string) => {
   }, 50);
 };
 
-const openPageSettings = () => {
-  // 实现页面设置功能
-  console.log("打开页面设置");
-};
-
 // 显示消息对话框
 const showMessage = (message: string, options: any = {}) => {
   messageDialogContent.value = {
@@ -229,15 +194,6 @@ const showMessage = (message: string, options: any = {}) => {
   showMessageDialog.value = true;
 };
 
-const previewPage = () => {
-  if (!designerStore.currentPage) {
-    showMessage("请先选择或创建页面", { type: "warning" });
-    return;
-  }
-
-  showPreview.value = true;
-};
-
 const savePage = () => {
   const success = designerStore.saveToLocalStorage();
 
@@ -246,12 +202,6 @@ const savePage = () => {
   } else {
     showMessage("保存失败，请检查浏览器存储权限", { type: "error" });
   }
-};
-
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle("dark", isDarkMode.value);
-  localStorage.setItem("darkMode", isDarkMode.value ? "true" : "false");
 };
 
 // 打开阅览器视图
@@ -299,12 +249,6 @@ const handleUnpublishSuccess = (page: any) => {
 
 // 初始化主题
 onMounted(() => {
-  const savedTheme = localStorage.getItem("darkMode");
-  if (savedTheme === "true") {
-    isDarkMode.value = true;
-    document.documentElement.classList.add("dark");
-  }
-
   // 点击外部关闭下拉菜单
   document.addEventListener("click", (e: MouseEvent) => {
     const target = e.target as HTMLElement;

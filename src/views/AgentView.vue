@@ -43,6 +43,7 @@
           <button
             class="bg-[#353535] text-gray-300 rounded-full p-2 transition-all duration-300 hover:bg-[#454545] hover:text-white"
             title="设置"
+            @click="router.push('/import')"
           >
             <Settings class="w-5 h-5" />
           </button>
@@ -226,6 +227,7 @@ import { useChatStore } from "@/stores/chatStore";
 import MessageItem from "@/components/chat/MessageItem.vue";
 import Toast from "@/components/ui/Toast.vue";
 import { chatService } from "@/services/chatService";
+import router from "@/router";
 
 // 引用和状态
 const toast = ref<InstanceType<typeof Toast> | null>(null);
