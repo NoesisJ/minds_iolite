@@ -666,13 +666,14 @@ const getPrimaryField = (item) => {
 <style scoped>
 .table-widget {
   width: 100%;
-  background-color: #ffffff;
+  background-color: #1e1e1e !important;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  color: white !important;
 }
 
 :global(.dark) .table-widget {
-  background-color: #242736;
+  background-color: #1e1e1e;
 }
 
 .table-container {
@@ -685,9 +686,10 @@ const getPrimaryField = (item) => {
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  background-color: #f5f5f5;
-  border: 1px dashed #ccc;
+  background-color: #2d2d2d;
+  border: 1px dashed #444;
   border-radius: 4px;
+  color: white;
 }
 
 :global(.dark) .table-placeholder {
@@ -702,9 +704,10 @@ const getPrimaryField = (item) => {
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  background-color: #f8fafc;
+  background-color: #2d2d2d;
   border-radius: 4px;
   padding: 20px;
+  color: white;
 }
 
 :global(.dark) .table-loading,
@@ -715,17 +718,92 @@ const getPrimaryField = (item) => {
 /* 表单样式 */
 :deep(.p-dropdown) {
   width: 100%;
+  background-color: #333 !important;
+  color: white !important;
 }
 
 :deep(.p-inputnumber) {
   width: 100%;
+  background-color: #333 !important;
+  color: white !important;
+}
+
+:deep(.p-inputnumber-input),
+:deep(.p-dropdown-label),
+:deep(.p-inputtext) {
+  background-color: #333 !important;
+  color: white !important;
 }
 
 .form-group {
   margin-bottom: 1rem;
+  color: white;
 }
 
 :deep(.p-dialog-content) {
   padding: 0 !important;
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+:deep(.p-dialog-header) {
+  background-color: #2d2d2d !important;
+  color: white !important;
+}
+
+:deep(.p-dialog-footer) {
+  background-color: #1e1e1e !important;
+}
+
+:deep(.table-title) {
+  color: white !important;
+}
+
+/* 滚动条样式 */
+:deep(*::-webkit-scrollbar) {
+  width: 8px;
+  height: 8px;
+}
+
+:deep(*::-webkit-scrollbar-track) {
+  background: #333333;
+}
+
+:deep(*::-webkit-scrollbar-thumb) {
+  background-color: #1e2939 !important;
+  border-radius: 4px;
+}
+
+/* 单选框样式 */
+:deep(.p-radiobutton .p-radiobutton-box.p-highlight) {
+  border-color: #ecfdf5 !important;
+  background: #ecfdf5 !important;
+}
+
+:deep(.p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon) {
+  color: #1e1e1e !important;
+}
+
+:deep(.p-radiobutton:not(.p-disabled):hover .p-radiobutton-box) {
+  border-color: #ecfdf5 !important;
+}
+
+/* 操作按钮样式 */
+:deep(.p-button.p-button-icon-only) {
+  border-color: #222222 !important;
+}
+
+:deep(.p-button.p-button-outlined) {
+  border-color: #222222 !important;
+}
+
+/* 编辑和删除按钮 */
+:deep(.p-button.p-button-text) {
+  border: 1px solid #222222 !important;
+  background-color: transparent !important;
+}
+
+:deep(.p-button.p-button-text:hover) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 </style>

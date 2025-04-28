@@ -127,7 +127,92 @@ defineExpose({
 </script>
 
 <style scoped>
+/* 修改表格背景色和字体颜色 */
+:deep(.p-datatable) {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+:deep(.p-datatable-thead > tr > th) {
+  background-color: #2d2d2d !important;
+  color: white !important;
+  border-color: #444 !important;
+}
+
+:deep(.p-datatable-tbody > tr) {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+:deep(.p-datatable-tbody > tr:hover) {
+  background-color: #333 !important;
+}
+
+:deep(.p-datatable-tbody > tr > td) {
+  border-color: #444 !important;
+  color: white !important;
+}
+
+/* 分页器样式 */
+:deep(.p-paginator) {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+:deep(.p-paginator .p-paginator-element) {
+  color: white !important;
+}
+
+/* 滚动条样式 */
+:deep(*::-webkit-scrollbar) {
+  width: 8px;
+  height: 8px;
+}
+
+:deep(*::-webkit-scrollbar-track) {
+  background: #333333;
+}
+
+:deep(*::-webkit-scrollbar-thumb) {
+  background-color: #1e2939 !important;
+  border-radius: 4px;
+}
+
+/* 单选框样式 */
+:deep(.p-radiobutton .p-radiobutton-box.p-highlight) {
+  border-color: #ecfdf5 !important;
+  background: #ecfdf5 !important;
+}
+
+:deep(.p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon) {
+  color: #1e1e1e !important;
+}
+
+:deep(.p-radiobutton:not(.p-disabled):hover .p-radiobutton-box) {
+  border-color: #ecfdf5 !important;
+}
+
+/* 操作按钮样式 */
+:deep(.p-button.p-button-icon-only) {
+  border-color: #222222 !important;
+}
+
+:deep(.p-button.p-button-outlined) {
+  border-color: #222222 !important;
+}
+
+/* 编辑和删除按钮 */
+:deep(.p-datatable .p-button.p-button-text) {
+  border: 1px solid #222222 !important;
+  background-color: transparent !important;
+}
+
+:deep(.p-datatable .p-button.p-button-text:hover) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 去掉原有的白色背景设置 */
 .p-datatable-tbody > tr {
-  --p-datatable-row-background: #fff;
+  --p-datatable-row-background: #1e1e1e;
 }
 </style>

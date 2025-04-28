@@ -100,24 +100,43 @@ const handleConfirm = () => {
 
 <style>
 .p-dialog {
-  box-shadow: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
   border: none !important;
 }
+
 .p-dialog .p-dialog-content,
 .p-dialog .p-dialog-header,
 .p-dialog .p-dialog-footer {
   border: none !important;
 }
+
 .p-dialog .p-dialog-content {
-  background: #353535;
-  color: #fff;
+  background: #1e1e1e !important;
+  color: #fff !important;
 }
+
 .p-dialog .p-dialog-header {
-  background: #353535;
-  color: #fff;
+  background: #2d2d2d !important;
+  color: #fff !important;
 }
+
 .p-dialog .p-dialog-footer {
-  background: #353535;
-  color: #fff;
+  background: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.p-dialog .p-dialog-header-icon {
+  color: #fff !important;
+}
+
+/* 确保对话框内部组件也使用相同的主题 */
+:deep(.p-button) {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+:deep(.p-button.p-button-outlined) {
+  border-color: #444 !important;
+  color: white !important;
 }
 </style>

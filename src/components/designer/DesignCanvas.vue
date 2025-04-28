@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[var(--material-bg-light)] overflow-auto">
+  <div class="bg-[#1e1e1e] overflow-auto">
     <!-- 选择布局提示 -->
     <div
       v-if="!currentPage || !currentPage.layoutType || !currentLayout"
@@ -16,7 +16,7 @@
     <!-- 页面布局渲染 -->
     <div v-else class="page-container min-h-full p-4">
       <div
-        class="layout-container bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4"
+        class="layout-container bg-[#1e1e1e] rounded-lg shadow-sm border border-gray-700 p-4"
       >
         <h2
           class="text-lg font-medium mb-4 pb-2 border-b border-gray-700 text-gray-300"
@@ -81,11 +81,6 @@
                 <div
                   class="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
-                  <button
-                    class="p-1 bg-gray-800 rounded-full shadow text-gray-400 hover:text-blue-400"
-                    @click.stop="openComponentSettings(component.id)"
-                  >
-                  </button>
                   <button
                     class="p-1 bg-gray-800 rounded-full shadow text-gray-400 hover:text-red-400"
                     @click.stop="removeComponent(component.id)"
@@ -275,3 +270,37 @@ onMounted(() => {
   console.log("设计画布已挂载");
 });
 </script>
+
+<style scoped>
+/* 添加深色主题相关样式 */
+.bg-\[var\(--material-bg-light\)\] {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+.layout-container {
+  background-color: #1e1e1e !important;
+}
+
+.region {
+  background-color: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+.region:hover {
+  background-color: #333 !important;
+}
+
+.empty-region {
+  background-color: #333 !important;
+  border-color: #444 !important;
+}
+
+.component-wrapper {
+  background-color: #1e1e1e !important;
+}
+
+.component-wrapper:hover {
+  background-color: #2d2d2d !important;
+}
+</style>
