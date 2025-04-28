@@ -55,7 +55,7 @@
           />
         </div>
         <div class="table-wrapper">
-          <Table
+          <Table 
             :data="filteredEmployeeData"
             :columns="employeeColumns"
             :rows="5"
@@ -80,7 +80,7 @@
           />
         </div>
         <div class="table-wrapper">
-          <Table
+          <Table 
             :data="filteredProductData"
             :columns="productColumns"
             :rows="5"
@@ -105,7 +105,7 @@
           />
         </div>
         <div class="table-wrapper">
-          <Table
+          <Table 
             :data="filteredFinanceData"
             :columns="financeColumns"
             :showSelection="true"
@@ -132,7 +132,7 @@
           />
         </div>
         <div class="table-wrapper">
-          <Table
+          <Table 
             :data="filteredUserData"
             :columns="userColumns"
             :showSelection="true"
@@ -279,7 +279,7 @@
               :options="['在线', '离线']"
               class="w-full"
             />
-          </div>
+      </div>
         </div>
       </div>
 
@@ -305,7 +305,7 @@
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle text-yellow-500 text-2xl"></i>
         <span>确定要删除{{ deleteItemLabel }}吗？此操作无法撤销。</span>
-      </div>
+    </div>
       <template #footer>
         <Button
           label="取消"
@@ -822,4 +822,4 @@ const handleSearch = (searchEvent) => {
 :deep(.p-dialog-content) {
   padding: 0 !important;
 }
-</style>
+</style> 
