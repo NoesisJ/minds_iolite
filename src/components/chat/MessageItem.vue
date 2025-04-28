@@ -128,13 +128,14 @@ const extractJsonData = (content: string) => {
   }
 };
 
-// 提取中括号中的内容
+// 提取&&&&中的内容
 const extractBracketData = (content: string) => {
+console.log("Extracting bracket data from content:", content);
   try {
     // 尝试匹配 [...] 中括号内容
-    const jsonMatch = content.match(/\[([\s\S]*)\]/);
+    const jsonMatch = content.match(/\&{4}([\s\S]*?)\&{4}/);
     if (jsonMatch) {
-      // 删掉头尾的中括号
+      // 删掉头尾的&&&&
       const jsonContent = jsonMatch[1];
       // 处理单引号和双引号的转换
       const formattedJsonContent = jsonContent.replace(/'/g, '"');
@@ -214,15 +215,15 @@ const nonJsonContent = computed(() => {
 
 // 提取中括号前后的文本内容
 const bracketNonJsonContent = computed(() => {
-  if (!hasBracketData.value) return ["", ""];
+  if (!hasBracketData.value) return [props.message.content];
 
-  const bracketRegex = /\[(.*?)\]/s;
+  const bracketRegex = /\&\&\&\&([\s\S]*?)\&\&\&\&/;
   const match = props.message.content.match(bracketRegex);
 
-  if (!match) return [props.message.content, ""];
+  if (!match) return [props.message.content];
 
   const parts = props.message.content.split(match[0]);
-  return [parts[0]?.trim(), parts[1]?.split("]")[1]?.trim()];
+  return [parts[0]?.trim(), parts[1]?.trim()];
 });
 
 // 为饼图准备数据格式
