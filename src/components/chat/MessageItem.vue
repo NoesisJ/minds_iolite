@@ -130,7 +130,7 @@ const extractJsonData = (content: string) => {
 
 // 提取&&&&中的内容
 const extractBracketData = (content: string) => {
-console.log("Extracting bracket data from content:", content);
+  console.log("Extracting bracket data from content:", content);
   try {
     // 尝试匹配 [...] 中括号内容
     const jsonMatch = content.match(/\&{4}([\s\S]*?)\&{4}/);

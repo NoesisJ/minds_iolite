@@ -265,8 +265,8 @@ const previewComponent = (component: any) => {
   window.dispatchEvent(
     new CustomEvent("preview-component", {
       detail: {
-        component: component
-      }
+        component: component,
+      },
     })
   );
 };

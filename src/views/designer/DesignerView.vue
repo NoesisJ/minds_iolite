@@ -16,38 +16,40 @@
     </div>
 
     <!-- 组件预览浮层 -->
-    <div 
-      v-if="showPreview" 
+    <div
+      v-if="showPreview"
       class="component-preview-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
       @click.self="closePreview"
       @mousedown.self="closePreview"
     >
-      <div 
+      <div
         class="preview-container rounded-lg shadow-lg p-6 max-w-3xl max-h-[80vh] overflow-auto"
-        style="background-color: rgb(53, 53, 53);"
+        style="background-color: rgb(53, 53, 53)"
       >
-        <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-700">
+        <div
+          class="flex justify-between items-center mb-4 pb-2 border-b border-gray-700"
+        >
           <h3 class="text-lg font-medium text-gray-200">
-            {{ previewComponentData?.name || '组件' }} 预览
+            {{ previewComponentData?.name || "组件" }} 预览
           </h3>
-          <button 
-            @click="closePreview" 
+          <button
+            @click="closePreview"
             class="text-gray-400 hover:text-gray-200"
           >
             <i class="pi pi-times"></i>
           </button>
         </div>
-        
-        <div 
+
+        <div
           class="preview-content p-4 flex justify-center"
           :style="getPreviewSize(previewComponentData?.type)"
         >
-          <component-preview 
+          <component-preview
             v-if="previewComponentData"
             :component="{
               componentId: previewComponentData.id,
               props: previewComponentData.defaultProps,
-              styles: previewComponentData.defaultStyles
+              styles: previewComponentData.defaultStyles,
             }"
           />
         </div>
@@ -73,13 +75,13 @@ const previewComponentData = ref<any>(null);
 
 // 根据组件类型获取预览尺寸
 const getPreviewSize = (type: string) => {
-  switch(type) {
-    case 'chart':
-      return { width: '600px', height: '400px' };
-    case 'table':
-      return { width: '700px', height: '500px' };
+  switch (type) {
+    case "chart":
+      return { width: "600px", height: "400px" };
+    case "table":
+      return { width: "700px", height: "500px" };
     default:
-      return { width: '400px', minHeight: '200px' };
+      return { width: "400px", minHeight: "200px" };
   }
 };
 
@@ -108,19 +110,25 @@ onMounted(() => {
   }
 
   // 监听组件预览事件
-  window.addEventListener('preview-component', handlePreviewComponent as EventListener);
+  window.addEventListener(
+    "preview-component",
+    handlePreviewComponent as EventListener
+  );
 
   // 当拖动开始时关闭预览
-  window.addEventListener('dragstart', closePreview);
+  window.addEventListener("dragstart", closePreview);
 });
 
 // 组件卸载时重置设计器模式标志
 onUnmounted(() => {
   (window as any).__DESIGNER_MODE__ = false;
-  
+
   // 移除事件监听
-  window.removeEventListener('preview-component', handlePreviewComponent as EventListener);
-  window.removeEventListener('dragstart', closePreview);
+  window.removeEventListener(
+    "preview-component",
+    handlePreviewComponent as EventListener
+  );
+  window.removeEventListener("dragstart", closePreview);
 });
 </script>
 
@@ -134,8 +142,12 @@ onUnmounted(() => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .preview-container {
@@ -143,7 +155,13 @@ onUnmounted(() => {
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

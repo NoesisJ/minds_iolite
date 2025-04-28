@@ -210,11 +210,11 @@ const savePage = () => {
     });
   } else {
     toast.value?.add({
-    severity: "error",
-    summary: "错误",
-    detail: "保存失败，请检查浏览器存储权限",
-    life: 3000,
-  });
+      severity: "error",
+      summary: "错误",
+      detail: "保存失败，请检查浏览器存储权限",
+      life: 3000,
+    });
   }
 };
 
